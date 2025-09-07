@@ -1,0 +1,63 @@
+/* ===== VARIÁVEIS E CONFIGURAÇÕES DO MODO ESCURO ===== */
+
+:root.dark {
+  /* Cores primárias */
+  --primary-color: #22c55e;
+  --primary-hover: #a3e635;
+  --accent-color: #22c55e;
+  --accent-hover: #7c3aed;
+  
+  /* Cores de texto */
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-inverse: #191970;
+  
+  /* Cores de fundo */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-glass: rgba(0, 0, 0, 0.7);
+  --bg-glass-border: rgba(255, 255, 255, 0.25);
+  
+  /* Cores de borda */
+  --border-primary: #374151;
+  --border-secondary: #4b5563;
+  --border-focus: #3b82f6;
+  
+  /* Cores de gradiente */
+  --gradient-blue: linear-gradient(135deg, #1e3a8a, #1e40af);
+  --gradient-green: linear-gradient(135deg, #14532d, #166534);
+  --gradient-yellow: linear-gradient(135deg, #713f12, #92400e);
+  --gradient-purple: linear-gradient(135deg, #581c87, #6b21a8);
+  --gradient-orange: linear-gradient(135deg, #9a3412, #c2410c);
+  --gradient-pink: linear-gradient(135deg, #831843, #9d174d);
+  --gradient-indigo: linear-gradient(135deg, #312e81, #3730a3);
+  --gradient-emerald: linear-gradient(135deg, #064e3b, #065f46);
+  --gradient-teal: linear-gradient(135deg, #134e4a, #155e75);
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-glass: 0 4px 32px 0 rgba(0, 0, 0, 0.3), 0 1.5px 4px 0 rgba(0, 0, 0, 0.2);
+  
+  /* Cores de estado */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Cores de chat */
+  --chat-bg: #111827;
+  --chat-border: #374151;
+  --chat-input-bg: #111827;
+  --chat-input-border: #374151;
+  --chat-bot-bg: #1e3a8a;
+  --chat-user-bg: #3b82f6;
+  --chat-user-text: #ffffff;
+  
+  /* Cores de accordion */
+  --accordion-chevron: #d1d5db;
+  --accordion-chevron-bg: #374151;
+  --accordion-chevron-hover: #9ca3af;
+}

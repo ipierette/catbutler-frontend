@@ -1,0 +1,114 @@
+/* ===== VARIÁVEIS E CONFIGURAÇÕES DO MODO CLARO ===== */
+
+:root.light {
+  /* Cores primárias */
+  --primary-color: #191970;
+  --primary-hover: #7c3aed;
+  --accent-color: #7c3aed;
+  --accent-hover: #a3e635;
+  
+  /* Cores de texto */
+  --text-primary: #1f2937; /* gray-800 - mais escuro para melhor contraste */
+  --text-secondary: #4b5563; /* gray-600 - mais escuro */
+  --text-muted: #6b7280; /* gray-500 - mais escuro */
+  --text-inverse: #ffffff;
+  
+  /* Cores de fundo */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-border: rgba(0, 0, 0, 0.04);
+  
+  /* Cores de borda */
+  --border-primary: #9ca3af; /* gray-400 - mais escuro para melhor visibilidade */
+  --border-secondary: #d1d5db; /* gray-300 */
+  --border-focus: #f97316;
+  
+  /* Cores de gradiente - otimizadas para contraste */
+  --gradient-blue: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  --gradient-green: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  --gradient-yellow: linear-gradient(135deg, #fef3c7, #fde68a);
+  --gradient-purple: linear-gradient(135deg, #e9d5ff, #ddd6fe);
+  --gradient-orange: linear-gradient(135deg, #fed7aa, #fdba74);
+  --gradient-pink: linear-gradient(135deg, #fce7f3, #fbcfe8);
+  --gradient-indigo: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  --gradient-emerald: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  --gradient-teal: linear-gradient(135deg, #ccfbf1, #99f6e4);
+  
+  /* Gradientes com mais contraste para texto */
+  --gradient-blue-strong: linear-gradient(135deg, #bfdbfe, #93c5fd);
+  --gradient-green-strong: linear-gradient(135deg, #bbf7d0, #86efac);
+  --gradient-yellow-strong: linear-gradient(135deg, #fde68a, #fcd34d);
+  --gradient-purple-strong: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  --gradient-orange-strong: linear-gradient(135deg, #fdba74, #fb923c);
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glass: 0 4px 32px 0 rgba(0, 0, 0, 0.07), 0 1.5px 4px 0 rgba(0, 0, 0, 0.03);
+  
+  /* Cores de estado */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Cores de chat */
+  --chat-bg: #f9fafb;
+  --chat-border: #d1d5db;
+  --chat-input-bg: #ffffff;
+  --chat-input-border: #d1d5db;
+  --chat-bot-bg: #f3f4f6;
+  --chat-user-bg: #dbeafe;
+  --chat-user-text: #1e40af;
+  
+  /* Cores de accordion */
+  --accordion-chevron: #4b5563;
+  --accordion-chevron-bg: #f3f4f6;
+  --accordion-chevron-hover: #6b7280;
+  
+  /* Cores específicas para contraste em gradientes */
+  --text-on-blue-gradient: #1e40af; /* blue-800 */
+  --text-on-green-gradient: #166534; /* green-800 */
+  --text-on-yellow-gradient: #92400e; /* yellow-800 */
+  --text-on-purple-gradient: #6b21a8; /* purple-800 */
+  --text-on-orange-gradient: #c2410c; /* orange-800 */
+  --text-on-pink-gradient: #be185d; /* pink-800 */
+  --text-on-indigo-gradient: #3730a3; /* indigo-800 */
+  --text-on-emerald-gradient: #065f46; /* emerald-800 */
+  --text-on-teal-gradient: #0f766e; /* teal-800 */
+}
+
+/* ===== ESTILOS ESPECÍFICOS DO MODO CLARO ===== */
+
+/* Cores de texto base para modo claro - INDEPENDENTES */
+html.light body {
+  color: #1f2937; /* gray-800 */
+}
+
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6 {
+  color: #1f2937; /* gray-800 */
+}
+
+html.light p {
+  color: #374151; /* gray-700 */
+}
+
+html.light a {
+  color: #1d4ed8; /* blue-700 */
+}
+
+html.light a:hover {
+  color: #1e40af; /* blue-800 */
+}
+
+/* Correção específica para título de login social */
+html.light .social-login-title {
+  color: #1f2937 !important; /* gray-800 */
+}
