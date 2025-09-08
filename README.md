@@ -2,8 +2,7 @@
 
 <div align="center">
   <img src="src/assets/images/logo-catbutler.png" alt="CatButler Logo" width="200" height="200">
-  
-  **O assistente inteligente que transforma sua casa em um lar mais organizado, sustentável e eficiente**
+
  [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
   [![Vite](https://img.shields.io/badge/Vite-7.1.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
