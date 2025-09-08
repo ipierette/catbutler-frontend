@@ -39,6 +39,8 @@ function Header() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="lg:hidden p-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600"
           title="Menu"
+          aria-label={mobileMenuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
+          aria-expanded={mobileMenuOpen}
         >
           <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {mobileMenuOpen ? (
@@ -56,6 +58,7 @@ function Header() {
             onClick={toggleTheme}
             className="p-1 sm:p-1.5 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-300 dark:border-gray-600"
             title={`Alternar para tema ${theme === "light" ? "escuro" : "claro"}`}
+            aria-label={`Alternar para tema ${theme === "light" ? "escuro" : "claro"}`}
           >
             {theme === "light" ? (
               <svg className="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">

@@ -229,9 +229,11 @@ export default function Home() {
         <div className="hidden xl:block absolute lg:relative lg:w-1/3 flex items-end justify-center lg:justify-end">
           <img
             src={gatoGif}
-            alt="gato-mordomo"
+            alt="CatButler - Assistente doméstico felino"
             className="w-[210px] h-[168px] sm:w-[240px] sm:h-[192px] lg:w-[270px] lg:h-[216px] object-contain hover:scale-105 transform transition-transform duration-300"
             style={{ transform: 'translateY(0px)' }}
+            fetchPriority="high"
+            loading="eager"
           />
         </div>
       </section>
