@@ -144,57 +144,61 @@ export default function Tarefas() {
   };
 
   return (
-    <div className="h-full p-4 lg:p-6 overflow-y-auto scrollbar-hide">
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-            <i className="fa-solid fa-clipboard-list text-xl text-green-600 dark:text-green-400" aria-label="tarefas"></i>
+    <div className="h-full p-3 sm:p-4 lg:p-6 overflow-y-auto scrollbar-hide">
+      {/* Header Section - Mobile Optimized */}
+      <div className="mb-4">
+        {/* Title Row */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg shrink-0">
+            <i className="fa-solid fa-clipboard-list text-lg sm:text-xl text-green-600 dark:text-green-400" aria-label="tarefas"></i>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
               Minhas Tarefas
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
               Organize e gerencie suas tarefas diárias
             </p>
           </div>
         </div>
         
-        {/* Filtros com botões pequenos */}
-        <div className="flex items-center gap-2">
-          <FilterButton
-            label="Status"
-            icon="fa-solid fa-circle-dot"
-            value={filtroStatus === "Todas" ? null : filtroStatus}
-            onChange={(value) => setFiltroStatus(value || "Todas")}
-            options={status.filter(s => s !== "Todas").map(s => ({
-              value: s,
-              label: s,
-              icon: s === "Pendente" ? "fa-solid fa-clock" : s === "Em Andamento" ? "fa-solid fa-play" : "fa-solid fa-check",
-              count: tarefas.filter(t => t.status === s).length
-            }))}
-          />
-          
-          <FilterButton
-            label="Categoria"
-            icon="fa-solid fa-folder"
-            value={filtroCategoria === "Todas" ? null : filtroCategoria}
-            onChange={(value) => setFiltroCategoria(value || "Todas")}
-            options={categorias.filter(c => c !== "Todas").map(c => ({
-              value: c,
-              label: c,
-              count: tarefas.filter(t => t.categoria === c).length
-            }))}
-          />
+        {/* Controls Row - Responsive */}
+        <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+          {/* Filtros */}
+          <div className="flex flex-wrap gap-2">
+            <FilterButton
+              label="Status"
+              icon="fa-solid fa-circle-dot"
+              value={filtroStatus === "Todas" ? null : filtroStatus}
+              onChange={(value) => setFiltroStatus(value || "Todas")}
+              options={status.filter(s => s !== "Todas").map(s => ({
+                value: s,
+                label: s,
+                icon: s === "Pendente" ? "fa-solid fa-clock" : s === "Em Andamento" ? "fa-solid fa-play" : "fa-solid fa-check",
+                count: tarefas.filter(t => t.status === s).length
+              }))}
+            />
+            
+            <FilterButton
+              label="Categoria"
+              icon="fa-solid fa-folder"
+              value={filtroCategoria === "Todas" ? null : filtroCategoria}
+              onChange={(value) => setFiltroCategoria(value || "Todas")}
+              options={categorias.filter(c => c !== "Todas").map(c => ({
+                value: c,
+                label: c,
+                count: tarefas.filter(t => t.categoria === c).length
+              }))}
+            />
+          </div>
 
+          {/* Nova Tarefa Button */}
           <button
             onClick={() => alert('Funcionalidade em desenvolvimento')}
-            className="btn-primary px-3 py-2 text-sm flex items-center gap-2 shrink-0 min-w-fit"
+            className="btn-primary w-full sm:w-auto px-4 py-2.5 text-sm flex items-center justify-center gap-2 font-medium"
           >
             <i className="fa-solid fa-plus text-xs"></i>
-            <span className="hidden sm:inline">Nova Tarefa</span>
-            <span className="sm:hidden">Nova</span>
+            <span>Nova Tarefa</span>
           </button>
         </div>
       </div>
@@ -244,11 +248,11 @@ export default function Tarefas() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             {tarefasPaginadas.map((tarefa, index) => (
               <div
                 key={tarefa.id}
-                className="glass-effect rounded-xl shadow-lg p-4 sm:p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 group cursor-pointer relative overflow-hidden"
+                className="glass-effect rounded-xl shadow-lg p-3 sm:p-4 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 sm:transform sm:hover:scale-105 sm:hover:-translate-y-1 group cursor-pointer relative overflow-hidden"
                 style={{
                   animationDelay: `${index * 100}ms`,
                   animation: 'fadeInUp 0.6s ease-out forwards'
@@ -258,56 +262,56 @@ export default function Tarefas() {
                 <div className="absolute top-0 right-0 w-8 h-8 bg-blue-200 dark:bg-blue-600 rounded-full -translate-y-4 translate-x-4 opacity-20"></div>
                 <div className="absolute bottom-0 left-0 w-6 h-6 bg-green-200 dark:bg-green-600 rounded-full translate-y-3 -translate-x-3 opacity-30"></div>
                 {/* Header da Tarefa */}
-                <div className="flex items-start justify-between mb-3 relative z-10">
-                  <div className="flex-1">
-                    <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <div className="flex items-start justify-between mb-2 sm:mb-3 relative z-10">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                       {tarefa.titulo}
                     </h3>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(tarefa.status)}`}>
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                      <span className={`px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${getStatusColor(tarefa.status)}`}>
                         {tarefa.status}
                       </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPrioridadeColor(tarefa.prioridade)}`}>
+                      <span className={`px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${getPrioridadeColor(tarefa.prioridade)}`}>
                         {tarefa.prioridade}
                       </span>
                     </div>
                   </div>
                   
                   {/* Menu de Ações */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
                     <button 
-                      className="p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-all duration-200"
+                      className="p-1 sm:p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-all duration-200"
                       title="Editar"
                     >
-                      <i className="fa-solid fa-edit text-sm"></i>
+                      <i className="fa-solid fa-edit text-xs sm:text-sm"></i>
                     </button>
                     <button 
-                      className="p-1.5 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-all duration-200"
+                      className="p-1 sm:p-1.5 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-all duration-200"
                       title="Concluir"
                     >
                       <i className="fa-solid fa-check text-sm"></i>
                     </button>
                     <button 
-                      className="p-1.5 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all duration-200"
+                      className="p-1 sm:p-1.5 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all duration-200"
                       title="Excluir"
                     >
-                      <i className="fa-solid fa-trash text-sm"></i>
+                      <i className="fa-solid fa-trash text-xs sm:text-sm"></i>
                     </button>
                   </div>
                 </div>
 
                 {/* Descrição */}
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                  {tarefa.descricao}
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 sm:mb-3 overflow-hidden">
+                  <span className="line-clamp-2">{tarefa.descricao}</span>
                 </p>
 
                 {/* Footer da Tarefa */}
                 <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-600">
-                  <div className="flex items-center gap-1">
-                    <i className="fa-solid fa-folder text-gray-400"></i>
-                    <span className="font-medium">{tarefa.categoria}</span>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <i className="fa-solid fa-folder text-gray-400 shrink-0"></i>
+                    <span className="font-medium truncate">{tarefa.categoria}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     <i className="fa-solid fa-calendar text-gray-400"></i>
                     <span className="font-medium">{new Date(tarefa.dataVencimento).toLocaleDateString('pt-BR')}</span>
                   </div>
