@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { createPortal } from "react-dom";
+import PropTypes from "prop-types";
 import logoCatButler from "../assets/images/logo-catbutler.png";
 
 function Header() {
@@ -76,6 +77,10 @@ function Header() {
           <div 
             className="md:hidden mobile-menu-overlay"
             onClick={() => setMobileMenuOpen(false)}
+            onKeyDown={(e) => e.key === 'Escape' && setMobileMenuOpen(false)}
+            role="button"
+            tabIndex={0}
+            aria-label="Fechar menu"
           />
           {/* Menu */}
           <div className="md:hidden mobile-menu">
@@ -114,6 +119,41 @@ function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Mercado IA
+            </Link>
+            <Link 
+              to="/agenda" 
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Agenda
+            </Link>
+            <Link 
+              to="/assistente" 
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Assistente
+            </Link>
+            <Link 
+              to="/dicas" 
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Dicas
+            </Link>
+            <Link 
+              to="/historico" 
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Histórico
+            </Link>
+            <Link 
+              to="/sobre" 
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Sobre
             </Link>
             <Link 
               to="/config" 
@@ -201,4 +241,5 @@ function ShareTooltip({ theme }) {
 }
 
 ShareTooltip.propTypes = {
+  theme: PropTypes.string
 };
