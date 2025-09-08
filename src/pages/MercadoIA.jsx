@@ -270,7 +270,7 @@ export default function MercadoIA() {
                       type="text"
                       value={novoItem}
                       onChange={(e) => setNovoItem(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && adicionarItem()}
+                      onKeyDown={(e) => e.key === 'Enter' && adicionarItem()}
                       placeholder="Adicionar item..."
                       className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
@@ -374,7 +374,7 @@ export default function MercadoIA() {
                   </div>
                   <div className="space-y-4">
                     {PRODUTOS_SUGERIDOS.map((produto, index) => (
-                      <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                      <div key={`produto-${produto.nome}-${index}`} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
@@ -439,7 +439,7 @@ export default function MercadoIA() {
       {/* Chat Modal */}
       {chatAberto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[500px] flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[31.25rem] flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
@@ -468,7 +468,7 @@ export default function MercadoIA() {
               ) : (
                 conversas.map((conversa, index) => (
                   <div
-                    key={index}
+                    key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
                     className={`flex ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
@@ -491,7 +491,7 @@ export default function MercadoIA() {
                   type="text"
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+                  onKeyDown={(e) => e.key === 'Enter' && enviarMensagem()}
                   placeholder="Digite sua pergunta..."
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                 />

@@ -275,7 +275,7 @@ export default function Assistente() {
               placeholder="Digite sua mensagem..."
               className="w-full p-3 pr-12 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none max-h-32"
               rows="1"
-              style={{ minHeight: '44px' }}
+              style={{ minHeight: '2.75rem' }}
             />
             <button
               onClick={() => sendMessage()}

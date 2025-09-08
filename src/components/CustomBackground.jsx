@@ -148,14 +148,14 @@ const CustomBackground = () => {
       {process.env.NODE_ENV === 'development' && (
         <div style={{
           position: 'fixed',
-          bottom: '10px',
-          right: '10px',
+          bottom: '0.625rem',
+          right: '0.625rem',
           zIndex: 1000,
-          padding: '4px 8px',
+          padding: '0.25rem 0.5rem',
           backgroundColor: isLoaded ? 'green' : 'red',
           color: 'white',
-          fontSize: '12px',
-          borderRadius: '4px'
+          fontSize: '0.75rem',
+          borderRadius: '0.25rem'
         }}>
           NEAT: {isLoaded ? 'Active' : 'Failed'}
         </div>

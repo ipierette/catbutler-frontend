@@ -273,13 +273,17 @@ export default function FaxinaIA() {
                   const isCompleted = tarefasConcluidas.has(`${rotinaAtiva}-${tarefa.task}`);
                   return (
                     <div
-                      key={index}
+                      key={`tarefa-${tarefa.task}-${index}`}
                       className={`flex items-center gap-4 p-4 border-2 rounded-lg transition-all duration-200 cursor-pointer ${
                         isCompleted
                           ? 'border-green-500 bg-green-50 dark:bg-green-900/30'
                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                       }`}
                       onClick={() => toggleTarefa(tarefa)}
+                      onKeyDown={(e) => e.key === 'Enter' && toggleTarefa(tarefa)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${isCompleted ? 'Desmarcar' : 'Marcar'} tarefa: ${tarefa.task}`}
                     >
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                         isCompleted
@@ -387,7 +391,7 @@ export default function FaxinaIA() {
       {/* Chat Modal */}
       {chatAberto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[500px] flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[31.25rem] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
               <div className="flex items-center gap-3">
@@ -418,7 +422,7 @@ export default function FaxinaIA() {
               ) : (
                 conversas.map((conversa, index) => (
                   <div
-                    key={index}
+                    key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
                     className={`flex ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
@@ -442,7 +446,7 @@ export default function FaxinaIA() {
                   type="text"
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+                  onKeyDown={(e) => e.key === 'Enter' && enviarMensagem()}
                   placeholder="Digite sua pergunta..."
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
@@ -477,10 +481,10 @@ export default function FaxinaIA() {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <div id="comodos-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Quantos cômodos sua casa tem?
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
+                  </div>
+                  <div className="grid grid-cols-4 gap-2" role="group" aria-labelledby="comodos-label">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                       <button
                         key={num}
@@ -521,7 +525,7 @@ export default function FaxinaIA() {
       {/* Modal Técnicas e Produtos */}
       {tecnicasAberto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl h-[600px] flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl h-[37.5rem] flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Técnicas e Produtos de Limpeza
@@ -544,7 +548,7 @@ export default function FaxinaIA() {
                   </h4>
                   <div className="space-y-4">
                     {TECNICAS_LIMPEZA.map((tecnica, index) => (
-                      <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                      <div key={`tecnica-${tecnica.nome}-${index}`} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                         <div className="flex items-start justify-between mb-2">
                           <h5 className="font-semibold text-gray-900 dark:text-white">
                             {tecnica.nome}
@@ -585,7 +589,7 @@ export default function FaxinaIA() {
                   </h4>
                   <div className="space-y-4">
                     {PRODUTOS_RECOMENDADOS.map((categoria, index) => (
-                      <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                      <div key={`categoria-${categoria.categoria}-${index}`} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                         <h5 className="font-semibold text-gray-900 dark:text-white mb-3">
                           {categoria.categoria}
                         </h5>

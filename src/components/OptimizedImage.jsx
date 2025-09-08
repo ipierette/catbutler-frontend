@@ -25,11 +25,11 @@ const OptimizedImage = ({
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          observerRef.current.disconnect();
+          observerRef.current?.disconnect();
         }
       },
       {
-        rootMargin: '100px', // Start loading 100px before entering viewport
+        rootMargin: '6.25rem', // 100px converted to rem (100/16 = 6.25)
         threshold: 0.1
       }
     );
@@ -39,9 +39,7 @@ const OptimizedImage = ({
     }
 
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      observerRef.current?.disconnect();
     };
   }, [priority, isInView]);
 
@@ -55,16 +53,11 @@ const OptimizedImage = ({
     onError?.(e);
   };
 
-  // Placeholder otimizado
+  // Placeholder otimizado - usando classe skeleton existente
   const defaultPlaceholder = (
     <div 
-      className={`bg-gray-200 dark:bg-gray-700 flex items-center justify-center ${className}`}
-      style={{ 
-        minHeight: '120px',
-        background: 'linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%)',
-        backgroundSize: '400% 100%',
-        animation: 'skeleton 1.5s ease-in-out infinite'
-      }}
+      className={`bg-gray-200 dark:bg-gray-700 flex items-center justify-center skeleton ${className}`}
+      style={{ minHeight: '7.5rem' }} // 120px = 7.5rem
     >
       <i className="fa-solid fa-image text-gray-400 text-xl"></i>
     </div>
@@ -74,7 +67,7 @@ const OptimizedImage = ({
   const errorFallback = (
     <div 
       className={`bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center ${className}`}
-      style={{ minHeight: '120px' }}
+      style={{ minHeight: '7.5rem' }} // 120px = 7.5rem
     >
       <div className="text-center text-gray-500 dark:text-gray-400">
         <i className="fa-solid fa-exclamation-triangle text-lg mb-2"></i>
@@ -108,18 +101,6 @@ const OptimizedImage = ({
           {...props}
         />
       )}
-      
-      {/* CSS for skeleton animation */}
-      <style jsx>{`
-        @keyframes skeleton {
-          0% {
-            background-position: -200px 0;
-          }
-          100% {
-            background-position: calc(200px + 100%) 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };

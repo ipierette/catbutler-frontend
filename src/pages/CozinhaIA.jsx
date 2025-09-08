@@ -352,7 +352,7 @@ export default function CozinhaIA() {
                   type="text"
                   value={novoIngrediente}
                   onChange={(e) => setNovoIngrediente(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && adicionarIngredienteManual()}
+                  onKeyDown={(e) => e.key === 'Enter' && adicionarIngredienteManual()}
                   placeholder="Digite um ingrediente..."
                   className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 />
@@ -399,10 +399,10 @@ export default function CozinhaIA() {
               <div className="space-y-4">
                 {Object.entries(FILTROS).map(([categoria, opcoes]) => (
                   <div key={categoria}>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 capitalize">
+                    <div id={`filtro-${categoria}-label`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 capitalize">
                       {categoria}
-                    </label>
-                    <div className="flex flex-wrap gap-2">
+                    </div>
+                    <div className="flex flex-wrap gap-2" role="group" aria-labelledby={`filtro-${categoria}-label`}>
                       {opcoes.map(opcao => (
                         <button
                           key={opcao}
@@ -500,7 +500,7 @@ export default function CozinhaIA() {
       {/* Chat Modal */}
       {chatAberto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[600px] flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[37.5rem] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
               <div className="flex items-center gap-3">
@@ -532,7 +532,7 @@ export default function CozinhaIA() {
               ) : (
                 conversas.map((conversa, index) => (
                   <div
-                    key={index}
+                    key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
                     className={`flex ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
@@ -556,7 +556,7 @@ export default function CozinhaIA() {
                   type="text"
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+                  onKeyDown={(e) => e.key === 'Enter' && enviarMensagem()}
                   placeholder="Digite sua pergunta sobre culinária..."
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                 />

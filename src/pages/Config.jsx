@@ -316,10 +316,11 @@ export default function Config() {
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label htmlFor="user-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nome
                       </label>
                       <input
+                        id="user-name"
                         type="text"
                         value={dadosUsuario.nome}
                         onChange={(e) => setDadosUsuario(prev => ({ ...prev, nome: e.target.value }))}
@@ -328,10 +329,11 @@ export default function Config() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label htmlFor="user-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Email
                       </label>
                       <input
+                        id="user-email"
                         type="email"
                         value={dadosUsuario.email}
                         onChange={(e) => setDadosUsuario(prev => ({ ...prev, email: e.target.value }))}
@@ -340,13 +342,15 @@ export default function Config() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label htmlFor="user-location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Localização
                       </label>
                       <input
+                        id="user-location"
                         type="text"
                         value={dadosUsuario.localizacao}
                         onChange={(e) => setDadosUsuario(prev => ({ ...prev, localizacao: e.target.value }))}
+                        placeholder="Ex: São Paulo, SP"
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>

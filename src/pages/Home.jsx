@@ -155,7 +155,7 @@ export default function Home() {
                   { icon: "fa-list-check", text: "Rotinas realistas", color: "text-blue-600 dark:text-blue-400" },
                   { icon: "fa-location-dot", text: "Preços locais", color: "text-purple-600 dark:text-purple-400" }
                 ].map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm font-medium">
+                  <div key={`feature-${feature.text}-${index}`} className="flex items-center gap-2 text-sm font-medium">
                     <i className={`fa-solid ${feature.icon} ${feature.color}`}></i>
                     <span className="text-gray-700 dark:text-gray-300">{feature.text}</span>
                   </div>

@@ -40,7 +40,7 @@ export class LazyWrapper extends Component {
       },
       {
         threshold: 0.1,
-        rootMargin: '50px',
+        rootMargin: '3.125rem',
       }
     );
 
@@ -58,7 +58,7 @@ export class LazyWrapper extends Component {
   }
 
   render() {
-    const { children, fallback, height = '200px' } = this.props;
+    const { children, fallback, height = '12.5rem' } = this.props;
     const { isVisible } = this.state;
 
     return (
@@ -88,7 +88,7 @@ export const useLazyLoading = (options = {}) => {
       },
       {
         threshold: options.threshold || 0.1,
-        rootMargin: options.rootMargin || '50px',
+        rootMargin: options.rootMargin || '3.125rem',
       }
     );
 
