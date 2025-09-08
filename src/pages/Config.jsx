@@ -28,7 +28,7 @@ const CONFIGURACOES_SECTIONS = [
     color: 'from-orange-500 to-red-500'
   },
   {
-    id: 'familia',
+    id: 'família',
     title: 'Conta Familiar',
     icon: 'fa-users',
     color: 'from-pink-500 to-rose-500'
@@ -362,7 +362,7 @@ export default function Config() {
               )}
 
               {/* Conta Familiar */}
-              {secaoAtiva === 'familia' && (
+              {secaoAtiva === 'família' && (
                 <div className="space-y-6">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                     Conta Familiar

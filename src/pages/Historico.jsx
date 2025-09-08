@@ -41,7 +41,7 @@ const historicoDados = [
     tipo: 'tarefa',
     titulo: 'Organização do Guarda-roupa',
     descricao: 'Roupas organizadas por categoria',
-    categoria: 'organizacao',
+    categoria: 'organização',
     status: 'concluida',
     data: '2025-01-07',
     tempo: '60 min',
@@ -75,7 +75,7 @@ const categorias = [
   { value: 'cozinha', label: 'Cozinha', icon: 'fa-solid fa-utensils', color: 'bg-orange-100 text-orange-700' },
   { value: 'compras', label: 'Compras', icon: 'fa-solid fa-shopping-cart', color: 'bg-blue-100 text-blue-700' },
   { value: 'faxina', label: 'Faxina', icon: 'fa-solid fa-broom', color: 'bg-green-100 text-green-700' },
-  { value: 'organizacao', label: 'Organização', icon: 'fa-solid fa-boxes', color: 'bg-purple-100 text-purple-700' },
+  { value: 'organização', label: 'Organização', icon: 'fa-solid fa-boxes', color: 'bg-purple-100 text-purple-700' },
   { value: 'planejamento', label: 'Planejamento', icon: 'fa-solid fa-calendar-check', color: 'bg-pink-100 text-pink-700' }
 ];
 

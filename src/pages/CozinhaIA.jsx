@@ -133,13 +133,13 @@ export default function CozinhaIA() {
     await new Promise(resolve => setTimeout(resolve, 3000));
     
     const cardapio = {
-      segunda: { cafe: "Vitamina de Banana", almoço: "Frango Grelhado com Arroz", jantar: "Sopa de Legumes" },
-      terça: { cafe: "Pão Integral com Queijo", almoço: "Macarrão à Carbonara", jantar: "Omelete com Salada" },
-      quarta: { cafe: "Mingau de Aveia", almoço: "Peixe Assado com Batatas", jantar: "Sanduíche Natural" },
-      quinta: { cafe: "Tapioca com Queijo", almoço: "Risotto de Camarão", jantar: "Wrap de Frango" },
-      sexta: { cafe: "Smoothie Verde", almoço: "Lasanha de Berinjela", jantar: "Pizza Caseira" },
-      sábado: { cafe: "Panqueca de Banana", almoço: "Churrasco com Farofa", jantar: "Hambúrguer Artesanal" },
-      domingo: { cafe: "Café da Manhã Completo", almoço: "Feijoada Light", jantar: "Canja de Galinha" }
+      segunda: { café: "Vitamina de Banana", almoço: "Frango Grelhado com Arroz", jantar: "Sopa de Legumes" },
+      terça: { café: "Pão Integral com Queijo", almoço: "Macarrão à Carbonara", jantar: "Omelete com Salada" },
+      quarta: { café: "Mingau de Aveia", almoço: "Peixe Assado com Batatas", jantar: "Sanduíche Natural" },
+      quinta: { café: "Tapioca com Queijo", almoço: "Risotto de Camarão", jantar: "Wrap de Frango" },
+      sexta: { café: "Smoothie Verde", almoço: "Lasanha de Berinjela", jantar: "Pizza Caseira" },
+      sábado: { café: "Panqueca de Banana", almoço: "Churrasco com Farofa", jantar: "Hambúrguer Artesanal" },
+      domingo: { café: "Café da Manhã Completo", almoço: "Feijoada Light", jantar: "Canja de Galinha" }
     };
     
     setCardapioSemanal(cardapio);
@@ -293,7 +293,7 @@ export default function CozinhaIA() {
                 <button
                   onClick={() => {
                     const texto = Object.entries(cardapioSemanal).map(([dia, refeicoes]) => 
-                      `${dia.toUpperCase()}:\n• Café: ${refeicoes.cafe}\n• Almoço: ${refeicoes.almoço}\n• Jantar: ${refeicoes.jantar}\n`
+                      `${dia.toUpperCase()}:\n• Café: ${refeicoes.café}\n• Almoço: ${refeicoes.almoço}\n• Jantar: ${refeicoes.jantar}\n`
                     ).join('\n');
                     navigator.clipboard.writeText(texto);
                   }}
@@ -319,7 +319,7 @@ export default function CozinhaIA() {
                   <div className="space-y-2 text-sm">
                     <div>
                       <span className="font-medium text-orange-600 dark:text-orange-400">Café:</span>
-                      <p className="text-gray-700 dark:text-gray-300">{refeicoes.cafe}</p>
+                      <p className="text-gray-700 dark:text-gray-300">{refeicoes.café}</p>
                     </div>
                     <div>
                       <span className="font-medium text-green-600 dark:text-green-400">Almoço:</span>

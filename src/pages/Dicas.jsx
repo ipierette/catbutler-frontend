@@ -7,7 +7,7 @@ const dicasDomesticas = [
     id: 1,
     titulo: 'Limpeza de Vidros sem Manchas',
     categoria: 'limpeza',
-    dificuldade: 'facil',
+    dificuldade: 'fácil',
     tempo: '5 min',
     descricao: 'Use jornal velho no lugar do pano para secar os vidros. O papel de jornal não deixa fiapos e dá um brilho especial!',
     dica: 'Misture água com vinagre branco (1:1) para um resultado ainda melhor',
@@ -16,8 +16,8 @@ const dicasDomesticas = [
   {
     id: 2,
     titulo: 'Geladeira Sempre Organizada',
-    categoria: 'organizacao',
-    dificuldade: 'medio',
+    categoria: 'organização',
+    dificuldade: 'médio',
     tempo: '15 min',
     descricao: 'Coloque uma caixa de bicarbonato aberta na geladeira para absorver odores e organize por zonas: laticínios em cima, verduras na gaveta.',
     dica: 'Troque o bicarbonato a cada 3 meses',
@@ -27,7 +27,7 @@ const dicasDomesticas = [
     id: 3,
     titulo: 'Economize na Conta de Luz',
     categoria: 'economia',
-    dificuldade: 'facil',
+    dificuldade: 'fácil',
     tempo: '2 min',
     descricao: 'Troque lâmpadas por LED e desligue aparelhos da tomada quando não usar. Um carregador ligado na tomada consome energia mesmo sem nada conectado!',
     dica: 'LED gasta 80% menos energia que lâmpadas convencionais',
@@ -37,7 +37,7 @@ const dicasDomesticas = [
     id: 4,
     titulo: 'Panela Queimada? Solução Fácil!',
     categoria: 'cozinha',
-    dificuldade: 'facil',
+    dificuldade: 'fácil',
     tempo: '30 min',
     descricao: 'Coloque água e bicarbonato na panela, leve ao fogo por 10 minutos. Depois é só esfregar levemente que sai tudinho!',
     dica: 'Para panelas muito queimadas, adicione um pouco de vinagre',
@@ -47,7 +47,7 @@ const dicasDomesticas = [
     id: 5,
     titulo: 'Roupas sem Amassados',
     categoria: 'lavanderia',
-    dificuldade: 'medio',
+    dificuldade: 'médio',
     tempo: '10 min',
     descricao: 'Pendure as roupas ainda úmidas e dê uma "sacudida" antes. Para camisas, abotoe e coloque no cabide imediatamente.',
     dica: 'Tire do varal quando ainda um pouquinho úmidas',
@@ -57,7 +57,7 @@ const dicasDomesticas = [
     id: 6,
     titulo: 'Plantas Sempre Verdes',
     categoria: 'jardim',
-    dificuldade: 'medio',
+    dificuldade: 'médio',
     tempo: '5 min',
     descricao: 'Regue pela manhã ou final do dia. Teste o solo com o dedo: se estiver seco a 2cm de profundidade, é hora de regar.',
     dica: 'Água da chuva é a melhor para suas plantas',
@@ -87,7 +87,7 @@ const horoscopoGato = [
 
 const categoriasDicas = [
   { value: 'limpeza', label: 'Limpeza', icon: 'fa-solid fa-broom' },
-  { value: 'organizacao', label: 'Organização', icon: 'fa-solid fa-boxes' },
+  { value: 'organização', label: 'Organização', icon: 'fa-solid fa-boxes' },
   { value: 'cozinha', label: 'Cozinha', icon: 'fa-solid fa-utensils' },
   { value: 'economia', label: 'Economia', icon: 'fa-solid fa-piggy-bank' },
   { value: 'lavanderia', label: 'Lavanderia', icon: 'fa-solid fa-tshirt' },
@@ -95,9 +95,9 @@ const categoriasDicas = [
 ];
 
 const dificuldades = [
-  { value: 'facil', label: 'Fácil', color: 'text-green-600', icon: 'fa-solid fa-thumbs-up' },
-  { value: 'medio', label: 'Médio', color: 'text-yellow-600', icon: 'fa-solid fa-hand' },
-  { value: 'dificil', label: 'Difícil', color: 'text-red-600', icon: 'fa-solid fa-exclamation-triangle' }
+  { value: 'fácil', label: 'Fácil', color: 'text-green-600', icon: 'fa-solid fa-thumbs-up' },
+  { value: 'médio', label: 'Médio', color: 'text-yellow-600', icon: 'fa-solid fa-hand' },
+  { value: 'difícil', label: 'Difícil', color: 'text-red-600', icon: 'fa-solid fa-exclamation-triangle' }
 ];
 
 export default function Dicas() {
