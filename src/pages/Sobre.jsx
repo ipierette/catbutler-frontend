@@ -259,7 +259,7 @@ export default function Sobre() {
             Agradecimentos Especiais
           </h3>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
-            Um agradecimento especial à Cris e o Rui, queridos amigos que inspiraram este projeto e a todos que acreditam no poder da tecnologia para simplificar e melhorar nosso dia a dia.
+            Um agradecimento especial a Cris e ao Rui, queridos amigos que inspiraram este projeto e a todos que acreditam no poder da tecnologia para simplificar e melhorar nosso dia a dia.
             <strong className="text-primary-600 dark:text-primary-400"> Juntos, fazemos a diferença! </strong>
             🐱✨
           </p>
