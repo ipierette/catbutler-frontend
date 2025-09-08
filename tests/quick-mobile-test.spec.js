@@ -43,8 +43,8 @@ test.describe('Quick Mobile Responsiveness Check', () => {
     await menuButton.click();
     await page.waitForTimeout(300);
     
-    // Menu should be visible
-    const menu = page.locator('.mobile-menu, [class*="mobile-menu"]');
+    // Menu should be visible (specifically the menu content, not overlay)
+    const menu = page.locator('.mobile-menu nav');
     await expect(menu).toBeVisible();
     
     // Menu items should be accessible
