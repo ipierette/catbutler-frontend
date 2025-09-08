@@ -14,7 +14,7 @@ export default function StatsOffcanvas({ achievements = {} }) {
     <>
       {/* Aba lateral */}
       <div 
-        className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 transition-all duration-300"
+        className="fixed right-0 top-1/2 transform -translate-y-1/2 z-[110] transition-all duration-300"
       >
         <button
           onClick={toggleOffcanvas}
@@ -41,7 +41,7 @@ export default function StatsOffcanvas({ achievements = {} }) {
       {/* Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[105] transition-opacity duration-300"
           onClick={toggleOffcanvas}
           onKeyDown={(e) => e.key === 'Escape' && toggleOffcanvas()}
           role="button"
@@ -52,7 +52,7 @@ export default function StatsOffcanvas({ achievements = {} }) {
 
       {/* Offcanvas Panel */}
       <div 
-        className={`fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl z-[110] transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

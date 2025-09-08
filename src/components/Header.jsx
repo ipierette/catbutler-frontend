@@ -66,20 +66,6 @@ function Header() {
               </svg>
             )}
           </button>
-          <div className="hidden lg:flex gap-2">
-            <Link 
-              to="/criar-conta" 
-              className="px-3 py-1.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white font-bold text-xs shadow-lg transition hover:scale-105 transform"
-            >
-              Criar Conta
-            </Link>
-            <Link 
-              to="/login" 
-              className="px-3 py-1.5 rounded-lg bg-success-500 hover:bg-success-600 text-white font-bold text-xs shadow-lg transition hover:scale-105 transform"
-            >
-              Entrar
-            </Link>
-          </div>
         </div>
       </header>
 
