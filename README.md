@@ -1,378 +1,312 @@
-# CatButler Frontend - Assistente de IA para Casa
+# 🐱 CatButler - Assistente Doméstico Inteligente
 
-<div align="center">
-  <img src="src/assets/images/logo-catbutler.png" alt="CatButler Logo" width="200" height="200">
-  
-  **O assistente inteligente que transforma sua casa em um lar mais organizado, sustentável e eficiente**
-  
-  [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
-  [![Vite](https://img.shields.io/badge/Vite-7.1.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  
-  [![Deploy Status](https://img.shields.io/badge/Deploy-Vercel-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
-  [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-  [![Version](https://img.shields.io/badge/Version-2.3.0-blue?style=for-the-badge)](package.json)
-</div>
+[![Deploy Status](https://img.shields.io/badge/deploy-vercel-brightgreen)](https://catbutler-frontend.vercel.app)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![React](https://img.shields.io/badge/react-19.1.1-blue)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/vite-7.1.2-purple)](https://vitejs.dev/)
 
----
+> **CatButler** é um assistente doméstico inteligente com personalidade felina, desenvolvido para simplificar e otimizar suas tarefas do dia a dia através de tecnologia moderna e inteligência artificial.
 
-## 🔗 Links do Projeto
+## 🌟 Sobre o Projeto
 
-- 🏠 **[README Principal](../README.md)** - Visão geral do projeto completo
-- 🔧 **[Backend API](../catbutler-backend/README.md)** - Documentação da API
-- 📋 **[PRD Backend](../catbutler-backend/docs/PRD.md)** - Product Requirements Document
-- 🚀 **[Guia de Deploy](../docs/DEPLOY.md)** - Instruções de deploy
-- 🛠️ **[Desenvolvimento](../docs/DEVELOPMENT.md)** - Setup para desenvolvimento
+O CatButler nasceu de uma necessidade real: amigos próximos, **Cris e Rui**, pediram ferramentas que pudessem ajudar em suas rotinas domésticas usando IA. Foi assim que este assistente felino ganhou vida, combinando praticidade, tecnologia e diversão em uma única plataforma.
 
----
+### ✨ Características Principais
 
-## 📋 Sobre o Projeto
+- 🤖 **Assistente IA**: Conversas inteligentes sobre organização doméstica
+- 🍳 **CozinhaIA**: Receitas personalizadas e sugestões culinárias
+- 🧹 **FaxinaIA**: Cronogramas de limpeza inteligentes
+- 🛒 **MercadoIA**: Listas de compras otimizadas
+- 📅 **Agenda**: Calendário interativo para organização
+- 📊 **Histórico**: Timeline de atividades e conquistas
+- 💡 **Dicas**: Sabedoria felina para o cotidiano
+- 🌓 **Tema Dual**: Modo claro/escuro com transições suaves
 
-O **CatButler** é uma aplicação web moderna e inteligente que funciona como um assistente pessoal para organização doméstica. Utilizando tecnologias de ponta e inteligência artificial, o CatButler oferece soluções práticas e sustentáveis para transformar sua casa em um ambiente mais organizado, eficiente e eco-friendly.
+## 🚀 Demo
 
-### 🎯 **Problema que Resolve**
+Acesse a aplicação em: **[catbutler-frontend.vercel.app](https://catbutler-frontend.vercel.app)**
 
-Muitas pessoas enfrentam dificuldades para:
-- **Organizar tarefas domésticas** de forma eficiente
-- **Planejar refeições** saudáveis e variadas
-- **Manter a casa limpa** com métodos sustentáveis
-- **Fazer compras inteligentes** e econômicas
-- **Gerenciar tempo** entre trabalho e vida pessoal
+## 📱 Funcionalidades
 
-### ✨ **Solução Oferecida**
+### 🎯 **Sistema SPA (Single Page Application)**
+- Layout otimizado sem necessidade de scroll no desktop
+- Sidebar navegacional com todas as funcionalidades
+- Header e footer fixos para melhor UX
 
-O CatButler resolve esses problemas através de:
-- **IA Integrada** para sugestões personalizadas
-- **Interface intuitiva** e responsiva
-- **Sistema de conquistas** para gamificação
-- **Dicas de sustentabilidade** para impacto ambiental positivo
-- **Planejamento inteligente** de rotinas domésticas
+### 🤖 **Assistente Inteligente**
+- Chat interativo com o CatButler IA
+- Sugestões rápidas contextuais
+- Respostas personalizadas por categoria
+- Interface moderna estilo WhatsApp
 
----
+### 🍳 **Gerenciamento Culinário**
+- Receitas sugeridas por IA
+- Filtros por dificuldade e tempo
+- Sistema de favoritos
+- Integração com lista de compras
 
-## 🚀 Funcionalidades Principais
+### 🧹 **Automação de Limpeza**
+- Cronogramas personalizados
+- Dicas de produtos e técnicas
+- Lembretes inteligentes
+- Tracking de progresso
 
-### 🍳 **Cozinha IA**
-- **Sugestões de receitas** baseadas em ingredientes disponíveis
-- **Cardápio semanal** personalizado e balanceado
-- **Receitas favoritas** para acesso rápido
-- **Dicas nutricionais** e de preparo
-- **Integração com IA** para sugestões inteligentes
+### 🛒 **Compras Inteligentes**
+- Listas organizadas por categoria
+- Sugestões baseadas em preferências
+- Comparação de preços
+- Informações nutricionais
 
-### 🧹 **Faxina IA**
-- **Planejamento de limpeza** por ambiente
-- **Dicas de sustentabilidade** para impacto ambiental
-- **Guia de produtos** de limpeza ecológicos
-- **Rotinas personalizadas** de limpeza
-- **Cálculo de impacto** ambiental das ações
+### 📅 **Organização Pessoal**
+- Calendário semanal interativo
+- Eventos categorizados
+- Sistema de prioridades
+- Estatísticas de produtividade
 
-### 🛒 **Mercado IA**
-- **Sugestões de compras** inteligentes
-- **Ofertas personalizadas** baseadas em preferências
-- **Comparação de preços** entre supermercados
-- **Listas de compras** organizadas e eficientes
-- **Informações nutricionais** dos produtos
-
-### ✅ **Sistema de Tarefas**
-- **Gerenciamento completo** de tarefas domésticas
-- **Sugestões inteligentes** baseadas em contexto
-- **Estatísticas de produtividade** e conquistas
-- **Categorização** por prioridade e ambiente
-- **Lembretes automáticos** e notificações
-
----
-
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias
 
 ### **Frontend**
-- **React 19.1.1** - Biblioteca principal para interface
-- **Vite 7.1.2** - Build tool e servidor de desenvolvimento
+- **React 19.1.1** - Biblioteca principal
+- **Vite 7.1.2** - Build tool e dev server
 - **Tailwind CSS 3.4.17** - Framework CSS utilitário
-- **React Router DOM 7.8.2** - Roteamento de páginas
+- **React Router DOM 7.8.2** - Roteamento SPA
 - **React Icons 5.5.0** - Biblioteca de ícones
-- **Three.js 0.180.0** - Gráficos 3D e animações
 
-### **Backend** (Repositório Separado)
-- **Node.js** - Runtime JavaScript
-- **Express** - Framework web
-- **Supabase** - Banco de dados PostgreSQL
-- **Hugging Face** - Inteligência Artificial
-- **JWT** - Autenticação segura
+### **Funcionalidades Especiais**
+- **NEAT Background** - Gradientes interativos animados
+- **Glass Effects** - Design moderno com backdrop blur
+- **Custom Scrollbar** - Scrollbars estilizadas
+- **Responsive Design** - Mobile-first approach
+- **Dark/Light Theme** - Sistema de temas completo
 
-### **Deploy e Infraestrutura**
-- **Vercel** - Deploy do frontend
-- **Supabase** - Banco de dados e autenticação
-- **GitHub** - Controle de versão
+### **Performance**
+- **Code Splitting** - Carregamento otimizado
+- **Lazy Loading** - Componentes sob demanda
+- **Custom Hooks** - Lógica reutilizável
+- **Context API** - Gerenciamento de estado global
 
----
+## 📦 Instalação
 
-## 🎨 Design e UX
-
-### **Sistema de Design**
-- **Paleta de cores** moderna e acessível
-- **Tipografia** clara e legível
-- **Componentes reutilizáveis** e consistentes
-- **Animações suaves** e responsivas
-- **Tema claro/escuro** para preferências do usuário
-
-### **Responsividade**
-- **Mobile-first** design approach
-- **Breakpoints** otimizados para todos os dispositivos
-- **Touch-friendly** interface para mobile
-- **Layout adaptativo** para diferentes telas
-
-### **Acessibilidade**
-- **WCAG 2.1** compliance
-- **Navegação por teclado** completa
-- **Contraste adequado** em todos os modos
-- **Screen reader** friendly
-- **Semântica HTML** correta
-
----
-
-## 📦 Instalação e Configuração
-
-### **Pré-requisitos**
-- Node.js 18+ 
+### Pré-requisitos
+- Node.js 18+
 - npm ou yarn
-- Git
-- Conta no Supabase (para backend)
 
-### **1. Clone o Repositório**
+### 1. Clone o repositório
 ```bash
-git clone https://github.com/ipierette/catbutler-react.git
-cd catbutler-react
+git clone https://github.com/ipierette/catbutler-frontend.git
+cd catbutler-frontend
 ```
 
-### **2. Instale as Dependências**
+### 2. Instale as dependências
 ```bash
 npm install
 # ou
 yarn install
 ```
 
-### **3. Configure as Variáveis de Ambiente**
+### 3. Configure variáveis de ambiente
 ```bash
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações:
+Edite o arquivo `.env`:
 ```env
 VITE_API_URL=http://localhost:3001/api
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-### **4. Execute o Projeto**
+### 4. Execute o projeto
 ```bash
 # Desenvolvimento
 npm run dev
-# ou
-yarn dev
 
 # Build para produção
 npm run build
-# ou
-yarn build
 
 # Preview da build
 npm run preview
-# ou
-yarn preview
 ```
 
-### **5. Acesse a Aplicação**
-Abra [http://localhost:5173](http://localhost:5173) no seu navegador.
-
----
+### 5. Acesse a aplicação
+Abra [http://localhost:5173](http://localhost:5173) no navegador.
 
 ## 🏗️ Estrutura do Projeto
 
 ```
-catbutler-react/
+catbutler-frontend/
 ├── public/                 # Arquivos estáticos
+│   ├── js/
+│   │   └── vendor/        # NEAT background library
+│   └── favicon.ico
 ├── src/
-│   ├── assets/            # Imagens, ícones, etc.
+│   ├── assets/            # Imagens e recursos
+│   │   └── images/
 │   ├── components/        # Componentes reutilizáveis
+│   │   ├── layout/        # Layout components
+│   │   │   └── Sidebar.jsx
+│   │   ├── ui/            # UI components
+│   │   │   └── FilterButton.jsx
 │   │   ├── Header.jsx
 │   │   ├── Footer.jsx
-│   │   ├── Loading.jsx
+│   │   ├── CustomBackground.jsx
 │   │   └── ...
-│   ├── contexts/          # Contextos React
+│   ├── contexts/          # React contexts
 │   │   └── ThemeContext.jsx
-│   ├── hooks/             # Hooks customizados
+│   ├── hooks/             # Custom hooks
 │   │   ├── useKeyboardShortcuts.js
 │   │   └── useValidation.js
 │   ├── pages/             # Páginas da aplicação
 │   │   ├── Home.jsx
-│   │   ├── CozinhaIA.jsx
-│   │   ├── FaxinaIA.jsx
-│   │   ├── MercadoIA.jsx
+│   │   ├── Assistente.jsx
+│   │   ├── Agenda.jsx
+│   │   ├── Historico.jsx
+│   │   ├── Dicas.jsx
+│   │   ├── Sobre.jsx
 │   │   └── ...
 │   ├── styles/            # Estilos CSS
-│   │   ├── light-theme.css
-│   │   └── dark-theme.css
 │   ├── utils/             # Utilitários
-│   │   └── security.js
 │   ├── App.jsx            # Componente principal
-│   ├── main.jsx           # Ponto de entrada
-│   └── routes.jsx         # Configuração de rotas
+│   ├── main.jsx           # Entry point
+│   ├── routes.jsx         # Configuração de rotas
+│   └── index.css          # Estilos globais e Tailwind
 ├── docs/                  # Documentação
-├── package.json           # Dependências e scripts
-├── tailwind.config.js     # Configuração do Tailwind
-├── vite.config.js         # Configuração do Vite
-└── README.md              # Este arquivo
+├── package.json
+├── tailwind.config.js
+├── vite.config.js
+└── README.md
 ```
 
----
+## 🎨 Design System
+
+### **Paleta de Cores**
+- **Primary**: Rosa/Roxo gradient (#ec4899 → #8b5cf6)
+- **Secondary**: Azul (#3b82f6)
+- **Accent**: Verde (#10b981), Amarelo (#f59e0b)
+- **Neutral**: Cinzas modernos
+
+### **Componentes**
+- **Glass Effects**: backdrop-blur com transparência
+- **Cards**: Bordas arredondadas e sombras sutis
+- **Buttons**: Estados hover e animações suaves
+- **Forms**: Validação visual e feedback
+
+### **Tipografia**
+- **Font**: System fonts (system-ui, Avenir, Helvetica)
+- **Scales**: Responsiva com classes utilitárias
+- **Hierarchy**: Clara distinção entre títulos e texto
+
+## 📱 Responsividade
+
+### **Breakpoints**
+- **SM**: 640px+ (Mobile landscape)
+- **MD**: 768px+ (Tablet)
+- **LG**: 1024px+ (Desktop)
+- **XL**: 1280px+ (Large desktop)
+
+### **Layout SPA**
+- **Mobile**: Stack vertical, sidebar oculta
+- **Desktop**: Layout horizontal com sidebar fixa
+- **Tablet**: Adaptação híbrida conforme orientação
+
+## 🔒 Boas Práticas
+
+### **Segurança**
+- Sanitização de inputs
+- Validação client-side
+- Links externos seguros
+- Proteção XSS
+
+### **Performance**
+- Lazy loading de páginas
+- Otimização de imagens
+- Bundle splitting
+- Caching inteligente
+
+### **Acessibilidade**
+- ARIA labels completos
+- Navegação por teclado
+- Contraste adequado
+- Screen reader friendly
 
 ## 🚀 Deploy
 
 ### **Vercel (Recomendado)**
-1. Conecte o repositório ao Vercel
-2. Configure as variáveis de ambiente
-3. Deploy automático a cada push
+```bash
+# Deploy automático via GitHub
+# Conecte o repositório no dashboard da Vercel
+```
 
-### **Netlify**
-1. Conecte o repositório ao Netlify
-2. Configure o build command: `npm run build`
-3. Configure o publish directory: `dist`
-
-### **GitHub Pages**
+### **Build Manual**
 ```bash
 npm run build
-npm run deploy
+# Deploy o conteúdo da pasta 'dist'
 ```
-
----
-
-## 📊 Performance
-
-### **Métricas Otimizadas**
-- **Lighthouse Score**: 95+ em todas as categorias
-- **First Contentful Paint**: < 1.5s
-- **Largest Contentful Paint**: < 2.5s
-- **Cumulative Layout Shift**: < 0.1
-- **Time to Interactive**: < 3.0s
-
-### **Otimizações Implementadas**
-- **Code splitting** por rotas
-- **Lazy loading** de componentes
-- **Image optimization** automática
-- **Tree shaking** para bundle menor
-- **Caching** inteligente de assets
-
----
-
-## 🔒 Segurança
-
-### **Medidas Implementadas**
-- **Input validation** em todos os formulários
-- **XSS protection** com sanitização
-- **CSRF protection** com tokens
-- **Secure headers** configurados
-- **Environment variables** protegidas
-
-### **Autenticação**
-- **JWT tokens** para sessões seguras
-- **Refresh tokens** para renovação automática
-- **Logout automático** em inatividade
-- **Validação** de permissões por rota
-
----
-
-## 🧪 Testes
-
-### **Estrutura de Testes**
-```bash
-# Executar testes
-npm run test
-
-# Executar testes com coverage
-npm run test:coverage
-
-# Executar testes em modo watch
-npm run test:watch
-```
-
-### **Cobertura de Testes**
-- **Unitários**: Componentes e hooks
-- **Integração**: Fluxos de usuário
-- **E2E**: Cenários completos
-- **Acessibilidade**: Validação WCAG
-
----
-
-## 📈 Roadmap
-
-### **Versão 2.4.0** (Próxima)
-- [ ] Integração com assistentes de voz
-- [ ] Notificações push nativas
-- [ ] Modo offline com sincronização
-- [ ] Dashboard de analytics avançado
-
-### **Versão 3.0.0** (Futuro)
-- [ ] Aplicativo mobile nativo
-- [ ] Integração com IoT devices
-- [ ] Machine Learning personalizado
-- [ ] Marketplace de receitas
-
----
 
 ## 🤝 Contribuição
 
-### **Como Contribuir**
 1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+2. Crie uma branch feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ### **Padrões de Código**
-- **ESLint** para linting
-- **Prettier** para formatação
-- **Conventional Commits** para mensagens
-- **Code review** obrigatório
+- ESLint para linting
+- Prettier para formatação
+- Conventional Commits
+- Code review obrigatório
 
----
+## 📊 Métricas
+
+### **Performance**
+- Lighthouse Score: 95+ (todas as categorias)
+- First Contentful Paint: < 1.5s
+- Time to Interactive: < 3.0s
+- Bundle size otimizado
+
+### **Cobertura**
+- Componentes principais testados
+- Hooks customizados validados
+- Fluxos de usuário verificados
+
+## 📄 Documentação
+
+- **[Guia de Instalação](docs/INSTALLATION.md)**
+- **[Guia de Desenvolvimento](docs/DEVELOPMENT.md)**
+- **[Contribuição](docs/CONTRIBUTING.md)**
+- **[API Reference](docs/API.md)**
+
+## 🔗 Links
+
+- **Deploy**: [catbutler-frontend.vercel.app](https://catbutler-frontend.vercel.app)
+- **Repositório**: [github.com/ipierette/catbutler-frontend](https://github.com/ipierette/catbutler-frontend)
+- **Portfolio**: [catbytes.netlify.app](https://catbytes.netlify.app)
+
+## 👥 Créditos
+
+**Desenvolvido por Izadora Pierette**
+
+### **Agradecimentos Especiais**
+- **Cris e Rui** - Inspiração e feedback inicial do projeto
+- **Comunidade React** - Ferramentas e bibliotecas incríveis
+- **Open Source** - Tornando projetos como este possíveis
+
+## 📞 Contato
+
+- **WhatsApp**: [+55 67 98409-8786](https://wa.me/5567984098786)
+- **Email**: [ipierette2@gmail.com](mailto:ipierette2@gmail.com)
+- **Ko-fi**: [ko-fi.com/ipierette](https://ko-fi.com/ipierette)
+- **LinkedIn**: [LinkedIn Profile](https://linkedin.com/in/izadora-pierette)
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a [Licença MIT](LICENSE) - veja o arquivo LICENSE para detalhes.
-
----
-
-## 👥 Equipe
-
-**Desenvolvido com ❤️ por [Izadora](https://github.com/ipierette)**
-
-- **Frontend**: React, Vite, Tailwind CSS
-- **Backend**: Node.js, Express, Supabase
-- **IA**: Hugging Face, Machine Learning
-- **Design**: UI/UX moderno e responsivo
-
----
-
-## 🔗 Links Relacionados
-
-- **Backend API**: [catbutler-backend](https://github.com/ipierette/catbutler-backend)
-- **Documentação**: [docs/](docs/)
-- **Deploy**: [catbutler.vercel.app](https://catbutler.vercel.app)
-- **Issues**: [GitHub Issues](https://github.com/ipierette/catbutler-react/issues)
-
----
-
-## 📞 Suporte
-
-Para suporte, dúvidas ou sugestões:
-- **GitHub Issues**: [Abrir uma issue](https://github.com/ipierette/catbutler-react/issues)
-- **Email**: [seu-email@exemplo.com](mailto:seu-email@exemplo.com)
-- **LinkedIn**: [Seu perfil](https://linkedin.com/in/seu-perfil)
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
 
 <div align="center">
-  <p>Feito com ❤️ para tornar sua casa mais inteligente e sustentável</p>
-  <p>© 2025 CatButler. Todos os direitos reservados.</p>
+
+**Feito com 💜 por Izadora Pierette**
+
+*Transformando casas em lares inteligentes, um miado por vez* 🐱✨
+
 </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import gatoGif from "../assets/images/gato-unscreen.gif";
 import { TermsModal, useModal } from "../components/Modals";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import StatsOffcanvas from "../components/StatsOffcanvas";
 
 
 export default function Home() {
@@ -201,28 +202,28 @@ export default function Home() {
   };
 
   return (
-    <main className="p-2 sm:p-3 md:p-4 max-w-7xl mx-auto h-full overflow-y-auto" style={{height: 'calc(100dvh - 7.5rem)'}}>
+    <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
       {/* Hero Section - Compacta e proporcional */}
-      <section key={`hero-${animationKey}`} className="relative flex flex-col lg:flex-row items-center justify-center gap-3 lg:gap-6 w-full mx-auto glass-effect rounded-xl shadow-lg p-4 sm:p-6 mb-3 sm:mb-4 fade-in-up bg-white/95 dark:bg-gray-700 border border-gray-200 dark:border-gray-500" style={{minHeight: '10rem'}}>
+      <section key={`hero-${animationKey}`} className="relative flex-responsive-center gap-responsive w-full mx-auto card-glass rounded-xl shadow-lg p-responsive mb-8 animate-fade-in-up min-h-40">
         <div className="flex flex-col items-center lg:items-start justify-center gap-3 lg:w-2/3 text-center lg:text-left px-2 sm:px-0">
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
-              {getGreeting()}, <span className="visitante-span">visitante</span>
+            <h1 className="text-responsive-xl font-bold text-gray-900 dark:text-white">
+              {getGreeting()}, <span className="text-primary-600 dark:text-primary-400">visitante</span>
             </h1>
-            <i className="fa-solid fa-hand-peace text-2xl text-blue-500 dark:text-green-400" aria-label="paz"></i>
+            <i className="fa-solid fa-hand-peace text-2xl text-primary-500 dark:text-accent-400" aria-label="paz"></i>
           </div>
-          <p className="text-xs sm:text-sm text-gray-800 dark:text-white max-w-xl font-medium leading-relaxed mb-3">
+          <p className="text-responsive-sm text-gray-800 dark:text-white max-w-xl font-medium leading-relaxed mb-3">
             Organize sua casa com IA — receitas, faxina e compras numa experiência fluida.
           </p>
           <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-2">
-            <Link to="/cozinha-ia" className="btn px-2.5 py-1.5 rounded-lg bg-green-400 hover:bg-green-500 text-white dark:text-white font-semibold shadow-md transition text-xs flex items-center gap-1 hover:scale-105 transform"><i className="fa-solid fa-bolt"></i> Começar</Link>
-            <Link to="/mercado-ia" className="btn px-2.5 py-1.5 rounded-lg bg-blue-400 hover:bg-blue-500 text-white dark:text-white font-semibold shadow-md transition text-xs flex items-center gap-1 hover:scale-105 transform"><i className="fa-solid fa-tags"></i> Comparar preços</Link>
-            <button type="button" onClick={termsModal.openModal} className="btn px-2.5 py-1.5 rounded-lg bg-purple-200 hover:bg-purple-300 dark:bg-purple-800 dark:hover:bg-purple-700 text-purple-800 dark:text-purple-200 font-semibold shadow-md transition text-xs flex items-center gap-1 hover:scale-105 transform"><i className="fa-solid fa-file-contract"></i> Termos de Uso</button>
+            <Link to="/cozinha-ia" className="btn-primary px-2.5 py-1.5 text-responsive-xs flex items-center gap-1 hover:scale-105 transform"><i className="fa-solid fa-bolt"></i> Começar</Link>
+            <Link to="/mercado-ia" className="btn-secondary px-2.5 py-1.5 text-responsive-xs flex items-center gap-1 hover:scale-105 transform"><i className="fa-solid fa-tags"></i> Comparar preços</Link>
+            <button type="button" onClick={termsModal.openModal} className="btn-accent px-2.5 py-1.5 text-responsive-xs flex items-center gap-1 hover:scale-105 transform"><i className="fa-solid fa-file-contract"></i> Termos de Uso</button>
           </div>
           <ul className="flex flex-wrap gap-1 sm:gap-2 items-center justify-center lg:justify-start text-center lg:text-left text-gray-800 dark:text-white text-xs font-semibold feature-list">
-            <li className="flex items-center gap-1 sm:gap-2 whitespace-nowrap"><i className="fa-solid fa-wand-magic-sparkles text-green-500 dark:text-green-300"></i> Sugestões inteligentes</li>
-            <li className="flex items-center gap-1 sm:gap-2 whitespace-nowrap"><i className="fa-solid fa-list-check text-blue-500 dark:text-blue-300"></i> Rotinas realistas</li>
-            <li className="flex items-center gap-1 sm:gap-2 whitespace-nowrap"><i className="fa-solid fa-location-dot text-pink-500 dark:text-pink-300"></i> Preços locais</li>
+            <li className="flex items-center gap-1 sm:gap-2 whitespace-nowrap"><i className="fa-solid fa-wand-magic-sparkles text-accent-500 dark:text-accent-300"></i> Sugestões inteligentes</li>
+            <li className="flex items-center gap-1 sm:gap-2 whitespace-nowrap"><i className="fa-solid fa-list-check text-primary-500 dark:text-primary-300"></i> Rotinas realistas</li>
+            <li className="flex items-center gap-1 sm:gap-2 whitespace-nowrap"><i className="fa-solid fa-location-dot text-accent-500 dark:text-accent-300"></i> Preços locais</li>
           </ul>
         </div>
         <div className="hidden xl:block absolute lg:relative lg:w-1/3 flex items-end justify-center lg:justify-end">
@@ -234,9 +235,10 @@ export default function Home() {
           />
         </div>
       </section>
+      
       {/* Seção de Ações Rápidas - Melhorada */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 w-full mx-auto mb-4 sm:mb-5">
-        <article key={`agora-${animationKey}`} className="agora-card glass-effect rounded-xl shadow-lg p-3 sm:p-4 flex flex-col justify-between gap-3 fade-in-up hover:scale-105 transition-all duration-300 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 border border-blue-200 dark:border-gray-600 relative overflow-hidden" style={{minHeight: '10rem'}}>
+      <section className="grid-responsive-3 gap-6 w-full mx-auto mb-8">
+        <article key={`agora-${animationKey}`} className="card-glass rounded-xl shadow-lg p-responsive flex flex-col justify-between gap-3 animate-fade-in-up hover:scale-105 transition-all duration-300 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-800 dark:to-gray-700 border border-primary-200 dark:border-gray-600 relative overflow-hidden min-h-40">
           {/* Decorative background elements */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200 dark:bg-blue-600 rounded-full -translate-y-10 translate-x-10 opacity-20"></div>
           <div className="absolute bottom-0 left-0 w-16 h-16 bg-indigo-200 dark:bg-indigo-600 rounded-full translate-y-8 -translate-x-8 opacity-30"></div>
@@ -435,66 +437,12 @@ export default function Home() {
           </div>
         </article>
       </section>
-
-      {/* Seção de Estatísticas - Compacta */}
-      <section className="w-full mx-auto mb-2 sm:mb-3">
-
-        <article key={`estatisticas-${animationKey}`} className="glass-effect rounded-xl shadow-lg p-3 sm:p-4 fade-in-up bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-800 dark:to-gray-700 border border-purple-200 dark:border-gray-600 relative overflow-hidden" style={{minHeight: '6rem'}}>
-          {/* Decorative background elements */}
-          <div className="absolute top-0 right-0 w-16 h-16 bg-purple-200 dark:bg-purple-600 rounded-full -translate-y-8 translate-x-8 opacity-20"></div>
-          <div className="absolute bottom-0 left-0 w-12 h-12 bg-pink-200 dark:bg-pink-600 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
-          
-          <header className="flex items-center gap-2 text-sm font-bold mb-4 text-gray-900 dark:text-white relative z-10">
-            <div className="w-8 h-8 bg-purple-500 dark:bg-purple-600 rounded-lg flex items-center justify-center">
-              <i className="fa-solid fa-trophy text-white text-sm" />
-            </div>
-            Suas Conquistas
-          </header>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 relative z-10">
-            <button 
-              onClick={() => navigate('/cozinha-ia')}
-              className="text-center p-2 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-600 dark:to-emerald-600 border border-green-200 dark:border-green-400 rounded-xl achievement-card-green cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 group w-full relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-8 h-8 bg-green-200 dark:bg-green-500 rounded-full -translate-y-4 translate-x-4 opacity-20"></div>
-              <div className="text-sm font-bold text-green-700 dark:text-white achievement-number group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {achievements.recipes || 0}
-              </div>
-              <div className="text-xs text-green-800 dark:text-white font-semibold achievement-label relative z-10">Receitas</div>
-            </button>
-            <button 
-              onClick={() => navigate('/mercado-ia')}
-              className="text-center p-2 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-600 dark:to-cyan-600 border border-blue-200 dark:border-blue-400 rounded-xl achievement-card-blue cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 group w-full relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-8 h-8 bg-blue-200 dark:bg-blue-500 rounded-full -translate-y-4 translate-x-4 opacity-20"></div>
-              <div className="text-sm font-bold text-blue-700 dark:text-white achievement-number group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {achievements.shopping || 0}
-              </div>
-              <div className="text-xs text-blue-800 dark:text-white font-semibold achievement-label relative z-10">Compras</div>
-            </button>
-            <button 
-              onClick={() => navigate('/faxina-ia')}
-              className="text-center p-2 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-600 dark:to-red-600 border border-orange-200 dark:border-orange-400 rounded-xl achievement-card-orange cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 group w-full relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-8 h-8 bg-orange-200 dark:bg-orange-500 rounded-full -translate-y-4 translate-x-4 opacity-20"></div>
-              <div className="text-sm font-bold text-orange-700 dark:text-white achievement-number group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {achievements.tasks || 0}
-              </div>
-              <div className="text-xs text-orange-800 dark:text-white font-semibold achievement-label relative z-10">Tarefas</div>
-            </button>
-            <button 
-              onClick={() => navigate('/config')}
-              className="text-center p-2 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-600 dark:to-pink-600 border border-purple-200 dark:border-purple-400 rounded-xl achievement-card-purple cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 group w-full relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-8 h-8 bg-purple-200 dark:bg-purple-500 rounded-full -translate-y-4 translate-x-4 opacity-20"></div>
-              <div className="text-sm font-bold text-purple-700 dark:text-white achievement-number group-hover:scale-110 transition-transform duration-200 relative z-10">
-                {achievements.days || 0}
-              </div>
-              <div className="text-xs text-purple-800 dark:text-white font-semibold achievement-label relative z-10">Dias</div>
-            </button>
-          </div>
-        </article>
-      </section>
+      
+      {/* Espaço adicional no final para melhor scroll */}
+      <div className="h-20"></div>
+      
       <TermsModal open={termsModal.isOpen} onClose={termsModal.closeModal} />
-    </main>
+      <StatsOffcanvas achievements={achievements} />
+    </div>
   );
 }

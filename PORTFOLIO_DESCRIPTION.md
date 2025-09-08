@@ -208,10 +208,11 @@ O CatButler oferece uma solução completa e integrada que combina:
 
 ## 🔗 **Links e Deploy**
 
-- **Frontend**: [catbutler.vercel.app](https://catbutler.vercel.app)
+- **Frontend**: [catbutler-frontend.vercel.app](https://catbutler-frontend.vercel.app)
 - **Backend API**: [catbutler-api.vercel.app](https://catbutler-api.vercel.app)
-- **Repositório Frontend**: [GitHub](https://github.com/ipierette/catbutler-react)
+- **Repositório Frontend**: [GitHub](https://github.com/ipierette/catbutler-frontend)
 - **Repositório Backend**: [GitHub](https://github.com/ipierette/catbutler-backend)
+- **Portfolio**: [catbytes.netlify.app](https://catbytes.netlify.app)
 - **Documentação**: [docs/](docs/)
 
 ## 💡 **Aprendizados e Desafios**

@@ -7,7 +7,12 @@ const CustomBackground = () => {
   const neatRef = useRef(null);
 
   useEffect(() => {
-    if (window.FireCMS && window.FireCMS.NeatGradient) {
+    // Função para inicializar o NEAT
+    const initNeat = () => {
+      if (!window.FireCMS?.NeatGradient) {
+        setTimeout(initNeat, 100);
+        return;
+      }
       if (neatRef.current) {
         neatRef.current.destroy();
       }
@@ -43,14 +48,15 @@ const CustomBackground = () => {
       };
 
       const lightPreset = {
-        ...darkPreset,
-        highlights: 12, // mais brilho
-        colorBrightness: 4.2, // mais claro
-        colorSaturation: 5,
-        colorBlending: 9,
-        backgroundColor: '#f8fafc', // cinza bem claro
-        backgroundAlpha: 1,
-        grainIntensity: 0.07,
+        ...darkPreset, // Usar exatamente o mesmo preset
+        colors: [
+          { color: '#BFDBFE', enabled: true }, // Azul claro com contraste (blue-200)
+          { color: '#DDD6FE', enabled: true }, // Violeta claro (violet-200)
+          { color: '#FCE7F3', enabled: true }, // Rosa muito claro (pink-100)
+          { color: '#D1FAE5', enabled: true }, // Verde muito claro (emerald-100)
+          { color: '#FEF3C7', enabled: true }, // Amarelo muito claro (amber-100)
+        ],
+        backgroundColor: '#ffffff', // Fundo branco
       };
 
       const preset = theme === 'light' ? lightPreset : darkPreset;
@@ -59,7 +65,10 @@ const CustomBackground = () => {
         ref: canvasRef.current,
         ...preset,
       });
-    }
+    };
+    
+    // Inicializar NEAT
+    initNeat();
 
     return () => {
       if (neatRef.current) {
@@ -77,7 +86,9 @@ const CustomBackground = () => {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: -1,
+        zIndex: -1, // Atrás do conteúdo mas visível
+        pointerEvents: 'none', // Não interferir com interações
+        backgroundColor: 'transparent',
       }}
     />
   );

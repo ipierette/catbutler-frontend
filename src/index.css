@@ -1,42 +1,364 @@
-/* ===== CONFIGURAÇÕES GERAIS E UTILITÁRIOS ===== */
-@import './styles/light-theme.css';
-@import './styles/dark-theme.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ===== CONFIGURAÇÕES GLOBAIS ===== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    min-width: 20rem;
+    min-height: 100vh;
+    background: transparent;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Permitir que o fundo interativo seja visível */
+    position: relative;
+  }
+
+  /* Transições suaves para mudança de tema */
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
 }
 
-/* Transições suaves para mudança de tema */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+/* ===== COMPONENTES PERSONALIZADOS ===== */
+@layer components {
+  /* Glass Effect - Mais transparente para mostrar o fundo */
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/75 dark:bg-gray-900/75 border border-white/20 dark:border-gray-700/20 shadow-lg;
+  }
+
+  /* Header Glass Effect - Mais transparente */
+  .header-glass {
+    @apply backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-white/10 dark:border-gray-700/10 shadow-lg;
+  }
+
+  /* Footer Glass Effect - Mais transparente */
+  .footer-glass {
+    @apply backdrop-blur-md bg-white/75 dark:bg-gray-900/75 border-t border-white/10 dark:border-gray-700/10 shadow-lg;
+  }
+
+  /* Card Glass Effect - Bem transparente para mostrar o fundo */
+  .card-glass {
+    @apply backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/20 shadow-md rounded-lg;
+  }
+
+  /* Botões personalizados */
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+
+  .btn-accent {
+    @apply bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
+  }
+
+  /* Inputs personalizados */
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+  }
+
+  /* Textarea personalizado */
+  .textarea-field {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical;
+  }
+
+  /* Select personalizado */
+  .select-field {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+  }
+
+  /* Chat containers */
+  .chat-container {
+    @apply bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4;
+  }
+
+  .chat-input {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+  }
+
+  .chat-message-bot {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg p-3 mb-2;
+  }
+
+  .chat-message-user {
+    @apply bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 rounded-lg p-3 mb-2 ml-auto max-w-xs;
+  }
+
+  /* Accordion */
+  .accordion-button {
+    @apply w-full text-left p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg border border-gray-200 dark:border-gray-700;
+  }
+
+  .accordion-content {
+    @apply p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg mt-2;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    @apply fixed z-[99999] bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-3 py-2 rounded-lg shadow-lg text-sm;
+  }
+
+  /* Filter buttons */
+  .filter-btn {
+    @apply inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600;
+  }
+
+  .filter-btn-active {
+    @apply bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 border-primary-300 dark:border-primary-700;
+  }
+
+  .filter-dropdown {
+    @apply absolute top-full mt-1 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-48 z-50;
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    @apply fixed top-16 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg;
+  }
+
+  .mobile-menu-overlay {
+    @apply fixed inset-0 z-30 bg-black/20 backdrop-blur-sm;
+  }
+
+  /* SPA Layout containers */
+  .container-responsive {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .page-content {
+    @apply min-h-[calc(100vh-8rem)] overflow-y-auto overflow-x-hidden;
+  }
+
+  /* SPA Layout - Desktop sem scroll */
+  .spa-layout {
+    @apply h-screen flex flex-col overflow-hidden;
+  }
+
+  .spa-header {
+    @apply flex-none h-16 lg:h-12;
+  }
+
+  .spa-main {
+    @apply flex-1 flex overflow-hidden;
+  }
+
+  .spa-sidebar {
+    @apply flex-none w-64 lg:w-48 xl:w-56 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-r border-gray-200 dark:border-gray-700 overflow-y-auto scrollbar-hide;
+  }
+
+  .spa-content {
+    @apply flex-1 overflow-y-auto scrollbar-hide bg-transparent;
+  }
+
+  /* Página Assistente - sem gap com footer */
+  .assistente-content {
+    @apply h-full flex flex-col;
+  }
+
+  .assistente-input {
+    @apply mt-auto;
+  }
+
+  .spa-footer {
+    @apply flex-none h-12 lg:h-10;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
-body {
-  margin: 0;
-  min-width: 20rem; /* 320px em rem */
-  min-height: 100vh; /* Altura mínima da viewport */
-  background: transparent;
-  overflow-x: hidden; /* Apenas esconder scroll horizontal */
-  overflow-y: auto; /* Permitir scroll vertical quando necessário */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+/* ===== UTILITÁRIOS PERSONALIZADOS ===== */
+@layer utilities {
+  /* Scroll invisível */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Scrollbar moderno e visível */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgb(156 163 175), rgb(107 114 128));
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgb(107 114 128), rgb(75 85 99));
+  }
+
+  /* Scrollbar moderno para modo escuro */
+  .dark .custom-scrollbar {
+    scrollbar-color: rgb(75 85 99) transparent;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgb(75 85 99), rgb(55 65 81));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgb(55 65 81), rgb(31 41 55));
+  }
+
+  /* Animações personalizadas */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInFromLeft 0.5s ease-out forwards;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulseSubtle 2s infinite;
+  }
+
+  /* Z-index utilities */
+  .z-header {
+    z-index: 100;
+  }
+
+  .z-mobile-menu {
+    z-index: 40;
+  }
+
+  .z-mobile-overlay {
+    z-index: 30;
+  }
+
+  .z-tooltip {
+    z-index: 99999;
+  }
+
+  /* Responsive text */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl;
+  }
+
+  /* Responsive spacing */
+  .p-responsive {
+    @apply p-2 sm:p-4 lg:p-6;
+  }
+
+  .px-responsive {
+    @apply px-2 sm:px-4 lg:px-6;
+  }
+
+  .py-responsive {
+    @apply py-2 sm:py-4 lg:py-6;
+  }
+
+  .m-responsive {
+    @apply m-2 sm:m-4 lg:m-6;
+  }
+
+  .mx-responsive {
+    @apply mx-2 sm:mx-4 lg:mx-6;
+  }
+
+  .my-responsive {
+    @apply my-2 sm:my-4 lg:my-6;
+  }
+
+  /* Responsive grid */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+  }
+
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  /* Responsive flex */
+  .flex-responsive {
+    @apply flex flex-col sm:flex-row gap-4;
+  }
+
+  .flex-responsive-center {
+    @apply flex flex-col sm:flex-row items-center gap-4;
+  }
+
+  .flex-responsive-between {
+    @apply flex flex-col sm:flex-row justify-between items-center gap-4;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-/* ===== ANIMAÇÕES E EFEITOS GLOBAIS ===== */
+/* ===== ANIMAÇÕES ===== */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -59,871 +381,16 @@ html {
   }
 }
 
-@keyframes pulse {
+@keyframes pulseSubtle {
   0%, 100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
 }
 
-.fade-in-up {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.slide-in-left {
-  animation: slideInFromLeft 0.5s ease-out forwards;
-}
-
-.pulse-animation {
-  animation: pulse 2s infinite;
-}
-
-.gallery-item {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-/* ===== EFEITOS GLASS E Z-INDEX ===== */
-.glass-effect {
-  z-index: 1 !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-main, section, article, .fade-in-up {
-  z-index: 1 !important;
-}
-
-header {
-  z-index: 100 !important;
-}
-
-.mobile-menu {
-  z-index: 40 !important;
-  position: fixed !important;
-  top: 4rem !important;
-  left: 0 !important;
-  right: 0 !important;
-}
-
-.mobile-menu-overlay {
-  z-index: 30 !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-}
-
-/* ===== TOOLTIPS E ELEMENTOS FLUTUANTES ===== */
-.share-tooltip {
-  z-index: 99999 !important;
-  position: fixed !important;
-  isolation: isolate !important;
-}
-
-/* ===== UTILITÁRIOS GLOBAIS ===== */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ===== RESPONSIVIDADE DO FOOTER ===== */
-@media (max-width: 925px) {
-  .footer-desktop {
-    display: none !important;
-  }
-  .footer-mobile {
-    display: flex !important;
-  }
-}
-
-@media (min-width: 926px) {
-  .footer-desktop {
-    display: flex !important;
-  }
-  .footer-mobile {
-    display: none !important;
-  }
-}
-
-/* ===== MODO CLARO - CONFIGURAÇÕES ESPECÍFICAS ===== */
-html.light {
-  color-scheme: light;
-}
-
-/* Cores de texto base para modo claro */
-html.light body,
-html.light main,
-html.light section,
-html.light article,
-html.light header,
-html.light footer,
-html.light h1,
-html.light h2,
-html.light h3,
-html.light h4,
-html.light h5,
-html.light h6,
-html.light p,
-html.light ul,
-html.light ol,
-html.light li,
-html.light a,
-html.light div,
-html.light label,
-html.light input,
-html.light textarea {
-  color: #191970;
-}
-
-/* Glass effect para modo claro */
-html.light .glass-effect,
-html.light header,
-html.light footer,
-html.light .card,
-html.light .container {
-  background: rgba(255, 255, 255, 0.85) !important;
-  box-shadow: 0 4px 32px 0 rgba(0, 0, 0, 0.07), 0 1.5px 4px 0 rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(8px);
-}
-
-/* Header específico para modo claro */
-html.light header.glass-effect {
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Cores específicas para modo claro */
-html.light .midnight-text {
-  color: #191970;
-}
-
-html.light .visitante-span {
-  color: #7c3aed !important;
-}
-
-html.light .catbutler-title {
-  color: #191970;
-}
-
-html.light .icon-social {
-  color: #191970;
-  transition: color 0.2s;
-}
-
-html.light .icon-social:hover {
-  color: #7c3aed;
-}
-
-/* Contraste para textos em modo claro */
-html.light .text-gray-500 {
-  color: #6b7280 !important;
-}
-
-html.light .text-gray-400 {
-  color: #9ca3af !important;
-}
-
-/* Contraste específico para gradientes claros */
-html.light .bg-gradient-to-br.from-blue-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-green-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-yellow-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-purple-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-orange-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-pink-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-indigo-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-emerald-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br.from-teal-50 .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-html.light .bg-gradient-to-br .text-gray-600 {
-  color: #4b5563 !important;
-}
-
-html.light .bg-gradient-to-br .text-gray-500 {
-  color: #6b7280 !important;
-}
-
-/* Inputs e formulários para modo claro */
-html.light input[type="text"],
-html.light input[type="email"],
-html.light input[type="password"],
-html.light textarea,
-html.light select {
-  color: #111827 !important;
-  background-color: #ffffff !important;
-  border-color: #d1d5db !important;
-}
-
-html.light input::placeholder,
-html.light textarea::placeholder {
-  color: #9ca3af !important;
-}
-
-/* Forçar fundo branco em todos os inputs no modo claro */
-html.light input,
-html.light select,
-html.light textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light input:focus,
-html.light select:focus,
-html.light textarea:focus {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #3b82f6 !important;
-}
-
-/* Seletores específicos para campos problemáticos */
-html.light .bg-white input,
-html.light .bg-white select,
-html.light .bg-white textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-}
-
-html.light .glass-effect input,
-html.light .glass-effect select,
-html.light .glass-effect textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-}
-
-html.light label {
-  color: #374151 !important;
-}
-
-/* Chat para modo claro */
-html.light .chat-container {
-  background-color: #f9fafb !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .chat-input {
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .chat-input::placeholder {
-  color: #9ca3af !important;
-}
-
-html.light .chat-message.bot {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-html.light .chat-message.user {
-  background-color: #dbeafe !important;
-  color: #1e40af !important;
-}
-
-/* Setinhas de accordion para modo claro */
-html.light .fa-chevron-down,
-html.light .fa-chevron-up {
-  color: #4b5563 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Footer para modo claro */
-html.light footer {
-  font-size: 1.15rem;
-  z-index: 1 !important;
-}
-
-html.light footer .text-gray-900 {
-  color: #1f2937 !important;
-}
-
-/* ===== CARD AGORA - MODO CLARO ===== */
-html.light .agora-card .suggestion-card {
-  background-color: #dbeafe !important; /* Fundo azul claro */
-  border-color: #93c5fd !important;
-}
-
-html.light .agora-card .suggestion-text {
-  color: #1e40af !important;
-}
-
-html.light .agora-card .suggestion-subtitle {
-  color: #3b82f6 !important;
-}
-
-html.light .agora-card .fa-lightbulb {
-  color: #ffffff !important;
-}
-
-/* Botões do card Agora */
-html.light .agora-card .btn {
-  color: #ffffff !important;
-}
-
-html.light .agora-card .btn i {
-  color: #ffffff !important;
-}
-
-/* ===== BOTÕES ESCUROS - MODO CLARO ===== */
-html.light .bg-gray-700,
-html.light .bg-gray-800,
-html.light .bg-gray-600 {
-  color: #ffffff !important;
-}
-
-html.light .bg-gray-700 *,
-html.light .bg-gray-800 *,
-html.light .bg-gray-600 * {
-  color: #ffffff !important;
-}
-
-html.light button.bg-gray-700,
-html.light button.bg-gray-800,
-html.light button.bg-gray-600 {
-  color: #ffffff !important;
-}
-
-html.light button.bg-gray-700 *,
-html.light button.bg-gray-800 *,
-html.light button.bg-gray-600 * {
-  color: #ffffff !important;
-}
-
-/* ===== BOTÕES DE COMPARTILHAR E TEMA - MODO CLARO ===== */
-html.light .bg-blue-100 {
-  background-color: #ffffff !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .bg-blue-100:hover {
-  background-color: #f3f4f6 !important;
-}
-
-html.light .bg-blue-100 svg {
-  color: #374151 !important;
-}
-
-html.light .bg-gray-200 {
-  background-color: #ffffff !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .bg-gray-200:hover {
-  background-color: #f3f4f6 !important;
-}
-
-html.light .bg-gray-200 svg {
-  color: #374151 !important;
-}
-
-/* ===== CARDS ESCUROS NO MODO CLARO ===== */
-html.light .bg-gray-800,
-html.light .bg-gray-700,
-html.light .bg-gray-600 {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-html.light .bg-gray-800 *,
-html.light .bg-gray-700 *,
-html.light .bg-gray-600 * {
-  color: #111827 !important;
-}
-
-/* Cards específicos que aparecem escuros */
-html.light .bg-gray-800 input,
-html.light .bg-gray-800 select,
-html.light .bg-gray-800 textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .bg-gray-700 input,
-html.light .bg-gray-700 select,
-html.light .bg-gray-700 textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .bg-gray-600 input,
-html.light .bg-gray-600 select,
-html.light .bg-gray-600 textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-/* ===== BOTÕES ESCUROS NO MODO CLARO ===== */
-html.light button.bg-gray-800,
-html.light button.bg-gray-700,
-html.light button.bg-gray-600 {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light button.bg-gray-800:hover,
-html.light button.bg-gray-700:hover,
-html.light button.bg-gray-600:hover {
-  background-color: #e5e7eb !important;
-  color: #111827 !important;
-}
-
-html.light button.bg-gray-800 *,
-html.light button.bg-gray-700 *,
-html.light button.bg-gray-600 * {
-  color: #111827 !important;
-}
-
-/* Botões específicos que aparecem escuros */
-html.light .bg-gray-800 button,
-html.light .bg-gray-700 button,
-html.light .bg-gray-600 button {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .bg-gray-800 button:hover,
-html.light .bg-gray-700 button:hover,
-html.light .bg-gray-600 button:hover {
-  background-color: #e5e7eb !important;
-  color: #111827 !important;
-}
-
-/* ===== SETAS DE ACCORDION - MODO CLARO ===== */
-html.light .fa-chevron-down,
-html.light .fa-chevron-up,
-html.light .fa-chevron-left,
-html.light .fa-chevron-right {
-  color: #374151 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-html.light .accordion-button .fa-chevron-down,
-html.light .accordion-button .fa-chevron-up {
-  color: #374151 !important;
-}
-
-html.light button .fa-chevron-down,
-html.light button .fa-chevron-up,
-html.light button .fa-chevron-left,
-html.light button .fa-chevron-right {
-  color: #374151 !important;
-}
-
-/* ===== SEÇÕES ESCURAS - MODO CLARO ===== */
-html.light .bg-gray-800,
-html.light .bg-gray-700,
-html.light .bg-gray-600,
-html.light .bg-gray-900 {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-html.light .bg-gray-800 *,
-html.light .bg-gray-700 *,
-html.light .bg-gray-600 *,
-html.light .bg-gray-900 * {
-  color: #111827 !important;
-}
-
-/* ===== CARDS ESCUROS ESPECÍFICOS ===== */
-html.light .card.bg-gray-800,
-html.light .card.bg-gray-700,
-html.light .card.bg-gray-600 {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-html.light .card.bg-gray-800 *,
-html.light .card.bg-gray-700 *,
-html.light .card.bg-gray-600 * {
-  color: #111827 !important;
-}
-
-/* ===== CONTAINERS ESCUROS ===== */
-html.light .container.bg-gray-800,
-html.light .container.bg-gray-700,
-html.light .container.bg-gray-600 {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-html.light .container.bg-gray-800 *,
-html.light .container.bg-gray-700 *,
-html.light .container.bg-gray-600 * {
-  color: #111827 !important;
-}
-
-/* ===== ELEMENTOS ESPECÍFICOS PROBLEMÁTICOS ===== */
-html.light .bg-gray-800 .text-gray-300,
-html.light .bg-gray-700 .text-gray-300,
-html.light .bg-gray-600 .text-gray-300 {
-  color: #111827 !important;
-}
-
-html.light .bg-gray-800 .text-gray-400,
-html.light .bg-gray-700 .text-gray-400,
-html.light .bg-gray-600 .text-gray-400 {
-  color: #374151 !important;
-}
-
-html.light .bg-gray-800 .text-gray-500,
-html.light .bg-gray-700 .text-gray-500,
-html.light .bg-gray-600 .text-gray-500 {
-  color: #6b7280 !important;
-}
-
-/* ===== BOTÕES EM SEÇÕES ESCURAS ===== */
-html.light .bg-gray-800 button,
-html.light .bg-gray-700 button,
-html.light .bg-gray-600 button {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light .bg-gray-800 button:hover,
-html.light .bg-gray-700 button:hover,
-html.light .bg-gray-600 button:hover {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-/* ===== ÍCONES EM SEÇÕES ESCURAS ===== */
-html.light .bg-gray-800 i,
-html.light .bg-gray-700 i,
-html.light .bg-gray-600 i,
-html.light .bg-gray-800 svg,
-html.light .bg-gray-700 svg,
-html.light .bg-gray-600 svg {
-  color: #374151 !important;
-}
-
-/* ===== MODO ESCURO - CONFIGURAÇÕES ESPECÍFICAS ===== */
-html.dark {
-  color-scheme: dark;
-}
-
-/* Cores de texto base para modo escuro */
-html.dark body,
-html.dark main,
-html.dark section,
-html.dark article,
-html.dark header,
-html.dark footer,
-html.dark h1,
-html.dark h2,
-html.dark h3,
-html.dark h4,
-html.dark h5,
-html.dark h6,
-html.dark p,
-html.dark ul,
-html.dark ol,
-html.dark li,
-html.dark a,
-html.dark div,
-html.dark label,
-html.dark input,
-html.dark textarea {
-  color: #fff;
-}
-
-/* Glass effect para modo escuro */
-html.dark .glass-effect {
-  background: rgba(0, 0, 0, 0.7) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-}
-
-/* Header específico para ficar sobre conteúdo */
-header.glass-effect {
-  background: rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Cores específicas para modo escuro */
-html.dark .midnight-text {
-  color: #191970;
-}
-
-html.dark .visitante-span {
-  color: #22c55e;
-}
-
-html.dark .catbutler-title {
-  color: #22c55e;
-}
-
-html.dark .icon-social {
-  color: #22c55e;
-  transition: color 0.2s;
-}
-
-html.dark .icon-social:hover {
-  color: #a3e635;
-}
-
-/* Fundos escuros para cards específicos */
-html.dark .bg-white {
-  background-color: #1f2937 !important;
-}
-
-html.dark .bg-gray-50 {
-  background-color: #374151 !important;
-}
-
-html.dark .bg-blue-50 {
-  background-color: #1e3a8a !important;
-}
-
-html.dark .bg-green-50 {
-  background-color: #14532d !important;
-}
-
-html.dark .bg-yellow-50 {
-  background-color: #713f12 !important;
-}
-
-html.dark .bg-purple-50 {
-  background-color: #581c87 !important;
-}
-
-html.dark .bg-orange-50 {
-  background-color: #9a3412 !important;
-}
-
-/* Seletores para modo escuro */
-html.dark select {
-  color: #ffffff !important;
-}
-
-html.dark select option {
-  color: #ffffff !important;
-  background-color: #374151 !important;
-}
-
-html.dark select option:hover {
-  background-color: #4b5563 !important;
-}
-
-/* Chat para modo escuro */
-html.dark .chat-container {
-  background-color: #111827 !important;
-}
-
-html.dark .bot-message {
-  background-color: #1e3a8a !important;
-  color: white !important;
-}
-
-html.dark .chat-input {
-  background-color: #111827 !important;
-  color: white !important;
-}
-
-/* Setinhas de accordion para modo escuro */
-html.dark .fa-chevron-down,
-html.dark .fa-chevron-up {
-  color: #d1d5db !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Footer para modo escuro */
-html.dark footer {
-  font-size: 1.15rem;
-  z-index: 1 !important;
-}
-
-html.dark footer .text-gray-100 {
-  color: #f9fafb !important;
-}
-
-/* ===== ESTILOS ESPECÍFICOS PARA ELEMENTOS ESPECIAIS ===== */
-
-/* Setinhas de accordion - comportamento global */
-.fa-chevron-down,
-.fa-chevron-up {
-  opacity: 0.8 !important;
-  transition: all 0.2s ease-in-out !important;
-}
-
-.fa-chevron-down:hover,
-.fa-chevron-up:hover {
-  opacity: 1 !important;
-  transform: scale(1.1) !important;
-}
-
-/* Toggle de tema */
-.theme-toggle {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.theme-toggle:hover {
-  transform: scale(1.05);
-}
-
-/* ===== ESTILOS LEGACY (manter compatibilidade) ===== */
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-/* ===== REGRAS ULTRA-ESPECÍFICAS PARA FORÇAR CONTRASTE ===== */
-/* Forçar todos os elementos escuros para claros no modo claro */
-html.light [class*="bg-gray-8"],
-html.light [class*="bg-gray-7"],
-html.light [class*="bg-gray-6"],
-html.light [class*="bg-gray-9"] {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-}
-
-html.light [class*="bg-gray-8"] *,
-html.light [class*="bg-gray-7"] *,
-html.light [class*="bg-gray-6"] *,
-html.light [class*="bg-gray-9"] * {
-  color: #111827 !important;
-}
-
-/* Forçar inputs em qualquer container escuro */
-html.light [class*="bg-gray-8"] input,
-html.light [class*="bg-gray-7"] input,
-html.light [class*="bg-gray-6"] input,
-html.light [class*="bg-gray-9"] input,
-html.light [class*="bg-gray-8"] select,
-html.light [class*="bg-gray-7"] select,
-html.light [class*="bg-gray-6"] select,
-html.light [class*="bg-gray-9"] select {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-/* Forçar botões em qualquer container escuro */
-html.light [class*="bg-gray-8"] button,
-html.light [class*="bg-gray-7"] button,
-html.light [class*="bg-gray-6"] button,
-html.light [class*="bg-gray-9"] button {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-/* Forçar ícones em qualquer container escuro */
-html.light [class*="bg-gray-8"] i,
-html.light [class*="bg-gray-7"] i,
-html.light [class*="bg-gray-6"] i,
-html.light [class*="bg-gray-9"] i,
-html.light [class*="bg-gray-8"] svg,
-html.light [class*="bg-gray-7"] svg,
-html.light [class*="bg-gray-6"] svg,
-html.light [class*="bg-gray-9"] svg {
-  color: #374151 !important;
-}
-
-/* Forçar setas de accordion em qualquer lugar */
-html.light .fa-chevron-down,
-html.light .fa-chevron-up,
-html.light .fa-chevron-left,
-html.light .fa-chevron-right {
-  color: #374151 !important;
-}
-
-/* Forçar todos os inputs para branco no modo claro */
-html.light input,
-html.light select,
-html.light textarea {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #d1d5db !important;
-}
-
-html.light input:focus,
-html.light select:focus,
-html.light textarea:focus {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border-color: #3b82f6 !important;
-}
-
-/* ===== SCROLL INVISÍVEL UNIVERSAL ===== */
-/* Scroll invisível para todas as telas - funciona em qualquer resolução */
-
-/* Scroll invisível para WebKit (Chrome, Safari, Edge) */
+/* ===== SCROLL INVISÍVEL ===== */
 ::-webkit-scrollbar {
   width: 0px;
   height: 0px;
@@ -942,120 +409,47 @@ html.light textarea:focus {
   background: transparent;
 }
 
-/* Scroll invisível para Firefox */
 html {
   scrollbar-width: none;
   scrollbar-color: transparent transparent;
 }
 
-/* Garantir que o scroll funcione mas seja invisível */
 body {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  min-height: 100vh;
-}
-
-/* Para elementos específicos que podem ter scroll */
-.card, .container, .glass-effect, main, section, .page-content {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.card::-webkit-scrollbar,
-.container::-webkit-scrollbar,
-.glass-effect::-webkit-scrollbar,
-main::-webkit-scrollbar,
-section::-webkit-scrollbar,
-.page-content::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
+/* ===== RESPONSIVIDADE ESPECÍFICA ===== */
+@media (max-width: 925px) {
+  .footer-desktop {
+    @apply hidden;
+  }
+  .footer-mobile {
+    @apply flex;
+  }
 }
 
-/* Garantir que todas as páginas tenham scroll funcional */
-#root, .app-container {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+@media (min-width: 926px) {
+  .footer-desktop {
+    @apply flex;
+  }
+  .footer-mobile {
+    @apply hidden;
+  }
 }
 
-#root::-webkit-scrollbar,
-.app-container::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
+/* ===== MODO ESCURO ESPECÍFICO ===== */
+.dark {
+  color-scheme: dark;
 }
 
-/* ===== SCROLL FUNCIONAL PARA TODAS AS PÁGINAS ===== */
-/* Garantir que todas as páginas tenham scroll funcional */
-
-/* Páginas principais */
-.page, .page-content, .main-content {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  min-height: calc(100vh - 80px); /* Altura da viewport menos header */
+/* ===== MODO CLARO ESPECÍFICO ===== */
+.light {
+  color-scheme: light;
 }
 
-.page::-webkit-scrollbar,
-.page-content::-webkit-scrollbar,
-.main-content::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
-}
 
-/* Funcionalidades específicas que precisam de scroll */
-.cozinha-content, .mercado-content, .faxina-content, .tarefas-content, .configuracoes-content {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  max-height: calc(100vh - 120px); /* Altura máxima com margem para header/footer */
-}
 
-.cozinha-content::-webkit-scrollbar,
-.mercado-content::-webkit-scrollbar,
-.faxina-content::-webkit-scrollbar,
-.tarefas-content::-webkit-scrollbar,
-.configuracoes-content::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
-}
 
-/* Cards e containers que podem ter conteúdo longo */
-.card-content, .container-content, .modal-content {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
 
-.card-content::-webkit-scrollbar,
-.container-content::-webkit-scrollbar,
-.modal-content::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
-}
 
-/* Listas e áreas de conteúdo */
-.content-area, .list-container, .chat-container {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.content-area::-webkit-scrollbar,
-.list-container::-webkit-scrollbar,
-.chat-container::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
-}

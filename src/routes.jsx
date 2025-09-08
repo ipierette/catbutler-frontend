@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { withLazyLoading } from "./components/LazyWrapper";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Sidebar from "./components/layout/Sidebar";
 
 // Lazy loading das páginas
 const Home = withLazyLoading(() => import("./pages/Home"), { 
@@ -82,33 +83,41 @@ const NotFound = withLazyLoading(() => import("./pages/NotFound"), {
 
 export default function AppRoutes() {
   return (
-    <>
+    <div className="spa-layout">
       {/* Header fixo */}
       <Header />
       
-      {/* Conteúdo principal com scroll */}
-      <main className="overflow-hidden" style={{height: '100dvh', paddingTop: '4rem', paddingBottom: '3.5rem'}}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/tarefas" element={<Tarefas />} />
-          <Route path="/agenda" element={<Agenda />} />
-          <Route path="/assistente" element={<Assistente />} />
-          <Route path="/config" element={<Config />} />
-          <Route path="/sobre" element={<Sobre />} />
-          <Route path="/dicas" element={<Dicas />} />
-          <Route path="/historico" element={<Historico />} />
-          <Route path="/mercado" element={<Mercado />} />
-          <Route path="/cozinha-ia" element={<CozinhaIA />} />
-          <Route path="/faxina-ia" element={<FaxinaIA />} />
-          <Route path="/mercado-ia" element={<MercadoIA />} />
-          <Route path="/criar-conta" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
+      {/* Layout principal com sidebar e conteúdo */}
+      <div className="spa-main">
+        {/* Sidebar - apenas no desktop */}
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+        
+        {/* Área de conteúdo principal */}
+        <main className="spa-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/tarefas" element={<Tarefas />} />
+            <Route path="/agenda" element={<Agenda />} />
+            <Route path="/assistente" element={<Assistente />} />
+            <Route path="/config" element={<Config />} />
+            <Route path="/sobre" element={<Sobre />} />
+            <Route path="/dicas" element={<Dicas />} />
+            <Route path="/historico" element={<Historico />} />
+            <Route path="/mercado" element={<Mercado />} />
+            <Route path="/cozinha-ia" element={<CozinhaIA />} />
+            <Route path="/faxina-ia" element={<FaxinaIA />} />
+            <Route path="/mercado-ia" element={<MercadoIA />} />
+            <Route path="/criar-conta" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
       
       {/* Footer fixo */}
       <Footer />
-    </>
+    </div>
   );
 }

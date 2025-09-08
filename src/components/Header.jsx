@@ -10,31 +10,33 @@ function Header() {
   
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 w-full glass-effect shadow-lg py-2 px-3 sm:px-4 flex items-center justify-between z-50" style={{height: '4rem', backdropFilter: 'blur(10px)'}}>
+      <header className="spa-header w-full header-glass px-responsive flex items-center justify-between z-header">
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <div className="flex items-center justify-center">
             <img 
               src={logoCatButler} 
               alt="CatButler Logo" 
-              className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
+              className="w-8 h-8 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
             />
           </div>
-          <span className="font-bold text-base sm:text-lg lg:text-xl tracking-wide catbutler-title">CatButler</span>
+          <span className="font-bold text-base lg:text-lg tracking-wide text-gray-900 dark:text-gray-100">CatButler</span>
         </div>
-        {/* Menu Desktop */}
-        <nav className="hidden md:flex gap-2 lg:gap-3 xl:gap-4">
-          <Link to="/" className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm">Home</Link>
-          <Link to="/tarefas" className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm">Tarefas</Link>
-          <Link to="/cozinha-ia" className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm">Cozinha IA</Link>
-          <Link to="/faxina-ia" className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm">Faxina IA</Link>
-          <Link to="/mercado-ia" className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm">Mercado IA</Link>
-          <Link to="/config" className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm">Configurações</Link>
-        </nav>
+        {/* Search Bar - Desktop */}
+        <div className="hidden lg:flex flex-1 max-w-md mx-8">
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="Buscar receitas, tarefas, dicas..."
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+            <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+          </div>
+        </div>
 
         {/* Botão Menu Mobile */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600"
+          className="lg:hidden p-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600"
           title="Menu"
         >
           <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,16 +66,16 @@ function Header() {
               </svg>
             )}
           </button>
-          <div className="flex gap-2">
+          <div className="hidden lg:flex gap-2">
             <Link 
               to="/criar-conta" 
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-blue-400 hover:bg-blue-500 text-white dark:text-midnight-800 font-bold text-xs sm:text-sm shadow-lg transition hover:scale-105 transform"
+              className="px-3 py-1.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white font-bold text-xs shadow-lg transition hover:scale-105 transform"
             >
               Criar Conta
             </Link>
             <Link 
               to="/login" 
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-green-400 hover:bg-green-500 text-white dark:text-midnight-800 font-bold text-xs sm:text-sm shadow-lg transition hover:scale-105 transform"
+              className="px-3 py-1.5 rounded-lg bg-success-500 hover:bg-success-600 text-white font-bold text-xs shadow-lg transition hover:scale-105 transform"
             >
               Entrar
             </Link>
@@ -86,50 +88,50 @@ function Header() {
         <>
           {/* Overlay de fundo */}
           <div 
-            className="md:hidden mobile-menu-overlay bg-black bg-opacity-50"
+            className="md:hidden mobile-menu-overlay"
             onClick={() => setMobileMenuOpen(false)}
           />
           {/* Menu */}
-          <div className="md:hidden mobile-menu glass-effect shadow-lg border-t border-gray-200 dark:border-gray-600">
+          <div className="md:hidden mobile-menu">
             <nav className="flex flex-col p-4 space-y-2">
             <Link 
               to="/" 
-              className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               Home
             </Link>
             <Link 
               to="/tarefas" 
-              className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               Tarefas
             </Link>
             <Link 
               to="/cozinha-ia" 
-              className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               Cozinha IA
             </Link>
             <Link 
               to="/faxina-ia" 
-              className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               Faxina IA
             </Link>
             <Link 
               to="/mercado-ia" 
-              className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               Mercado IA
             </Link>
             <Link 
               to="/config" 
-              className="text-gray-800 dark:text-gray-200 hover:text-green-500 transition font-bold text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               Configurações
@@ -191,17 +193,14 @@ function ShareTooltip({ theme }) {
         </svg>
       </button>
       {open && createPortal(
-        <div className={
-          `fixed right-4 top-20 w-80 rounded-lg shadow-lg p-4 z-[99999] animate-fadeInDown border share-tooltip ` +
-          (theme === 'dark' ? 'bg-[#181f2a] border-[#232b3a] text-white' : 'bg-white border-gray-200 text-gray-900')
-        }>
-          <div className="font-bold mb-2 text-gray-900 dark:text-gray-100">Compartilhe o CatButler</div>
-          <div className="text-sm mb-2 text-gray-700 dark:text-gray-300">Conheça o CatButler! Organize sua casa com IA: receitas, faxina, mercado e mais. Acesse: <span className="font-mono text-blue-600">https://catbutler.app</span></div>
+        <div className="tooltip fixed right-4 top-20 w-80 rounded-lg shadow-lg p-4 z-tooltip animate-fade-in-up border">
+          <div className="font-bold mb-2  text-gray-100 dark:text-gray-900">Compartilhe o CatButler</div>
+          <div className="text-sm mb-2 text-gray-300 dark:text-gray-700 ">Conheça o CatButler! Organize sua casa com IA: receitas, faxina, mercado e mais. Acesse: <span className="font-mono text-blue-600">https://catbutler.app</span></div>
           <div className="flex gap-2">
-            <button onClick={handleCopy} className="px-3 py-1 rounded bg-blue-500 text-white font-bold hover:bg-blue-600 transition text-sm">
+            <button onClick={handleCopy} className="btn-primary px-3 py-1 text-sm">
               {copied ? 'Copiado!' : 'Copiar link'}
             </button>
-            <button onClick={handleNativeShare} className="px-3 py-1 rounded bg-green-500 text-white font-bold hover:bg-green-600 transition text-sm">
+            <button onClick={handleNativeShare} className="btn-secondary px-3 py-1 text-sm">
               Compartilhar
             </button>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import FilterButton from "../components/ui/FilterButton";
 
 export default function Tarefas() {
   const [tarefas] = useState([
@@ -143,118 +144,77 @@ export default function Tarefas() {
   };
 
   return (
-    <main className="min-h-screen p-2 sm:p-3 md:p-4 max-w-7xl mx-auto">
-      {/* Hero Section - Mais compacto */}
-      <section className="relative flex items-center justify-between w-full mx-auto glass-effect rounded-xl shadow-lg p-3 sm:p-4 mb-3 sm:mb-4 fade-in-up bg-white/95 dark:bg-gray-700 border border-gray-200 dark:border-gray-500 h-16 sm:h-18">
+    <div className="h-full p-4 lg:p-6 overflow-y-auto scrollbar-hide">
+      {/* Header Section */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-            <i className="fa-solid fa-clipboard-list text-xl sm:text-2xl text-green-600 dark:text-green-400" aria-label="tarefas"></i>
+            <i className="fa-solid fa-clipboard-list text-xl text-green-600 dark:text-green-400" aria-label="tarefas"></i>
           </div>
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-              <span className="visitante-span">Minhas Tarefas</span>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              Minhas Tarefas
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Organize e gerencie suas tarefas diárias
             </p>
           </div>
         </div>
-        <div className="hidden sm:block text-right">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {tarefasFiltradas.length} tarefa(s) encontrada(s) - Página {paginaAtual} de {totalPaginas}
-          </p>
+        
+        {/* Filtros com botões pequenos */}
+        <div className="flex items-center gap-2">
+          <FilterButton
+            label="Status"
+            icon="fa-solid fa-circle-dot"
+            value={filtroStatus === "Todas" ? null : filtroStatus}
+            onChange={(value) => setFiltroStatus(value || "Todas")}
+            options={status.filter(s => s !== "Todas").map(s => ({
+              value: s,
+              label: s,
+              icon: s === "Pendente" ? "fa-solid fa-clock" : s === "Em Andamento" ? "fa-solid fa-play" : "fa-solid fa-check",
+              count: tarefas.filter(t => t.status === s).length
+            }))}
+          />
+          
+          <FilterButton
+            label="Categoria"
+            icon="fa-solid fa-folder"
+            value={filtroCategoria === "Todas" ? null : filtroCategoria}
+            onChange={(value) => setFiltroCategoria(value || "Todas")}
+            options={categorias.filter(c => c !== "Todas").map(c => ({
+              value: c,
+              label: c,
+              count: tarefas.filter(t => t.categoria === c).length
+            }))}
+          />
+
+          <button
+            onClick={() => alert('Funcionalidade em desenvolvimento')}
+            className="btn-primary px-3 py-2 text-sm flex items-center gap-2"
+          >
+            <i className="fa-solid fa-plus text-xs"></i>
+            Nova Tarefa
+          </button>
         </div>
-      </section>
+      </div>
 
-      {/* Ações Rápidas - Mais compactas */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 w-full mx-auto mb-3 sm:mb-4">
-        <button 
-          onClick={() => alert('Funcionalidade em desenvolvimento')}
-          className="p-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
-        >
-          <span className="text-2xl">➕</span>
-          <span className="font-semibold text-sm">Nova Tarefa</span>
-        </button>
-        
-        <button className="p-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
-          <i className="fa-solid fa-search text-xl"></i>
-          <span className="font-semibold text-sm">Buscar</span>
-        </button>
-        
-        <button className="p-3 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
-          <i className="fa-solid fa-chart-bar text-xl"></i>
-          <span className="font-semibold text-sm">Relatórios</span>
-        </button>
-        
-        <button className="p-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
-          <i className="fa-solid fa-cog text-xl"></i>
-          <span className="font-semibold text-sm">Configurar</span>
-        </button>
-      </section>
-
-      {/* Filtros e Busca - Mais compactos */}
-      <section className="glass-effect rounded-xl shadow-lg p-3 sm:p-4 mb-3 sm:mb-4 fade-in-up bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label htmlFor="busca-tarefas" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Buscar
-            </label>
-            <input
-              id="busca-tarefas"
-              type="text"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Digite para buscar..."
-              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="filtro-status" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Status
-            </label>
-            <select
-              id="filtro-status"
-              value={filtroStatus}
-              onChange={(e) => setFiltroStatus(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+      {/* Busca rápida - compacta */}
+      {busca && (
+        <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-primary-700 dark:text-primary-300">
+              <i className="fa-solid fa-search mr-2"></i>
+              Buscando por: "{busca}"
+            </span>
+            <button
+              onClick={() => setBusca("")}
+              className="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
             >
-              {status.map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label htmlFor="filtro-categoria" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Categoria
-            </label>
-            <select
-              id="filtro-categoria"
-              value={filtroCategoria}
-              onChange={(e) => setFiltroCategoria(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
-            >
-              {categorias.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="flex items-end">
-            <button 
-              onClick={() => {
-                setBusca("");
-                setFiltroStatus("Todas");
-                setFiltroCategoria("Todas");
-              }}
-              className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg transition-all duration-200"
-            >
-              Limpar Filtros
+              <i className="fa-solid fa-times"></i>
             </button>
           </div>
         </div>
-      </section>
+      )}
 
       {/* Galeria Vertical de Tarefas */}
       <section className="relative">
@@ -283,7 +243,7 @@ export default function Tarefas() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {tarefasPaginadas.map((tarefa, index) => (
               <div
                 key={tarefa.id}
@@ -424,6 +384,6 @@ export default function Tarefas() {
       </div>
         </section>
       )}
-    </main>
+    </div>
   );
 }

@@ -1,4 +1,20 @@
-# Sistema de Temas Separados - CatButler
+# CatButler Frontend - Assistente de IA para Casa
+
+<div align="center">
+  <img src="src/assets/images/logo-catbutler.png" alt="CatButler Logo" width="200" height="200">
+  
+  **O assistente inteligente que transforma sua casa em um lar mais organizado, sustentável e eficiente**
+  
+  [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+  [![Vite](https://img.shields.io/badge/Vite-7.1.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  
+  [![Deploy Status](https://img.shields.io/badge/Deploy-Vercel-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+  [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+  [![Version](https://img.shields.io/badge/Version-2.3.0-blue?style=for-the-badge)](package.json)
+</div>
+
 
 ## 📋 Visão Geral
 
