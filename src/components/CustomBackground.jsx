@@ -1,32 +1,57 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const CustomBackground = () => {
   const { theme } = useTheme();
   const canvasRef = useRef(null);
   const neatRef = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Função para inicializar o NEAT
-    const initNeat = () => {
-      if (!window.FireCMS?.NeatGradient) {
-        // Debug: verificar se está carregando
-        console.log('NEAT: Aguardando carregamento da biblioteca...');
-        setTimeout(initNeat, 100);
+    let attempts = 0;
+    const maxAttempts = 30; // 6 segundos máximo
+    
+    // Aguardar um pouco para garantir que o DOM está pronto
+    const timer = setTimeout(() => {
+      initializeNEAT();
+    }, 500);
+
+    function initializeNEAT() {
+      attempts++;
+      
+      if (attempts > maxAttempts) {
+        console.warn('NEAT: Timeout após múltiplas tentativas');
+        setIsLoaded(false);
         return;
       }
-      
+      // Verificar se Three.js carregou
+      if (!window.THREE) {
+        console.log('NEAT: Three.js não carregado, tentando novamente...');
+        setTimeout(initializeNEAT, 200);
+        return;
+      }
+
+      // Verificar se a biblioteca NEAT existe
+      if (!window.FireCMS || !window.FireCMS.NeatGradient) {
+        console.log('NEAT: Biblioteca NEAT não encontrada, tentando novamente...');
+        setTimeout(initializeNEAT, 200);
+        return;
+      }
+
+      // Verificar se o canvas existe
       if (!canvasRef.current) {
-        // Canvas não está pronto ainda
-        console.log('NEAT: Aguardando canvas estar pronto...');
-        setTimeout(initNeat, 50);
+        console.log('NEAT: Canvas não encontrado, tentando novamente...');
+        setTimeout(initializeNEAT, 100);
         return;
       }
-      
-      console.log('NEAT: Inicializando background com tema:', theme);
-      
+
+      // Limpar instância anterior
       if (neatRef.current) {
-        neatRef.current.destroy();
+        try {
+          neatRef.current.destroy();
+        } catch (e) {
+          console.warn('NEAT: Erro ao limpar:', e);
+        }
       }
 
       const darkPreset = {
@@ -78,56 +103,64 @@ const CustomBackground = () => {
           ref: canvasRef.current,
           ...preset,
         });
-        console.log('NEAT: Background inicializado com sucesso!');
+        
+        console.log('NEAT: Fundo ativo!');
+        setIsLoaded(true);
       } catch (error) {
         console.error('NEAT: Erro ao inicializar:', error);
+        setIsLoaded(false);
       }
-    };
-    
-    // Inicializar NEAT
-    initNeat();
-    
-    // Listener para detectar quando scripts carregam
-    const handleScriptLoad = () => {
-      if (window.FireCMS?.NeatGradient && !neatRef.current) {
-        initNeat();
-      }
-    };
-    
-    // Verificar periodicamente se o script carregou (fallback)
-    const checkInterval = setInterval(() => {
-      if (window.FireCMS?.NeatGradient && !neatRef.current) {
-        initNeat();
-        clearInterval(checkInterval);
-      }
-    }, 500);
-    
-    // Listener para evento de load da janela
-    window.addEventListener('load', handleScriptLoad);
+    }
 
     return () => {
+      clearTimeout(timer);
       if (neatRef.current) {
-        neatRef.current.destroy();
+        try {
+          neatRef.current.destroy();
+        } catch (e) {
+          console.warn('NEAT: Erro no cleanup:', e);
+        }
       }
-      clearInterval(checkInterval);
-      window.removeEventListener('load', handleScriptLoad);
+      setIsLoaded(false);
     };
   }, [theme]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: -1, // Atrás do conteúdo mas visível
-        pointerEvents: 'none', // Não interferir com interações
-        backgroundColor: 'transparent',
-      }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: -1,
+          pointerEvents: 'none',
+          background: isLoaded ? 'transparent' : (
+            theme === 'light' 
+              ? 'linear-gradient(45deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)'
+              : 'linear-gradient(45deg, #1a202c 0%, #2d3748 50%, #4a5568 100%)'
+          ),
+        }}
+      />
+      {/* Debug indicator */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{
+          position: 'fixed',
+          bottom: '10px',
+          right: '10px',
+          zIndex: 1000,
+          padding: '4px 8px',
+          backgroundColor: isLoaded ? 'green' : 'red',
+          color: 'white',
+          fontSize: '12px',
+          borderRadius: '4px'
+        }}>
+          NEAT: {isLoaded ? 'Active' : 'Failed'}
+        </div>
+      )}
+    </>
   );
 };
 
