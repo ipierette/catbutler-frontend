@@ -1,9 +1,18 @@
-# 🐱 CatButler - Assistente Doméstico Inteligente
+# CatButler Frontend - Assistente de IA para Casa
 
-[![Deploy Status](https://img.shields.io/badge/deploy-vercel-brightgreen)](https://catbutler-frontend.vercel.app)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![React](https://img.shields.io/badge/react-19.1.1-blue)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/vite-7.1.2-purple)](https://vitejs.dev/)
+<div align="center">
+  <img src="src/assets/images/logo-catbutler.png" alt="CatButler Logo" width="200" height="200">
+  
+  **O assistente inteligente que transforma sua casa em um lar mais organizado, sustentável e eficiente**
+ [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+  [![Vite](https://img.shields.io/badge/Vite-7.1.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  
+  [![Deploy Status](https://img.shields.io/badge/Deploy-Vercel-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+  [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+  [![Version](https://img.shields.io/badge/Version-2.3.0-blue?style=for-the-badge)](package.json)
+</div>
 
 > **CatButler** é um assistente doméstico inteligente com personalidade felina, desenvolvido para simplificar e otimizar suas tarefas do dia a dia através de tecnologia moderna e inteligência artificial.
 
@@ -14,13 +23,15 @@ O CatButler nasceu de uma necessidade real: amigos próximos, **Cris e Rui**, pe
 ### ✨ Características Principais
 
 - 🤖 **Assistente IA**: Conversas inteligentes sobre organização doméstica
-- 🍳 **CozinhaIA**: Receitas personalizadas e sugestões culinárias
-- 🧹 **FaxinaIA**: Cronogramas de limpeza inteligentes
-- 🛒 **MercadoIA**: Listas de compras otimizadas
-- 📅 **Agenda**: Calendário interativo para organização
-- 📊 **Histórico**: Timeline de atividades e conquistas
-- 💡 **Dicas**: Sabedoria felina para o cotidiano
+- 🍳 **CozinhaIA**: Receitas personalizadas, cardápios semanais e ingredientes customizáveis
+- 🧹 **FaxinaIA**: Rotinas de limpeza personalizadas, técnicas profissionais e configuração de cômodos
+- 🛒 **MercadoIA**: Listas inteligentes e comparação de preços em tempo real
+- 📅 **Agenda**: Calendário semanal interativo com filtros avançados
+- 📊 **Histórico**: Timeline completa de atividades e conquistas
+- 💡 **Dicas**: Horóscopo felino, curiosidades e sabedoria para o cotidiano
+- 👥 **Conta Familiar**: Sistema colaborativo para toda a família
 - 🌓 **Tema Dual**: Modo claro/escuro com transições suaves
+- 🎨 **Background Interativo**: Gradientes animados com NEAT.js
 
 ## 🚀 Demo
 
@@ -39,29 +50,47 @@ Acesse a aplicação em: **[catbutler-frontend.vercel.app](https://catbutler-fro
 - Respostas personalizadas por categoria
 - Interface moderna estilo WhatsApp
 
-### 🍳 **Gerenciamento Culinário**
-- Receitas sugeridas por IA
-- Filtros por dificuldade e tempo
-- Sistema de favoritos
-- Integração com lista de compras
+### 🍳 **CozinhaIA - Assistente Culinário**
+- **Ingredientes Flexíveis**: Adicione manualmente + sugestões categorizadas
+- **Cardápio Semanal**: Gerador de IA com planejamento completo de refeições
+- **Função Copiar**: Export cardápios para compartilhar ou salvar
+- **Receitas Inteligentes**: Sugestões baseadas em ingredientes disponíveis
+- **Chef IA**: Chat especializado para dúvidas culinárias
+- **Filtros Avançados**: Por tempo de preparo, dificuldade e tipo de refeição
 
-### 🧹 **Automação de Limpeza**
-- Cronogramas personalizados
-- Dicas de produtos e técnicas
-- Lembretes inteligentes
-- Tracking de progresso
+### 🧹 **FaxinaIA - Gestão Doméstica**
+- **Configuração Personalizada**: Defina número de cômodos (1-8)
+- **Rotinas Adaptativas**: Cronogramas diários/semanais baseados na sua casa
+- **Técnicas Profissionais**: Database com métodos específicos por superfície
+- **Produtos Recomendados**: Sugestões com dicas de economia
+- **Progresso Visual**: Tracking em tempo real com estatísticas
+- **Assistente Especializado**: Chat para dúvidas de limpeza e organização
 
-### 🛒 **Compras Inteligentes**
-- Listas organizadas por categoria
-- Sugestões baseadas em preferências
-- Comparação de preços
-- Informações nutricionais
+### 🛒 **MercadoIA - Compras Otimizadas**
+- **Lista Inteligente**: Gerenciamento completo com quantidades e categorias
+- **Comparação de Preços**: Sistema de busca por melhores ofertas
+- **Controle Orçamentário**: Acompanhamento visual de gastos vs meta
+- **Geração Automática**: IA cria listas baseada em padrões de consumo
+- **Consultor de Compras**: Chat especializado em economia doméstica
 
-### 📅 **Organização Pessoal**
-- Calendário semanal interativo
-- Eventos categorizados
-- Sistema de prioridades
-- Estatísticas de produtividade
+### 📅 **Agenda - Organização Total**
+- **Calendário Semanal**: Interface moderna e responsiva
+- **Filtros Inteligentes**: Por categoria, prioridade e status
+- **Gestão de Eventos**: Criar, editar e marcar como concluído
+- **Dashboard Estatístico**: Métricas de produtividade
+- **Sistema de Prioridades**: Organização visual por urgência
+
+### 💡 **Dicas & Curiosidades**
+- **Horóscopo Felino**: Previsões diárias personalizadas
+- **Fatos sobre Gatos**: Curiosidades interessantes
+- **Dicas Práticas**: Conselhos categorizados para otimização
+- **Interface Moderna**: Design limpo com ícones Font Awesome
+
+### 👥 **Conta Familiar**
+- **Sistema Colaborativo**: Compartilhe listas e rotinas
+- **Gestão de Membros**: Convites por email com roles
+- **Sincronização Real-time**: Atualizações instantâneas
+- **Controle de Permissões**: Admin/membro para acesso controlado
 
 ## 🛠️ Tecnologias
 
