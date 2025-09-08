@@ -233,61 +233,68 @@ export default function MercadoIA() {
         </div>
 
         {/* Conteúdo das Abas */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           
           {/* Conteúdo Principal */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 min-w-0">
             <div className="card-glass rounded-xl shadow-lg p-6">
               
               {/* Lista Inteligente */}
               {abaAtiva === 'lista' && (
                 <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      Lista de Compras
-                    </h3>
-                    <div className="flex gap-2">
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+                        Lista de Compras
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={gerarListaIA}
-                        className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+                        className="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm shrink-0"
                       >
                         <i className="fa-solid fa-magic-wand-sparkles"></i>
-                        Gerar IA
+                        <span className="hidden sm:inline">Gerar IA</span>
+                        <span className="sm:hidden">IA</span>
                       </button>
                       <button
                         onClick={() => setChatAberto(true)}
-                        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+                        className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm shrink-0"
                       >
                         <i className="fa-solid fa-comments"></i>
-                        Consultor
+                        <span className="hidden sm:inline">Consultor</span>
+                        <span className="sm:hidden">Chat</span>
                       </button>
                     </div>
                   </div>
 
                   {/* Adicionar Item */}
-                  <div className="flex gap-2 mb-6">
-                    <input
-                      type="text"
-                      value={novoItem}
-                      onChange={(e) => setNovoItem(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && adicionarItem()}
-                      placeholder="Adicionar item..."
-                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                    <select
-                      value={categoriaItem}
-                      onChange={(e) => setCategoriaItem(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
+                  <div className="mb-6">
+                    <div className="flex flex-col sm:flex-row gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={novoItem}
+                        onChange={(e) => setNovoItem(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && adicionarItem()}
+                        placeholder="Adicionar item..."
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                      />
+                      <select
+                        value={categoriaItem}
+                        onChange={(e) => setCategoriaItem(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm min-w-0 sm:w-auto"
+                      >
                       {CATEGORIAS.map(cat => (
                         <option key={cat.name} value={cat.name}>{cat.name}</option>
                       ))}
                     </select>
+                    </div>
                     <button
                       onClick={adicionarItem}
-                      className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
+                      className="w-full sm:w-auto px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
                     >
                       <i className="fa-solid fa-plus"></i>
+                      <span>Adicionar</span>
                     </button>
                   </div>
 
@@ -406,8 +413,8 @@ export default function MercadoIA() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="card-glass rounded-xl shadow-lg p-6">
+          <div className="space-y-4 lg:space-y-6 min-w-0">
+            <div className="card-glass rounded-xl shadow-lg p-4 lg:p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Resumo da Lista
               </h3>

@@ -201,6 +201,64 @@ export default function Sobre() {
                   </div>
                 </div>
               </a>
+
+              {/* Links Profissionais */}
+              <a
+                href="https://catbytes.netlify.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors group"
+              >
+                <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <i className="fa-solid fa-globe text-white text-lg"></i>
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-white">
+                    Portfolio
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    Veja meus projetos
+                  </div>
+                </div>
+              </a>
+
+              <a
+                href="https://github.com/ipierette"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/30 transition-colors group"
+              >
+                <div className="w-10 h-10 bg-gray-800 dark:bg-gray-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <i className="fa-brands fa-github text-white text-lg"></i>
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-white">
+                    GitHub
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    Código aberto
+                  </div>
+                </div>
+              </a>
+
+              <a
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors group"
+              >
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <i className="fa-brands fa-linkedin text-white text-lg"></i>
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-white">
+                    LinkedIn
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    Rede profissional
+                  </div>
+                </div>
+              </a>
             </div>
           </div>
 

@@ -143,25 +143,25 @@ export default function Assistente() {
         {messages.length === 1 && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fa-solid fa-cat text-white text-2xl"></i>
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fa-solid fa-cat text-white text-xl sm:text-2xl"></i>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Olá! Sou o CatButler IA 🐱
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">
                 Estou aqui para ajudar com receitas, compras, limpeza e organização da casa!
               </p>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {quickSuggestions.map((suggestion, suggestionIndex) => (
                   <button
                     key={`suggestion-${suggestion.text}-${suggestionIndex}`}
                     onClick={() => sendMessage(suggestion.text)}
-                    className="p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors text-left group"
+                    className="p-2 sm:p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors text-left group"
                   >
-                    <i className={`${suggestion.icon} text-primary-500 text-sm mb-2 group-hover:scale-110 transition-transform`}></i>
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    <i className={`${suggestion.icon} text-primary-500 text-xs sm:text-sm mb-1 sm:mb-2 group-hover:scale-110 transition-transform`}></i>
+                    <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
                       {suggestion.text}
                     </div>
                   </button>

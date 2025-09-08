@@ -190,10 +190,11 @@ export default function Tarefas() {
 
           <button
             onClick={() => alert('Funcionalidade em desenvolvimento')}
-            className="btn-primary px-3 py-2 text-sm flex items-center gap-2"
+            className="btn-primary px-3 py-2 text-sm flex items-center gap-2 shrink-0 min-w-fit"
           >
             <i className="fa-solid fa-plus text-xs"></i>
-            Nova Tarefa
+            <span className="hidden sm:inline">Nova Tarefa</span>
+            <span className="sm:hidden">Nova</span>
           </button>
         </div>
       </div>
