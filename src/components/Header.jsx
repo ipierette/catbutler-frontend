@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
-import logoCatButler from "../assets/images/logo-catbutler.png";
+import logoCatButler from "../assets/images/logo-catbutler.webp";
 
 function Header() {
   const { theme, toggleTheme } = useTheme();

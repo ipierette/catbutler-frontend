@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { sanitizeInput, validateEmail, validatePassword, validateName } from '../utils/security';
 import { TermsModal, PrivacyModal, useModal } from '../components/Modals';
-import logoCatButler from '../assets/images/logo-catbutler.png';
+import logoCatButler from '../assets/images/logo-catbutler.webp';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({

@@ -30,7 +30,7 @@ src/
 ├── index.css ✅ (com Tailwind customizado)
 ├── assets/
 │   └── images/
-│       ├── logo-catbutler.png
+│       ├── logo-catbutler.webp
 │       ├── gato-unscreen.gif
 │       └── izadora-profile.jpg (adicionar sua foto)
 ├── components/

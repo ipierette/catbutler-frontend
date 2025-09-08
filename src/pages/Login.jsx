@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { sanitizeInput, validateEmail } from '../utils/security';
-import logoCatButler from '../assets/images/logo-catbutler.png';
+import logoCatButler from '../assets/images/logo-catbutler.webp';
 
 export default function Login() {
   const [formData, setFormData] = useState({
