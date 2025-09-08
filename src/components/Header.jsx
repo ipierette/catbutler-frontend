@@ -37,12 +37,12 @@ function Header() {
         {/* Botão Menu Mobile */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600"
+          className="lg:hidden p-3 min-w-11 min-h-11 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex items-center justify-center"
           title="Menu"
           aria-label={mobileMenuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
           aria-expanded={mobileMenuOpen}
         >
-          <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {mobileMenuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -56,7 +56,7 @@ function Header() {
           {/* Toggle de tema */}
           <button
             onClick={toggleTheme}
-            className="p-1 sm:p-1.5 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-300 dark:border-gray-600"
+            className="p-2.5 min-w-11 min-h-11 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-300 dark:border-gray-600 flex items-center justify-center"
             title={`Alternar para tema ${theme === "light" ? "escuro" : "claro"}`}
             aria-label={`Alternar para tema ${theme === "light" ? "escuro" : "claro"}`}
           >

@@ -133,7 +133,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/30 dark:bg-primary-600/20 rounded-full -translate-y-16 translate-x-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent-200/30 dark:bg-accent-600/20 rounded-full translate-y-12 -translate-x-12"></div>
           
-          <div className="relative grid lg:grid-cols-3 gap-8 items-center">
+          <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
             <div className="lg:col-span-2 space-y-6">
               {/* Greeting */}
               <div className="space-y-3">
@@ -188,11 +188,11 @@ export default function Home() {
             </div>
 
             {/* Cat Image */}
-            <div className="hidden lg:flex justify-center">
+            <div className="flex justify-center">
               <OptimizedImage
                 src={gatoGif}
-                alt="CatButler - Assistente doméstico felino"
-                className="w-64 h-52 object-contain hover:scale-105 transition-transform duration-300"
+                alt="CatButler Mascote - Gato Assistente"
+                className="w-48 h-40 sm:w-56 sm:h-48 lg:w-64 lg:h-52 object-contain hover:scale-105 transition-transform duration-300 max-w-full"
                 priority={true}
               />
             </div>
@@ -200,7 +200,7 @@ export default function Home() {
         </section>
 
         {/* Quick Actions Grid */}
-        <section className="grid md:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           
           {/* Current Time Card */}
           <article className="card-glass rounded-xl shadow-lg p-6 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 border border-indigo-200 dark:border-gray-600">
