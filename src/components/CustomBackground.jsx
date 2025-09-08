@@ -10,9 +10,21 @@ const CustomBackground = () => {
     // Função para inicializar o NEAT
     const initNeat = () => {
       if (!window.FireCMS?.NeatGradient) {
+        // Debug: verificar se está carregando
+        console.log('NEAT: Aguardando carregamento da biblioteca...');
         setTimeout(initNeat, 100);
         return;
       }
+      
+      if (!canvasRef.current) {
+        // Canvas não está pronto ainda
+        console.log('NEAT: Aguardando canvas estar pronto...');
+        setTimeout(initNeat, 50);
+        return;
+      }
+      
+      console.log('NEAT: Inicializando background com tema:', theme);
+      
       if (neatRef.current) {
         neatRef.current.destroy();
       }
@@ -61,19 +73,44 @@ const CustomBackground = () => {
 
       const preset = theme === 'light' ? lightPreset : darkPreset;
 
-      neatRef.current = new window.FireCMS.NeatGradient({
-        ref: canvasRef.current,
-        ...preset,
-      });
+      try {
+        neatRef.current = new window.FireCMS.NeatGradient({
+          ref: canvasRef.current,
+          ...preset,
+        });
+        console.log('NEAT: Background inicializado com sucesso!');
+      } catch (error) {
+        console.error('NEAT: Erro ao inicializar:', error);
+      }
     };
     
     // Inicializar NEAT
     initNeat();
+    
+    // Listener para detectar quando scripts carregam
+    const handleScriptLoad = () => {
+      if (window.FireCMS?.NeatGradient && !neatRef.current) {
+        initNeat();
+      }
+    };
+    
+    // Verificar periodicamente se o script carregou (fallback)
+    const checkInterval = setInterval(() => {
+      if (window.FireCMS?.NeatGradient && !neatRef.current) {
+        initNeat();
+        clearInterval(checkInterval);
+      }
+    }, 500);
+    
+    // Listener para evento de load da janela
+    window.addEventListener('load', handleScriptLoad);
 
     return () => {
       if (neatRef.current) {
         neatRef.current.destroy();
       }
+      clearInterval(checkInterval);
+      window.removeEventListener('load', handleScriptLoad);
     };
   }, [theme]);
 

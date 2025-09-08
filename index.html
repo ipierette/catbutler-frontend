@@ -43,7 +43,9 @@
     
     <!-- Non-critical scripts with defer/async -->
     <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script async defer src="/js/vendor/index.umd.js"></script>
+    
+    <!-- NEAT Background - Load with higher priority -->
+    <script defer src="/js/vendor/index.umd.js"></script>
     
     <!-- Main app script -->
     <script type="module" src="/src/main.jsx"></script>
