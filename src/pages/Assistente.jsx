@@ -143,8 +143,8 @@ export default function Assistente() {
         {messages.length === 1 && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fa-solid fa-cat text-white text-xl sm:text-2xl"></i>
+              <div className="hidden sm:block w-20 h-20 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fa-solid fa-cat text-white text-2xl"></i>
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Olá! Sou o CatButler IA 🐱
