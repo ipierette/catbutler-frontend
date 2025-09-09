@@ -29,11 +29,39 @@ export default function Assistente() {
   const pageRef = useRef(null);           // container da página
   const chatHeaderRef = useRef(null);     // header interno do chat
   const chatInputRef = useRef(null);      // rodapé com textarea/botão
-  const scrollAreaRef = useRef(null);     // área rolável (mensagens)
-  const endRef = useRef(null);            // para autoscroll
+  const scrollAreaRef = useRef(null);
 
   // Altura calculada p/ a área rolável (fallback 320px)
   const [scrollH, setScrollH] = useState(320);
+
+  // controla autoscroll
+const nearBottomRef = useRef(true);      // usuário está perto do fim?
+const firstPaintRef = useRef(true);      // primeira renderização
+
+const isNearBottom = (el, margin = 120) => {
+  // quanto falta para o fim
+  return el.scrollHeight - (el.scrollTop + el.clientHeight) <= margin;
+};
+
+const scrollToBottom = (smooth = true) => {
+  const el = scrollAreaRef.current;
+  if (!el) return;
+  // usa rAF p/ garantir que o layout já foi aplicado
+  requestAnimationFrame(() => {
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: smooth ? "smooth" : "auto",
+    });
+  });
+};
+
+// atualiza flag se o usuário está perto do fim
+const handleScroll = () => {
+  const el = scrollAreaRef.current;
+  if (!el) return;
+  nearBottomRef.current = isNearBottom(el);
+};
+
 
   /** -----------------------------
    *  Responsividade sem mexer no shell:
@@ -100,12 +128,64 @@ useLayoutEffect(() => {
   };
 }, []);
 
-  /** -----------------------------
-   *  Auto scroll para a última mensagem
-   *  ----------------------------- */
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, isTyping, scrollH]);
+  // trava o scroll da página sem mexer em position/overflow do body
+useEffect(() => {
+  const docEl = document.documentElement;
+
+  // mantém a largura da barra de rolagem estável (evita "pulo" de layout)
+  const prevGutter = docEl.style.scrollbarGutter;
+  docEl.style.scrollbarGutter = "stable";
+
+  const area = () => scrollAreaRef.current;
+
+  const onWheel = (e) => {
+    const box = area();
+    if (!box) return;
+
+    if (!box.contains(e.target)) {
+      e.preventDefault();
+      return;
+    }
+
+    const canUp = box.scrollTop > 0 && e.deltaY < 0;
+    const canDown =
+      box.scrollTop + box.clientHeight < box.scrollHeight && e.deltaY > 0;
+    if (!(canUp || canDown)) e.preventDefault();
+  };
+
+  const onTouchMove = (e) => {
+    const box = area();
+    if (!box || !box.contains(e.target)) e.preventDefault();
+  };
+
+  document.addEventListener("wheel", onWheel, { passive: false });
+  document.addEventListener("touchmove", onTouchMove, { passive: false });
+
+  return () => {
+    document.removeEventListener("wheel", onWheel);
+    document.removeEventListener("touchmove", onTouchMove);
+    docEl.style.scrollbarGutter = prevGutter;
+  };
+}, []);
+
+// auto-scroll para última mensagem
+useEffect(() => {
+  const el = scrollAreaRef.current;
+  if (!el) return;
+
+  // primeira renderização: vai direto para o fim
+  if (firstPaintRef.current) {
+    firstPaintRef.current = false;
+    scrollToBottom(false);
+    return;
+  }
+
+  // se o usuário já estava perto do fim, acompanha novas mensagens
+  if (nearBottomRef.current) {
+    scrollToBottom(true);
+  }
+}, [messages, isTyping, scrollH]);
+
 
   /** -----------------------------
    *  Simula resposta do bot
@@ -203,6 +283,7 @@ useLayoutEffect(() => {
       {/* Área rolável (altura definida via medição) */}
       <div
         ref={scrollAreaRef}
+        onScroll={handleScroll}
         className="custom-scrollbar p-4 sm:p-6 lg:p-8 bg-gray-50/50 dark:bg-gray-900/20 overflow-y-auto"
         style={{ height: `${scrollH}px` }}
       >
@@ -310,8 +391,6 @@ useLayoutEffect(() => {
             </div>
           </div>
         )}
-
-        <div ref={endRef} />
       </div>
 
       {/* Rodapé (input) */}

@@ -7,53 +7,47 @@ const CustomBackground = () => {
   const neatRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // medidor simples de FPS (dev only)
+  const fpsRaf = useRef(null);
+  const [fps, setFps] = useState(null);
+
   useEffect(() => {
     let attempts = 0;
-    const maxAttempts = 30; // 6 segundos máximo
-    
-    // Aguardar um pouco para garantir que o DOM está pronto
+    const maxAttempts = 30; // ~6s
     const timer = setTimeout(() => {
       initializeNEAT();
-    }, 500);
+    }, 300);
 
     function initializeNEAT() {
       attempts++;
-      
+
       if (attempts > maxAttempts) {
         console.warn('NEAT: Timeout após múltiplas tentativas');
         setIsLoaded(false);
+        stopFpsMeter();
         return;
       }
-      // Verificar se Three.js carregou
       if (!window.THREE) {
-        console.log('NEAT: Three.js não carregado, tentando novamente...');
+        // aguarda three carregar
         setTimeout(initializeNEAT, 200);
         return;
       }
-
-      // Verificar se a biblioteca NEAT existe
       if (!window.FireCMS || !window.FireCMS.NeatGradient) {
-        console.log('NEAT: Biblioteca NEAT não encontrada, tentando novamente...');
+        // aguarda NEAT (index.umd.js)
         setTimeout(initializeNEAT, 200);
         return;
       }
-
-      // Verificar se o canvas existe
       if (!canvasRef.current) {
-        console.log('NEAT: Canvas não encontrado, tentando novamente...');
         setTimeout(initializeNEAT, 100);
         return;
       }
 
-      // Limpar instância anterior
+      // limpa instância anterior se existir
       if (neatRef.current) {
-        try {
-          neatRef.current.destroy();
-        } catch (e) {
-          console.warn('NEAT: Erro ao limpar:', e);
-        }
+        try { neatRef.current.destroy(); } catch (e) { console.warn('NEAT cleanup:', e); }
       }
 
+      // presets
       const darkPreset = {
         colors: [
           { color: '#554226', enabled: true },
@@ -80,46 +74,76 @@ const CustomBackground = () => {
         grainSparsity: 0,
         grainIntensity: 0.175,
         grainSpeed: 1,
-        resolution: 1,
+        // (deixa a resolução do preset ser sobrescrita abaixo)
         yOffset: 0,
       };
 
       const lightPreset = {
-        ...darkPreset, // Usar exatamente o mesmo preset
+        ...darkPreset,
         colors: [
-          { color: '#BFDBFE', enabled: true }, // Azul claro com contraste (blue-200)
-          { color: '#DDD6FE', enabled: true }, // Violeta claro (violet-200)
-          { color: '#FCE7F3', enabled: true }, // Rosa muito claro (pink-100)
-          { color: '#D1FAE5', enabled: true }, // Verde muito claro (emerald-100)
-          { color: '#FEF3C7', enabled: true }, // Amarelo muito claro (amber-100)
+          { color: '#BFDBFE', enabled: true },
+          { color: '#DDD6FE', enabled: true },
+          { color: '#FCE7F3', enabled: true },
+          { color: '#D1FAE5', enabled: true },
+          { color: '#FEF3C7', enabled: true },
         ],
-        backgroundColor: '#ffffff', // Fundo branco
+        backgroundColor: '#ffffff',
       };
 
       const preset = theme === 'light' ? lightPreset : darkPreset;
 
       try {
+        // ⚠️ Requer o index.umd.js otimizado (com fps/pauseOnHidden)
         neatRef.current = new window.FireCMS.NeatGradient({
           ref: canvasRef.current,
           ...preset,
+          // overrides de performance:
+          resolution: 0.2,     // ↓ metade da resolução interna
+          fps: 20,            // limita o loop a 30fps lá dentro
+          pauseOnHidden: true, // pausa quando a aba fica oculta
         });
-        
-        console.log('NEAT: Fundo ativo!');
+
         setIsLoaded(true);
+        startFpsMeter(); // dev only
       } catch (error) {
         console.error('NEAT: Erro ao inicializar:', error);
         setIsLoaded(false);
+        stopFpsMeter();
+      }
+    }
+
+    function startFpsMeter() {
+      if (process.env.NODE_ENV !== 'development') return;
+      let last = performance.now();
+      let frames = 0;
+      const sampleMs = 500; // janela de meia-seg pra leitura mais estável
+
+      const loop = (now) => {
+        frames++;
+        if (now - last >= sampleMs) {
+          const currentFps = Math.round((frames * 1000) / (now - last));
+          setFps(currentFps);
+          frames = 0;
+          last = now;
+        }
+        fpsRaf.current = requestAnimationFrame(loop);
+      };
+      fpsRaf.current = requestAnimationFrame(loop);
+    }
+
+    function stopFpsMeter() {
+      if (fpsRaf.current) {
+        cancelAnimationFrame(fpsRaf.current);
+        fpsRaf.current = null;
+        setFps(null);
       }
     }
 
     return () => {
       clearTimeout(timer);
+      stopFpsMeter();
       if (neatRef.current) {
-        try {
-          neatRef.current.destroy();
-        } catch (e) {
-          console.warn('NEAT: Erro no cleanup:', e);
-        }
+        try { neatRef.current.destroy(); } catch (e) { console.warn('NEAT cleanup:', e); }
       }
       setIsLoaded(false);
     };
@@ -131,8 +155,7 @@ const CustomBackground = () => {
         ref={canvasRef}
         style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
+          inset: 0,
           width: '100%',
           height: '100%',
           zIndex: -1,
@@ -142,24 +165,10 @@ const CustomBackground = () => {
               ? 'linear-gradient(45deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)'
               : 'linear-gradient(45deg, #1a202c 0%, #2d3748 50%, #4a5568 100%)'
           ),
+          contain: 'strict', // dica de perf do layout
         }}
+        aria-hidden
       />
-      {/* Debug indicator */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{
-          position: 'fixed',
-          bottom: '0.625rem',
-          right: '0.625rem',
-          zIndex: 1000,
-          padding: '0.25rem 0.5rem',
-          backgroundColor: isLoaded ? 'green' : 'red',
-          color: 'white',
-          fontSize: '0.75rem',
-          borderRadius: '0.25rem'
-        }}>
-          NEAT: {isLoaded ? 'Active' : 'Failed'}
-        </div>
-      )}
     </>
   );
 };
