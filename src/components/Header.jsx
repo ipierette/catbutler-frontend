@@ -8,15 +8,15 @@ import logoCatButler from "../assets/images/logo-catbutler.webp";
 function Header() {
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  
+
   return (
     <>
       <header className="spa-header w-full header-glass px-responsive flex items-center justify-between z-header">
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <div className="flex items-center justify-center">
-            <img 
-              src={logoCatButler} 
-              alt="CatButler Logo" 
+            <img
+              src={logoCatButler}
+              alt="CatButler Logo"
               className="w-8 h-8 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
             />
           </div>
@@ -73,103 +73,76 @@ function Header() {
         </div>
       </header>
 
-      {/* Menu Mobile */}
-      {mobileMenuOpen && (
-        <>
-          {/* Overlay de fundo */}
-          <div 
-            className="md:hidden mobile-menu-overlay"
-            onClick={() => setMobileMenuOpen(false)}
-            onKeyDown={(e) => e.key === 'Escape' && setMobileMenuOpen(false)}
-            role="button"
-            tabIndex={0}
-            aria-label="Fechar menu"
-          />
-          {/* Menu */}
-          <div className="md:hidden mobile-menu">
-            <nav className="flex flex-col p-4 space-y-2">
-            <Link 
-              to="/" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link 
-              to="/tarefas" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Tarefas
-            </Link>
-            <Link 
-              to="/cozinha-ia" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Cozinha IA
-            </Link>
-            <Link 
-              to="/faxina-ia" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Faxina IA
-            </Link>
-            <Link 
-              to="/mercado-ia" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Mercado IA
-            </Link>
-            <Link 
-              to="/agenda" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Agenda
-            </Link>
-            <Link 
-              to="/assistente" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Assistente
-            </Link>
-            <Link 
-              to="/dicas" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Dicas
-            </Link>
-            <Link 
-              to="/historico" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Histórico
-            </Link>
-            <Link 
-              to="/sobre" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Sobre
-            </Link>
-            <Link 
-              to="/config" 
-              className="text-gray-800 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Configurações
-            </Link>
-          </nav>
-        </div>
-        </>
-      )}
-  {/* Dock removido para evitar navegação duplicada */}
+{mobileMenuOpen && (
+  <>
+    {/* Overlay para fechar ao tocar fora */}
+    <div
+      className="md:hidden fixed inset-0 bg-black/40 z-[98]"
+      onClick={() => setMobileMenuOpen(false)}
+    />
+
+    {/* Menu mobile em tela cheia (acima do header) */}
+    <div
+      className="lg:hidden fixed inset-0 z-[99] bg-gray-900 text-white"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="flex flex-col h-full min-h-0">
+        {/* LISTA ROLÁVEL + AÇÕES NO FINAL */}
+        <nav
+          className="
+            h-full overflow-y-auto px-4 space-y-2
+            pt-20
+            pb-[calc(1rem+env(safe-area-inset-bottom))]
+          "
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          <Link to="/"            onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Home</Link>
+          <Link to="/tarefas"     onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Tarefas</Link>
+          <Link to="/cozinha-ia"  onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Cozinha IA</Link>
+          <Link to="/faxina-ia"   onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Faxina IA</Link>
+          <Link to="/mercado-ia"  onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Mercado IA</Link>
+          <Link to="/agenda"      onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Agenda</Link>
+          <Link to="/assistente"  onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Assistente</Link>
+          <Link to="/dicas"       onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Dicas</Link>
+          <Link to="/historico"   onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Histórico</Link>
+          <Link to="/sobre"       onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Sobre</Link>
+          <Link to="/config"      onClick={() => setMobileMenuOpen(false)} className="block text-gray-200 hover:text-primary-400 transition font-bold text-responsive-sm py-2 px-3 rounded-lg hover:bg-gray-800/60">Configurações</Link>
+
+          {/* divisor opcional */}
+          <hr className="my-3 border-gray-800/70" />
+
+          {/* BOTÃO DUPLO (uma peça só com duas ações) */}
+          <div className="rounded-xl overflow-hidden ring-1 ring-gray-700">
+            <div className="grid grid-cols-2">
+              {/* Criar Conta (primário) */}
+              <Link
+                to="/criar-conta"
+                onClick={() => setMobileMenuOpen(false)}
+                className="btn-primary !rounded-none py-3 text-center font-semibold flex items-center justify-center gap-2"
+              >
+                <i className="fa-solid fa-user-plus text-xs" />
+                Criar Conta
+              </Link>
+
+              {/* Entrar (neutro) */}
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="bg-gray-800 hover:bg-gray-700 text-white py-3 text-center font-semibold flex items-center justify-center gap-2"
+              >
+                <i className="fa-solid fa-right-to-bracket text-xs" />
+                Entrar
+              </Link>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </>
+)}
+
+      {/* Dock removido para evitar navegação duplicada */}
     </>
   );
 }
