@@ -85,7 +85,7 @@ export default function Sidebar() {
   const location = useLocation();
 
   return (
-    <aside className="spa-sidebar">
+    <aside className="spa-sidebar h-screen">
       <div className="p-4 h-full flex flex-col">
         {/* User Section */}
         <div className="mb-7 mt-1">
