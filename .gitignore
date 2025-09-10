@@ -37,4 +37,6 @@ yarn-error.log*
 
 # playwright
 test-results/
-playwright-report/
+playwright-report/.env
+.env.exemple
+.env.example
