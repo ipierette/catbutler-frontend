@@ -40,3 +40,10 @@ test-results/
 playwright-report/.env
 .env.exemple
 .env.example
+# ignore env files
+.env
+.env.*
+*/.env
+*/.env.*
+env
+env/*
