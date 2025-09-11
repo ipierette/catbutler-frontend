@@ -1,4 +1,5 @@
-import React, { Suspense, lazy, Component } from 'react';
+import React, { Suspense, lazy, useRef, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { LoadingCard } from './Loading';
 
 // Componente de fallback para lazy loading
@@ -7,6 +8,8 @@ const LazyFallback = ({ title = 'Carregando...', description = 'Aguarde um momen
 );
 
 LazyFallback.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
 };
 
 // HOC para lazy loading com fallback customizado
@@ -20,22 +23,27 @@ export const withLazyLoading = (importFunction, fallbackProps = {}) => {
   );
 };
 
-// Componente wrapper para lazy loading com intersection observer
-export class LazyWrapper extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isVisible: false,
-      hasLoaded: false,
-    };
-    this.elementRef = React.createRef();
-  }
 
-  componentDidMount() {
-    const observer = new IntersectionObserver(
+// Componente funcional para lazy loading com intersection observer
+export function LazyWrapper({ children, fallback, height = '12.5rem' }) {
+LazyWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  fallback: PropTypes.node,
+  height: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+};
+  const elementRef = useRef();
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  useEffect(() => {
+    const observer = new window.IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !this.state.hasLoaded) {
-          this.setState({ isVisible: true, hasLoaded: true });
+        if (entry.isIntersecting && !hasLoaded) {
+          setIsVisible(true);
+          setHasLoaded(true);
         }
       },
       {
@@ -43,30 +51,20 @@ export class LazyWrapper extends Component {
         rootMargin: '3.125rem',
       }
     );
-
-    if (this.elementRef.current) {
-      observer.observe(this.elementRef.current);
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
     }
+    return () => {
+      observer.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasLoaded]);
 
-    this.observer = observer;
-  }
-
-  componentWillUnmount() {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
-  }
-
-  render() {
-    const { children, fallback, height = '12.5rem' } = this.props;
-    const { isVisible } = this.state;
-
-    return (
-      <div ref={this.elementRef} style={{ minHeight: height }}>
-        {isVisible ? children : (fallback || <LazyFallback />)}
-      </div>
-    );
-  }
+  return (
+    <div ref={elementRef} style={{ minHeight: height }}>
+      {isVisible ? children : (fallback || <LazyFallback />)}
+    </div>
+  );
 }
 
 LazyWrapper.propTypes = {
@@ -104,6 +102,12 @@ export const useLazyLoading = (options = {}) => {
 
 // Componente para lazy loading de imagens
 export const LazyImage = ({ src, alt, placeholder, className = '', ...props }) => {
+LazyImage.propTypes = {
+  src: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  placeholder: PropTypes.node,
+  className: PropTypes.string,
+};
   const { elementRef, isVisible } = useLazyLoading();
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);

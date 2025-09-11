@@ -24,6 +24,12 @@ jobs:
       - name: 📥 Install dependencies
         run: npm ci
         
+      - name: ▶️ Start Vite server
+        run: npm run dev -- --port=5173 &
+
+      - name: ⏳ Wait for Vite server
+        run: npx wait-on http://localhost:5173
+
       - name: 🧪 Run tests
         run: npm run test
         
