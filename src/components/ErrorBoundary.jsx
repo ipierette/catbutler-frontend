@@ -65,6 +65,9 @@ function ErrorBoundary({ children }) {
 }
 
 
+
 ErrorBoundary.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
+export default ErrorBoundary;
