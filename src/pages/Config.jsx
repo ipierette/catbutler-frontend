@@ -94,20 +94,21 @@ export default function Config() {
   return (
     <div className="h-full overflow-y-auto custom-scrollbar">
       <div className="p-4 lg:p-6 space-y-6">
-        
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl flex items-center justify-center">
-              <i className="fa-solid fa-gear text-white text-xl"></i>
+        {/* Header padronizado */}
+        <div className="mb-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0">
+              <i className="fa-solid fa-gear text-lg sm:text-xl text-gray-700 dark:text-gray-200" aria-label="configurações"></i>
             </div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-              Configurações
-            </h1>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                Configurações
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                Personalize sua experiência no CatButler
+              </p>
+            </div>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Personalize sua experiência no CatButler
-          </p>
         </div>
 
         {/* Grid Principal */}

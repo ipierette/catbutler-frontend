@@ -133,20 +133,21 @@ export default function FaxinaIA() {
   return (
     <div className="h-full overflow-y-auto custom-scrollbar">
       <div className="p-4 lg:p-6 space-y-6">
-        
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-              <i className="fa-solid fa-broom text-white text-xl"></i>
+        {/* Header padronizado */}
+        <div className="mb-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg shrink-0">
+              <i className="fa-solid fa-broom text-lg sm:text-xl text-green-600 dark:text-green-400" aria-label="faxina"></i>
             </div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-              Faxina IA
-            </h1>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                Faxina IA
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                Organize sua casa com rotinas inteligentes e dicas personalizadas
+              </p>
+            </div>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Organize sua casa com rotinas inteligentes e dicas personalizadas
-          </p>
         </div>
 
         {/* Configuração de Cômodos */}

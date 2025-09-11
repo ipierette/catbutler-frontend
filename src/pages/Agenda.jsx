@@ -160,15 +160,20 @@ export default function Agenda() {
 
   return (
     <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
-      {/* Header Otimizado */}
+      {/* Header Otimizado com ícone */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Agenda Semanal
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Organize suas tarefas por dia da semana
-          </p>
+        <div className="flex items-center gap-3 mb-2 sm:mb-0">
+          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg shrink-0">
+            <i className="fa-solid fa-calendar-days text-lg sm:text-xl text-blue-600 dark:text-blue-400" aria-label="agenda"></i>
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+              Agenda Semanal
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              Organize suas tarefas por dia da semana
+            </p>
+          </div>
         </div>
 
         {/* Date Navigation - Mobile Optimized */}
@@ -180,14 +185,12 @@ export default function Agenda() {
           >
             <i className="fa-solid fa-chevron-left text-sm"></i>
           </button>
-          
           <input
             type="date"
             value={selectedDate}
             onChange={handleDateChange}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
-          
           <button
             onClick={() => navigateDate(1)}
             className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
