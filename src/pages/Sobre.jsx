@@ -86,16 +86,6 @@ export default function Sobre() {
               {/* Social Links */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-3">
                 <a
-                  href="https://catbytes.netlify.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  <i className="fa-solid fa-globe text-sm"></i>
-                  <span className="text-sm font-medium">Portfolio</span>
-                </a>
-                
-                <a
                   href="https://drive.google.com/file/d/1JY_hUoeiW-IVyCuJ9yg9CS63QZ3GZzDq/view"
                   target="_blank"
                   rel="noopener noreferrer"
