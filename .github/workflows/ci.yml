@@ -2,72 +2,45 @@ name: 🚀 CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
-  test:
-    name: 🧪 Testes
+  build-and-test:
+    name: 🧪 Build and Test
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
-        
+
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-          
 
       - name: 📥 Install dependencies
         run: npm ci
 
-      - name: 📥 Install Playwright browsers
-        run: npx playwright install --with-deps
-        
-      - name: 🏗️ Build project
-        run: npm run build
+      - name: 🧪 Run unit tests
+        run: npm run test:unit
 
+      - name: 🧪 Run E2E tests
+        run: |
+          npx playwright install --with-deps
+          npm run test
 
-      - name: 🧪 Run tests with Vite dev server
-        run: npx start-server-and-test dev http://localhost:5173 test
-        
-      - name: 🔍 Run linting
+      - name: 🧹 Run linting
         run: npm run lint
-        
+
       - name: 🏗️ Build project
         run: npm run build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
-  build:
-    name: 🏗️ Build
-    runs-on: ubuntu-latest
-    needs: test
-    
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-        
-      - name: 📦 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          
-      - name: 📥 Install dependencies
-        run: npm ci
-        
-      - name: 🏗️ Build project
-        run: npm run build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
-          
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -77,19 +50,19 @@ jobs:
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-and-test
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
-        
+
       - name: 📦 Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-files
           path: dist/
-          
+
       - name: 🚀 Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:

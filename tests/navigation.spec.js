@@ -14,12 +14,10 @@ const menuLinks = [
   { text: 'Configurações', url: '/config' },
 ];
 
-test.describe('Navegação principal', () => {
-  menuLinks.forEach(link => {
-    test(`Menu navega para ${link.text}`, async ({ page }) => {
-      await page.goto('/');
-      await page.click(`a:has-text("${link.text}")`);
-      await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
-    });
+menuLinks.forEach(link => {
+  test(`Menu navega para ${link.text}`, async ({ page }) => {
+    await page.goto('/');
+    await page.click(`a:has-text("${link.text}")`);
+    await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
   });
 });
