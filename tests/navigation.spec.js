@@ -18,7 +18,7 @@ test.describe('Navegação principal', () => {
   for (const link of menuLinks) {
     test(`Menu navega para ${link.text}`, async ({ page }) => {
       await page.goto('/');
-      await page.click(`a:has-text(\"${link.text}\")`);
+      await page.click(`a:has-text("${link.text}")`);
       await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
     });
   }
