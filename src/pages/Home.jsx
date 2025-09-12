@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { TermsModal, useModal } from '../components/Modals';
 import StatsOffcanvas from '../components/StatsOffcanvas';
 import OptimizedImage from '../components/OptimizedImage';
-import gatoGif from '../assets/images/gato-optimized.gif';
 
 // Dados estáticos otimizados
 const TIPS = [
@@ -190,7 +189,7 @@ export default function Home() {
             {/* Cat Image */}
             <div className="flex justify-center">
               <OptimizedImage
-                src={gatoGif}
+                src="/images/gato-optimized.gif"
                 alt="CatButler Mascote - Gato Assistente"
                 className="w-48 h-40 sm:w-56 sm:h-48 lg:w-64 lg:h-52 object-contain hover:scale-105 transition-transform duration-300 max-w-full"
                 priority={true}
