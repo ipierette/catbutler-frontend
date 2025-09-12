@@ -1,4 +1,4 @@
-name: 🚀 Simplified CI/CD Pipeline
+name: 🚀 CI/CD Pipeline (Build and Deploy Only)
 
 on:
   push:
