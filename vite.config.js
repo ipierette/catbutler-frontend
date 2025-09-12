@@ -18,10 +18,10 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          icons: ['react-icons']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
         },
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
@@ -31,7 +31,8 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    open: true
+    open: true,
+    historyApiFallback: true // Adicionado para suportar rotas SPA
   },
   test: {
     globals: true,

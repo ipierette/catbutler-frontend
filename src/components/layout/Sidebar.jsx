@@ -19,21 +19,21 @@ const menuItems = [
   {
     id: 'kitchen',
     label: 'Cozinha',
-    path: '/cozinha',
+    path: '/cozinha-ia',
     icon: 'fa-solid fa-utensils',
     color: 'text-orange-600 dark:text-orange-400'
   },
   {
     id: 'cleaning',
     label: 'Faxina',
-    path: '/faxina',
+    path: '/faxina-ia',
     icon: 'fa-solid fa-broom',
     color: 'text-green-600 dark:text-green-400'
   },
   {
     id: 'shopping',
     label: 'Mercado',
-    path: '/mercado',
+    path: '/mercado-ia',
     icon: 'fa-solid fa-shopping-cart',
     color: 'text-purple-600 dark:text-purple-400'
   },

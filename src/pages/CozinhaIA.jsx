@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 // Dados estáticos otimizados
 const INGREDIENTES_SUGERIDOS = [
   { name: "Frango", category: "proteina", icon: "🍗" },
@@ -54,6 +53,11 @@ const RECEITAS_MOCK = [
 ];
 
 export default function CozinhaIA() {
+  // Log para depuração
+  useEffect(() => {
+    console.log('CozinhaIA carregado');
+  }, []);
+
   // Estados essenciais
   const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
   const [novoIngrediente, setNovoIngrediente] = useState("");
@@ -67,8 +71,6 @@ export default function CozinhaIA() {
   const [cardapioSemanal, setCardapioSemanal] = useState(null);
   const [gerandoCardapio, setGerandoCardapio] = useState(false);
   
-  const navigate = useNavigate();
-
   // Receitas filtradas - memoizadas
   const receitasFiltradas = useMemo(() => {
     return RECEITAS_MOCK.filter(receita => {
@@ -402,7 +404,7 @@ export default function CozinhaIA() {
                     <div id={`filtro-${categoria}-label`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 capitalize">
                       {categoria}
                     </div>
-                    <div className="flex flex-wrap gap-2" role="group" aria-labelledby={`filtro-${categoria}-label`}>
+                    <div className="flex flex-wrap gap-2" aria-labelledby={`filtro-${categoria}-label`}>
                       {opcoes.map(opcao => (
                         <button
                           key={opcao}
@@ -449,6 +451,10 @@ export default function CozinhaIA() {
                       key={receita.id}
                       className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-lg transition-shadow duration-200 cursor-pointer"
                       onClick={() => setReceitaSelecionada(receita)}
+                      onKeyDown={(e) => e.key === 'Enter' && setReceitaSelecionada(receita)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Selecionar receita: ${receita.nome}`}
                     >
                       <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-3 flex items-center justify-center">
                         <i className="fa-solid fa-utensils text-3xl text-gray-400"></i>

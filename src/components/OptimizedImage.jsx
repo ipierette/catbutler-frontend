@@ -11,6 +11,7 @@ const OptimizedImage = ({
   onError,
   ...props 
 }) => {
+  const webpSrc = src.replace(/\.(png|jpg|jpeg)$/i, '.webp');
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
   const [hasError, setHasError] = useState(false);
@@ -87,19 +88,22 @@ const OptimizedImage = ({
       
       {/* Actual Image */}
       {isInView && (
-        <img
-          src={src}
-          alt={alt}
-          className={`transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          onLoad={handleLoad}
-          onError={handleError}
-          style={isLoaded ? {} : { position: 'absolute', top: 0, left: 0 }}
-          {...props}
-        />
+        <picture>
+          <source srcSet={webpSrc} type="image/webp" />
+          <img
+            src={src}
+            alt={alt}
+            className={`transition-opacity duration-300 ${
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            } ${className}`}
+            loading={priority ? "eager" : "lazy"}
+            decoding="async"
+            onLoad={handleLoad}
+            onError={handleError}
+            style={isLoaded ? {} : { position: 'absolute', top: 0, left: 0 }}
+            {...props}
+          />
+        </picture>
       )}
     </div>
   );

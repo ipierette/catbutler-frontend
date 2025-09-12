@@ -1,9 +1,10 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { withLazyLoading } from "./components/LazyWrapper";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Sidebar from "./components/layout/Sidebar";
+import Loading from "./components/Loading";
 
 // Lazy loading das páginas
 const Home = withLazyLoading(() => import("./pages/Home"), { 
@@ -46,20 +47,16 @@ const Historico = withLazyLoading(() => import("./pages/Historico"), {
   description: "Recuperando seu histórico" 
 });
 
-const CozinhaIA = withLazyLoading(() => import("./pages/CozinhaIA"), { 
-  title: "Carregando Cozinha...", 
-  description: "Ativando assistente culinário" 
-});
+const FaxinaIA = lazy(() => import('./pages/FaxinaIA'));
+const CozinhaIA = lazy(() => import('./pages/CozinhaIA'));
+const MercadoIA = lazy(() => import('./pages/MercadoIA'));
 
-const FaxinaIA = withLazyLoading(() => import("./pages/FaxinaIA"), { 
-  title: "Carregando Faxina...", 
-  description: "Preparando planejador de limpeza" 
-});
-
-const MercadoIA = withLazyLoading(() => import("./pages/MercadoIA"), { 
-  title: "Carregando Mercado...", 
-  description: "Ativando assistente de compras" 
-});
+// Atualizar rotas para lazy loading
+const routes = [
+  { path: '/faxina-ia', element: <FaxinaIA /> },
+  { path: '/cozinha-ia', element: <CozinhaIA /> },
+  { path: '/mercado-ia', element: <MercadoIA /> },
+];
 
 const SignUp = withLazyLoading(() => import("./pages/SignUp"), { 
   title: "Carregando Cadastro...", 
@@ -91,22 +88,24 @@ export default function AppRoutes() {
         
         {/* Área de conteúdo principal */}
         <main className="spa-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/tarefas" element={<Tarefas />} />
-            <Route path="/agenda" element={<Agenda />} />
-            <Route path="/assistente" element={<Assistente />} />
-            <Route path="/config" element={<Config />} />
-            <Route path="/sobre" element={<Sobre />} />
-            <Route path="/dicas" element={<Dicas />} />
-            <Route path="/historico" element={<Historico />} />
-            <Route path="/mercado" element={<MercadoIA />} />
-            <Route path="/cozinha" element={<CozinhaIA />} />
-            <Route path="/faxina" element={<FaxinaIA />} />
-            <Route path="/criar-conta" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<Loading message="Carregando página..." />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/tarefas" element={<Tarefas />} />
+              <Route path="/agenda" element={<Agenda />} />
+              <Route path="/assistente" element={<Assistente />} />
+              <Route path="/config" element={<Config />} />
+              <Route path="/sobre" element={<Sobre />} />
+              <Route path="/dicas" element={<Dicas />} />
+              <Route path="/historico" element={<Historico />} />
+              <Route path="/mercado-ia" element={<MercadoIA />} />
+              <Route path="/cozinha-ia" element={<CozinhaIA />} />
+              <Route path="/faxina-ia" element={<FaxinaIA />} />
+              <Route path="/criar-conta" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
       

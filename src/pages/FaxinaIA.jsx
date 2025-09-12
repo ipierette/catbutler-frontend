@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 // Dados estáticos otimizados
 const COMODOS = [
@@ -78,6 +78,10 @@ const PRODUTOS_RECOMENDADOS = [
 ];
 
 export default function FaxinaIA() {
+  useEffect(() => {
+    console.log('FaxinaIA carregado');
+  }, []);
+
   // Estados essenciais
   const [rotinaAtiva, setRotinaAtiva] = useState("diaria");
   const [tarefasConcluidas, setTarefasConcluidas] = useState(new Set());
@@ -269,11 +273,13 @@ export default function FaxinaIA() {
 
               {/* Tarefas */}
               <div className="space-y-3">
-                {ROTINAS[rotinaAtiva].map((tarefa, index) => {
-                  const isCompleted = tarefasConcluidas.has(`${rotinaAtiva}-${tarefa.task}`);
+                {ROTINAS[rotinaAtiva].map((tarefa) => {
+                  const key = `${rotinaAtiva}-${tarefa.task}`;
+                  const isCompleted = tarefasConcluidas.has(key);
+
                   return (
                     <div
-                      key={`tarefa-${tarefa.task}-${index}`}
+                      key={key}
                       className={`flex items-center gap-4 p-4 border-2 rounded-lg transition-all duration-200 cursor-pointer ${
                         isCompleted
                           ? 'border-green-500 bg-green-50 dark:bg-green-900/30'
@@ -281,8 +287,8 @@ export default function FaxinaIA() {
                       }`}
                       onClick={() => toggleTarefa(tarefa)}
                       onKeyDown={(e) => e.key === 'Enter' && toggleTarefa(tarefa)}
-                      role="button"
                       tabIndex={0}
+                      role="button"
                       aria-label={`${isCompleted ? 'Desmarcar' : 'Marcar'} tarefa: ${tarefa.task}`}
                     >
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
@@ -483,7 +489,7 @@ export default function FaxinaIA() {
                   <div id="comodos-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Quantos cômodos sua casa tem?
                   </div>
-                  <div className="grid grid-cols-4 gap-2" role="group" aria-labelledby="comodos-label">
+                  <div className="grid grid-cols-4 gap-2" aria-labelledby="comodos-label">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                       <button
                         key={num}
@@ -594,7 +600,7 @@ export default function FaxinaIA() {
                         </h5>
                         <div className="space-y-3">
                           {categoria.produtos.map((produto, prodIndex) => (
-                            <div key={prodIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                            <div key={produto.nome} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                               <h6 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
                                 {produto.nome}
                               </h6>

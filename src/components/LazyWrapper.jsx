@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useRef, useState, useEffect } from 'react';
+import React, { Suspense, lazy, useRef, useState, useEffect, startTransition } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingCard } from './Loading';
 
@@ -17,7 +17,11 @@ export const withLazyLoading = (importFunction, fallbackProps = {}) => {
   const LazyComponent = lazy(importFunction);
   
   return (props) => (
-    <Suspense fallback={<LazyFallback {...fallbackProps} />}>
+    <Suspense
+      fallback={
+        startTransition(() => <LazyFallback {...fallbackProps} />)
+      }
+    >
       <LazyComponent {...props} />
     </Suspense>
   );

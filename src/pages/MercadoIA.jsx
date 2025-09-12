@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 // Dados estáticos otimizados
 const CATEGORIAS = [
@@ -19,6 +19,10 @@ const PRODUTOS_SUGERIDOS = [
 
 
 export default function MercadoIA() {
+  useEffect(() => {
+    console.log('MercadoIA carregado');
+  }, []);
+
   // Estados essenciais
   const [abaAtiva, setAbaAtiva] = useState('lista');
   const [listaCompras, setListaCompras] = useState([

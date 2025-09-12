@@ -151,3 +151,5 @@ export const useLoading = (initialState = false) => {
     withLoading,
   };
 };
+
+export default LoadingCard;
