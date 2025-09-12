@@ -46,23 +46,18 @@ const Historico = withLazyLoading(() => import("./pages/Historico"), {
   description: "Recuperando seu histórico" 
 });
 
-const Mercado = withLazyLoading(() => import("./pages/Mercado"), { 
-  title: "Carregando Mercado...", 
-  description: "Conectando com supermercados" 
-});
-
 const CozinhaIA = withLazyLoading(() => import("./pages/CozinhaIA"), { 
-  title: "Carregando Cozinha IA...", 
+  title: "Carregando Cozinha...", 
   description: "Ativando assistente culinário" 
 });
 
 const FaxinaIA = withLazyLoading(() => import("./pages/FaxinaIA"), { 
-  title: "Carregando Faxina IA...", 
+  title: "Carregando Faxina...", 
   description: "Preparando planejador de limpeza" 
 });
 
 const MercadoIA = withLazyLoading(() => import("./pages/MercadoIA"), { 
-  title: "Carregando Mercado IA...", 
+  title: "Carregando Mercado...", 
   description: "Ativando assistente de compras" 
 });
 
@@ -105,10 +100,9 @@ export default function AppRoutes() {
             <Route path="/sobre" element={<Sobre />} />
             <Route path="/dicas" element={<Dicas />} />
             <Route path="/historico" element={<Historico />} />
-            <Route path="/mercado" element={<Mercado />} />
-            <Route path="/cozinha-ia" element={<CozinhaIA />} />
-            <Route path="/faxina-ia" element={<FaxinaIA />} />
-            <Route path="/mercado-ia" element={<MercadoIA />} />
+            <Route path="/mercado" element={<MercadoIA />} />
+            <Route path="/cozinha" element={<CozinhaIA />} />
+            <Route path="/faxina" element={<FaxinaIA />} />
             <Route path="/criar-conta" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />

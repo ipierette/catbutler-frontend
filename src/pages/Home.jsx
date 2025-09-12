@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { TermsModal, useModal } from '../components/Modals';
 import StatsOffcanvas from '../components/StatsOffcanvas';
 import OptimizedImage from '../components/OptimizedImage';
-import gatoGif from '../assets/images/gato-unscreen.gif';
+import gatoGif from '../assets/images/gato-optimized.gif';
 
 // Dados estáticos otimizados
 const TIPS = [
@@ -29,8 +29,8 @@ const CAT_FACTS = [
 ];
 
 const ACTIVITIES = [
-  { id: 1, title: "Pasta Carbonara", subtitle: "Receita sugerida", time: "2h atrás", icon: "fa-utensils", color: "from-blue-500 to-blue-600", route: "/cozinha-ia" },
-  { id: 2, title: "Mercado Central", subtitle: "Lista de compras", time: "Ontem", icon: "fa-shopping-cart", color: "from-green-500 to-green-600", route: "/mercado-ia" }
+  { id: 1, title: "Pasta Carbonara", subtitle: "Receita sugerida", time: "2h atrás", icon: "fa-utensils", color: "from-blue-500 to-blue-600", route: "/cozinha" },
+  { id: 2, title: "Mercado Central", subtitle: "Lista de compras", time: "Ontem", icon: "fa-shopping-cart", color: "from-green-500 to-green-600", route: "/mercado" }
 ];
 
 const ACHIEVEMENTS = {
@@ -71,22 +71,22 @@ export default function Home() {
     let suggestion, suggestionRoute;
     if (hour >= 6 && hour < 10) {
       suggestion = "Que tal preparar um café da manhã nutritivo?";
-      suggestionRoute = "/cozinha-ia";
+      suggestionRoute = "/cozinha";
     } else if (hour >= 10 && hour < 12) {
       suggestion = "Hora de organizar as tarefas do dia!";
       suggestionRoute = "/tarefas";
     } else if (hour >= 12 && hour < 14) {
       suggestion = "Vamos preparar o almoço com ingredientes frescos?";
-      suggestionRoute = "/cozinha-ia";
+      suggestionRoute = "/cozinha";
     } else if (hour >= 14 && hour < 17) {
       suggestion = "Que tal uma faxina rápida na casa?";
-      suggestionRoute = "/faxina-ia";
+      suggestionRoute = "/faxina";
     } else if (hour >= 17 && hour < 20) {
       suggestion = "Hora de fazer as compras para o jantar!";
-      suggestionRoute = "/mercado-ia";
+      suggestionRoute = "/mercado";
     } else if (hour >= 20 && hour < 22) {
       suggestion = "Vamos preparar um jantar especial?";
-      suggestionRoute = "/cozinha-ia";
+      suggestionRoute = "/cozinha";
     } else {
       suggestion = "Que tal planejar o dia de amanhã?";
       suggestionRoute = "/agenda";

@@ -18,22 +18,22 @@ const menuItems = [
   },
   {
     id: 'kitchen',
-    label: 'Cozinha IA',
-    path: '/cozinha-ia',
+    label: 'Cozinha',
+    path: '/cozinha',
     icon: 'fa-solid fa-utensils',
     color: 'text-orange-600 dark:text-orange-400'
   },
   {
     id: 'cleaning',
-    label: 'Faxina IA',
-    path: '/faxina-ia',
+    label: 'Faxina',
+    path: '/faxina',
     icon: 'fa-solid fa-broom',
     color: 'text-green-600 dark:text-green-400'
   },
   {
     id: 'shopping',
-    label: 'Mercado IA',
-    path: '/mercado-ia',
+    label: 'Mercado',
+    path: '/mercado',
     icon: 'fa-solid fa-shopping-cart',
     color: 'text-purple-600 dark:text-purple-400'
   },
