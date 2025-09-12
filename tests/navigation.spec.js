@@ -3,9 +3,9 @@ import { test, expect } from '@playwright/test';
 // Testa se o menu navega corretamente entre as páginas principais
 const menuLinks = [
   { text: 'Tarefas', url: '/tarefas' },
-  { text: 'Cozinha IA', url: '/cozinha-ia' },
-  { text: 'Faxina IA', url: '/faxina-ia' },
-  { text: 'Mercado IA', url: '/mercado-ia' },
+  { text: 'Cozinha', url: '/cozinha' },
+  { text: 'Faxina', url: '/faxina' },
+  { text: 'Mercado', url: '/mercado' },
   { text: 'Agenda', url: '/agenda' },
   { text: 'Assistente', url: '/assistente' },
   { text: 'Dicas', url: '/dicas' },
@@ -14,12 +14,11 @@ const menuLinks = [
   { text: 'Configurações', url: '/config' },
 ];
 
-test.describe('Navegação principal', () => {
+test('Navegação através do menu principal', async ({ page }) => {
   for (const link of menuLinks) {
-    test(`Menu navega para ${link.text}`, async ({ page }) => {
-      await page.goto('/');
-      await page.click(`a:has-text("${link.text}")`);
-      await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
-    });
+    await page.goto('/');
+    await page.click(`a:has-text("${link.text}")`);
+    await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
+    console.log(`✓ Navegação para ${link.text} funcionou`);
   }
 });
