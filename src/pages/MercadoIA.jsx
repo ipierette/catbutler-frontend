@@ -90,6 +90,12 @@ export default function MercadoIA() {
     setListaCompras(prev => [...prev, ...novosItens]);
   }, []);
 
+  const getProgressBarColor = (progress) => {
+    if (progress > 90) return 'bg-gradient-to-r from-red-500 to-red-600';
+    if (progress > 70) return 'bg-gradient-to-r from-yellow-500 to-amber-500';
+    return 'bg-gradient-to-r from-green-500 to-emerald-500';
+  };
+
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
     
@@ -120,7 +126,7 @@ export default function MercadoIA() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                Mercado IA
+                Mercado
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 Economize tempo e dinheiro com listas inteligentes e comparação de preços
@@ -198,11 +204,7 @@ export default function MercadoIA() {
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
             <div 
-              className={`h-3 rounded-full transition-all duration-500 ${
-                progressoOrcamento > 90 ? 'bg-gradient-to-r from-red-500 to-red-600' :
-                progressoOrcamento > 70 ? 'bg-gradient-to-r from-yellow-500 to-amber-500' :
-                'bg-gradient-to-r from-green-500 to-emerald-500'
-              }`}
+              className={`h-3 rounded-full transition-all duration-500 ${getProgressBarColor(progressoOrcamento)}`}
               style={{ width: `${progressoOrcamento}%` }}
             ></div>
           </div>

@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 // Dados estáticos otimizados
 const INGREDIENTES_SUGERIDOS = [
   { name: "Frango", category: "proteina", icon: "🍗" },
@@ -177,7 +176,7 @@ export default function CozinhaIA() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                Cozinha IA
+                Cozinha
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 Descubra receitas incríveis baseadas nos seus ingredientes disponíveis

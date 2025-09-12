@@ -113,7 +113,7 @@ useLayoutEffect(() => {
   window.addEventListener("resize", onResize);
   window.addEventListener("orientationchange", onResize);
 
-  if (document.fonts?.ready) {
+  if (document.fonts) {
     document.fonts.ready.then(measure).catch(() => {});
   }
   const t = setTimeout(measure, 0);
@@ -300,9 +300,9 @@ useEffect(() => {
               </p>
 
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3">
-                {quickSuggestions.map((s, i) => (
+                {quickSuggestions.map((s) => (
                   <button
-                    key={`qs-${i}`}
+                    key={`qs-${s.text}`}
                     onClick={() => send(s.text)}
                     className="p-2 sm:p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors text-left group"
                   >
@@ -403,7 +403,7 @@ useEffect(() => {
           <div className="flex flex-wrap gap-2 mb-3">
             {quickSuggestions.slice(0, 3).map((s, i) => (
               <button
-                key={`quick-${i}`}
+                key={`quick-${s.text}`}
                 onClick={() => send(s.text)}
                 className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1"
               >

@@ -141,7 +141,7 @@ export default function FaxinaIA() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                Faxina IA
+                Faxina
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 Organize sua casa com rotinas inteligentes e dicas personalizadas
@@ -166,13 +166,12 @@ export default function FaxinaIA() {
                 </p>
               </div>
             </div>
-            <button
+            <input
+              type="button"
               onClick={() => setConfigComodosAberto(true)}
+              value="Configurar"
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 text-sm"
-            >
-              <i className="fa-solid fa-gear mr-1"></i>
-              Configurar
-            </button>
+            />
           </div>
           <div className="text-sm text-blue-800 dark:text-blue-200">
             Personalize as rotinas de limpeza de acordo com o número de cômodos da sua casa
@@ -304,7 +303,7 @@ export default function FaxinaIA() {
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                           <span className="flex items-center gap-1">
-                            <i className="fa-solid fa-clock"></i>
+                            <i className="fa-solid fa-clock" />{' '}
                             {tarefa.time}
                           </span>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -354,13 +353,12 @@ export default function FaxinaIA() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Técnicas & Produtos
                 </h3>
-                <button
+                <input
+                  type="button"
                   onClick={() => setTecnicasAberto(true)}
+                  value="Ver Dicas"
                   className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm transition-colors duration-200"
-                >
-                  <i className="fa-solid fa-lightbulb mr-1"></i>
-                  Ver Dicas
-                </button>
+                />
               </div>
               <div className="space-y-3">
                 <div className="p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-700">

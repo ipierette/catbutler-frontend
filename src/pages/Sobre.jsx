@@ -308,17 +308,17 @@ export default function Sobre() {
           </h3>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
             Um agradecimento especial a Cris e ao Rui, queridos amigos que inspiraram este projeto e a todos que acreditam no poder da tecnologia para simplificar e melhorar nosso dia a dia.
-            <strong className="text-primary-600 dark:text-primary-400"> Juntos, fazemos a diferença! </strong>
-            🐱✨
+            <strong className="text-primary-600 dark:text-primary-400">Juntos, fazemos a diferença!</strong>
+            {' 🐱✨'}
           </p>
         </section>
 
         {/* Footer da página */}
         <section className="text-center py-8">
           <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400">
-            <i className="fa-solid fa-code"></i>
+            <i className="fa-solid fa-code" />{' '}
             <span className="text-sm">
-              Feito com 💜 por Izadora Pierette •
+              Feito com 💜 por Izadora Pierette
             </span>
           </div>
         </section>

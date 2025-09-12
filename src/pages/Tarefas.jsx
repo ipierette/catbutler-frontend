@@ -143,6 +143,14 @@ export default function Tarefas() {
     }
   };
 
+  const getProgressBarStyle = (status) => {
+    switch (status) {
+      case 'Concluída': return 'bg-green-500 w-full';
+      case 'Em Andamento': return 'bg-blue-500 w-2/3';
+      default: return 'bg-orange-500 w-1/3';
+    }
+  };
+
   return (
     <div className="h-full p-3 sm:p-4 lg:p-6 overflow-y-auto scrollbar-hide">
       {/* Header Section - Mobile Optimized */}
@@ -321,13 +329,7 @@ export default function Tarefas() {
                 <div className="mt-3">
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                     <div 
-                      className={`h-1.5 rounded-full transition-all duration-500 ${
-                        (() => {
-                          if (tarefa.status === 'Concluída') return 'bg-green-500 w-full';
-                          if (tarefa.status === 'Em Andamento') return 'bg-blue-500 w-2/3';
-                          return 'bg-orange-500 w-1/3';
-                        })()
-                      }`}
+                      className={`h-1.5 rounded-full transition-all duration-500 ${getProgressBarStyle(tarefa.status)}`}
                     ></div>
                   </div>
                 </div>

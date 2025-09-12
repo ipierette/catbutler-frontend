@@ -64,11 +64,11 @@ const EventItem = React.memo(({ event, onToggle, onEdit }) => {
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
             <span className="flex items-center gap-1">
-              <i className="fa-solid fa-clock"></i>
+              <i className="fa-solid fa-clock" />{' '}
               {event.time}
             </span>
             <span className="flex items-center gap-1">
-              <i className={category.icon}></i>
+              <i className={category.icon} />{' '}
               {category.label}
             </span>
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityStyles(event.priority)}`}>
