@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+const { expect, test } = require('@playwright/test');
 
 // Testa se o menu navega corretamente entre as páginas principais
 const menuLinks = [
@@ -14,11 +14,12 @@ const menuLinks = [
   { text: 'Configurações', url: '/config' },
 ];
 
-test('Navegação através do menu principal', async ({ page }) => {
-  for (const link of menuLinks) {
-    await page.goto('/');
-    await page.click(`a:has-text("${link.text}")`);
-    await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
-    console.log(`✓ Navegação para ${link.text} funcionou`);
-  }
+test.describe('Navegação principal', () => {
+  menuLinks.forEach(link => {
+    test(`Menu navega para ${link.text}`, async ({ page }) => {
+      await page.goto('/');
+      await page.click(`a:has-text("${link.text}")`);
+      await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
+    });
+  });
 });

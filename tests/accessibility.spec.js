@@ -1,12 +1,13 @@
-import { test, expect } from '@playwright/test';
+const { expect, test } = require('@playwright/test');
 
-// Teste básico de acessibilidade: verifica se todas as páginas principais têm título e navegação
 const routes = ['/', '/tarefas', '/cozinha', '/faxina', '/mercado', '/agenda', '/login', '/sobre', '/config'];
 
-test('Verificação de títulos h1 em todas as páginas', async ({ page }) => {
-  for (const route of routes) {
-    await page.goto(route);
-    await expect(page.locator('h1')).toBeVisible();
-    console.log(`✓ Página ${route} tem título h1`);
-  }
+test.describe('Acessibilidade básica', () => {
+  routes.forEach(route => {
+    test(`Página ${route} deve ter um título h1`, async ({ page }) => {
+      await page.goto(route);
+      const h1 = await page.locator('h1');
+      await expect(h1).toBeVisible();
+    });
+  });
 });
