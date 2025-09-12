@@ -215,7 +215,7 @@ export default function Login() {
 
       {/* Login Social (Opcional) */}
       <section className="mt-6 p-4 bg-gray-800 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600">
-        <h3 className="text-2l font-bold text-gray-700 mb-3 text-center">
+        <h3 className="text-2l font-bold text-gray-200 mb-3 text-center">
           Ou entre com
         </h3>
         <div className="grid grid-cols-2 gap-3">

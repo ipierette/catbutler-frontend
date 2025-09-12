@@ -98,7 +98,6 @@ export default {
         'fade-in-up': 'fadeInUp 0.6s ease-out',
         'slide-in-left': 'slideInFromLeft 0.5s ease-out forwards',
         'pulse-subtle': 'pulseSubtle 2s infinite',
-        'bounce-subtle': 'bounceSubtle 2s infinite',
       },
       keyframes: {
         fadeInUp: {
@@ -112,10 +111,6 @@ export default {
         pulseSubtle: {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.02)' },
-        },
-        bounceSubtle: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-4px)' },
         },
       },
       screens: {
