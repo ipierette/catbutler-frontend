@@ -28,8 +28,8 @@ jobs:
         run: npm run build
 
 
-      - name: 🧪 Run tests with Vite preview
-        run: npx start-server-and-test preview http://localhost:5173 test
+      - name: 🧪 Run tests with Vite dev server
+        run: npx start-server-and-test dev http://localhost:5173 test
         
       - name: 🔍 Run linting
         run: npm run lint
