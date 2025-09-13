@@ -36,8 +36,14 @@ jobs:
       - name: 🧪 Run unit tests
         run: npm run test:unit
 
+      - name: � Cleanup ports
+        run: |
+          sudo lsof -t -i:5173 | xargs -r sudo kill -9 || true
+          sudo lsof -t -i:5174 | xargs -r sudo kill -9 || true
+          sleep 2
+
       - name: 🧪 Run Playwright tests
-        run: npm run test
+        run: npx playwright test --config playwright.ci.config.js
         env:
           CI: true
 
