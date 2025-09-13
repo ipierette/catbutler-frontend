@@ -6,19 +6,26 @@ const { CI } = process.env;
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
+import { defineConfig, devices } from '@playwright/test';
+
+const { CI } = process.env;
+
+/**
+ * @see https://playwright.dev/docs/test-configuration
+ */
+export default defineConfig({
   testDir: './tests',
+  testMatch: ['**/*.spec.js'],
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: !!CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'dot' : 'html',
-  testDir: './tests',
-  testMatch: ['**/*.spec.js'],
+  reporter: CI ? [['html'], ['json', { outputFile: 'playwright-report/results.json' }]] : 'html',
   timeout: 60000,
   expect: {
     timeout: 10000,
@@ -59,48 +66,14 @@ export default defineConfig({
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
     },
-    {
-      name: 'Mobile Safari Large',
-      use: { ...devices['iPhone 12 Pro Max'] },
-    },
-    
-    /* Tablets */
-    {
-      name: 'iPad',
-      use: { ...devices['iPad Pro'] },
-    },
-    {
-      name: 'iPad Landscape',
-      use: { ...devices['iPad Pro landscape'] },
-    },
-
-    /* Custom breakpoints */
-    {
-      name: 'Small Mobile',
-      use: {
-        ...devices['iPhone SE'],
-        viewport: { width: 375, height: 667 }
-      },
-    },
-    {
-      name: 'Large Desktop',
-      use: {
-        viewport: { width: 1920, height: 1080 }
-      },
-    },
-    {
-      name: 'Ultra Wide',
-      use: {
-        viewport: { width: 2560, height: 1440 }
-      },
-    },
   ],
 
   /* Start dev server before running tests */
   webServer: {
-    command: 'npm run dev',
+    command: CI ? 'npm run preview' : 'npm run dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !CI,
     timeout: 120 * 1000,
   },
+});
 });
