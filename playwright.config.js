@@ -6,14 +6,6 @@ const { CI } = process.env;
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-import { defineConfig, devices } from '@playwright/test';
-
-const { CI } = process.env;
-
-/**
- * @see https://playwright.dev/docs/test-configuration
- */
-export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.js'],
   /* Run tests in files in parallel */
@@ -75,5 +67,4 @@ export default defineConfig({
     reuseExistingServer: !CI,
     timeout: 120 * 1000,
   },
-});
 });

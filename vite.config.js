@@ -90,15 +90,32 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
+    // Excluir arquivos de teste do Playwright
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      'tests/**/*.spec.js', // Excluir testes E2E do Playwright
+      'playwright-report/**',
+      '**/*.{test,spec}.e2e.{js,ts}',
+    ],
+    // Incluir apenas testes unitários
+    include: [
+      'src/**/*.{test,spec}.{js,ts,jsx,tsx}',
+    ],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
         'src/test/setup.js',
+        'tests/', // Excluir pasta de testes E2E da cobertura
       ],
     },
     deps: {
-      inline: ['@testing-library/jest-dom'],
+      optimizer: {
+        web: {
+          include: ['@testing-library/jest-dom'],
+        },
+      },
     },
   },
 });
