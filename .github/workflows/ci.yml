@@ -36,7 +36,7 @@ jobs:
       - name: 🧪 Run unit tests
         run: npm run test:unit
 
-      - name: � Cleanup ports
+      - name: 🧹 Cleanup ports
         run: |
           sudo lsof -t -i:5173 | xargs -r sudo kill -9 || true
           sudo lsof -t -i:5174 | xargs -r sudo kill -9 || true
@@ -109,4 +109,3 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./
           vercel-args: '--prod'
-

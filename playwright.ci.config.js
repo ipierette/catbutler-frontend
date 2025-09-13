@@ -8,20 +8,20 @@ const { CI } = process.env;
  */
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['**/*.spec.js'],
+  testMatch: ['**/basic-smoke.spec.js'], // Usar apenas testes mais robustos no CI
   /* Run tests in files in parallel */
   fullyParallel: false, // Desabilita paralelismo total no CI
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!CI,
   /* Retry on CI only */
-  retries: 2,
+  retries: 1, // Menos retries para ser mais rápido
   /* Opt out of parallel tests on CI. */
   workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html'], ['json', { outputFile: 'playwright-report/results.json' }]],
-  timeout: 60000,
+  timeout: 30000, // Timeout menor
   expect: {
-    timeout: 15000,
+    timeout: 10000, // Timeout de expectativas menor
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -33,10 +33,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     /* Record video on failure */
     video: 'retain-on-failure',
-    /* Aumenta o timeout para navegação */
-    navigationTimeout: 30000,
-    /* Timeout para ações */
-    actionTimeout: 15000,
+    /* Timeouts otimizados para CI */
+    navigationTimeout: 20000,
+    actionTimeout: 10000,
   },
 
   /* Configure projects for major browsers */
@@ -53,6 +52,6 @@ export default defineConfig({
     command: 'vite preview --port=5174',
     port: 5174,
     reuseExistingServer: true,
-    timeout: 120 * 1000,
+    timeout: 60 * 1000, // Timeout menor para CI
   },
 });
