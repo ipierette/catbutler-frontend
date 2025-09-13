@@ -435,8 +435,8 @@ useEffect(() => {
               onClick={() => send()}
               disabled={!input.trim() || isTyping}
               className="absolute right-2 bottom-2 p-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Enviar"
-              title="Enviar"
+              aria-label="Enviar mensagem"
+              title="Enviar mensagem"
             >
               <i className="fa-solid fa-paper-plane text-sm" />
             </button>

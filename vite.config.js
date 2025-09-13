@@ -5,42 +5,45 @@ import { VitePWA } from 'vite-plugin-pwa';
 /// <reference types="vitest" />
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), VitePWA({
-    registerType: 'autoUpdate',
-    workbox: {
-      runtimeCaching: [
-        {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|webp|woff2|woff|ttf)$/,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'assets-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|webp|woff2|woff|ttf)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'assets-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              },
             },
           },
-        },
-        {
-          urlPattern: /^https:\/\/fonts\.googleapis\.com/,
-          handler: 'StaleWhileRevalidate',
-          options: {
-            cacheName: 'google-fonts-stylesheets',
-          },
-        },
-        {
-          urlPattern: /^https:\/\/fonts\.gstatic\.com/,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'google-fonts-webfonts',
-            expiration: {
-              maxEntries: 30,
-              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
             },
           },
-        },
-      ],
-    },
-  })],
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+        ],
+      },
+    }),
+  ],
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -49,8 +52,8 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true
-      }
+        drop_debugger: true,
+      },
     },
     rollupOptions: {
       output: {
@@ -66,8 +69,8 @@ export default defineConfig({
         },
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
-      }
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+      },
     },
     treeshake: true,
   },
@@ -92,10 +95,10 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'src/test/setup.js',
-      ]
+      ],
     },
     deps: {
-      inline: ['@testing-library/jest-dom']
-    }
-  }
-})
+      inline: ['@testing-library/jest-dom'],
+    },
+  },
+});

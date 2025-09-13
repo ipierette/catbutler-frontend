@@ -57,6 +57,16 @@
     @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
   }
 
+  .btn-primary {
+    color: #ffffff; /* Texto branco */
+    background-color: #1d4ed8; /* Azul escuro */
+    border-color: #1e40af; /* Contraste aprimorado */
+  }
+
+  .btn-primary:hover {
+    background-color: #2563eb; /* Azul mais claro para hover */
+  }
+
   .btn-secondary {
     @apply bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
   }
@@ -121,7 +131,7 @@
   }
 
   .filter-dropdown {
-    @apply absolute top-full mt-1 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-48 z-50;
+    @apply absolute top-full mt-1 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[12rem] z-50;
   }
 
   /* Mobile menu */

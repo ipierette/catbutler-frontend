@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -7,6 +7,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      minWidth: {
+        '48': '12rem',
+      },
       colors: {
         // Cores personalizadas do CatButler
         midnight: {
@@ -116,6 +119,14 @@ export default {
       screens: {
         'xs': '475px',
         '3xl': '1600px',
+      },
+      backdropBlur: {
+        xs: '2px',
+        sm: '4px',
+        md: '8px',
+        lg: '12px',
+        xl: '16px',
+        '2xl': '24px',
       },
     },
   },

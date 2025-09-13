@@ -159,6 +159,8 @@ export default function Dicas() {
                   ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
+              aria-label={`Selecionar aba ${tab.label}`}
+              title={`Selecionar aba ${tab.label}`}
             >
               <i className={`${tab.icon} text-xs`}></i>
               <span className="hidden sm:inline">{tab.label}</span>
