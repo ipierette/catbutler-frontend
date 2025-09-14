@@ -29,9 +29,6 @@ jobs:
 
       - name: 🏗️ Build project
         run: npm run build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:3001' }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY || 'dummy-key' }}
 
       - name: 🧪 Run unit tests
         run: npm run test:unit
@@ -62,7 +59,7 @@ jobs:
   build:
     name: 🏗️ Build for Production
     runs-on: ubuntu-latest
-    needs: quality-tests # Só executa se os testes passaram
+    needs: quality-tests
     if: needs.quality-tests.result == 'success'
 
     steps:
@@ -80,9 +77,6 @@ jobs:
 
       - name: 🏗️ Build optimized production bundle
         run: npm run build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:3001' }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY || 'dummy-key' }}
 
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -93,7 +87,7 @@ jobs:
   deploy:
     name: 🚀 Deploy to Production
     runs-on: ubuntu-latest
-    needs: [quality-tests, build] # Precisa de ambos
+    needs: [quality-tests, build]
     if: github.ref == 'refs/heads/main' && needs.quality-tests.result == 'success' && needs.build.result == 'success'
 
     steps:
@@ -107,13 +101,22 @@ jobs:
           path: dist/
 
       - name: 🚀 Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
-          vercel-args: '--prod'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "⚠️ VERCEL_TOKEN não configurado - Deploy ignorado"
+            echo "Configure os secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+            exit 0
+          fi
+          
+          echo "🔧 Instalando Vercel CLI..."
+          npm install -g vercel@latest
+          
+          echo "🚀 Fazendo deploy para produção..."
+          vercel --prod --token=$VERCEL_TOKEN --yes
 
   quality-report:
     name: 📋 Quality Report
@@ -125,15 +128,6 @@ jobs:
       - name: 📊 Generate Quality Summary
         run: |
           echo "# 🎯 Quality Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Test Results:" >> $GITHUB_STEP_SUMMARY
           echo "- 🧪 Quality Tests: ${{ needs.quality-tests.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- 🏗️ Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- 🚀 Deploy: ${{ needs.deploy.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ needs.quality-tests.result }}" = "success" ] && [ "${{ needs.build.result }}" = "success" ] && [ "${{ needs.deploy.result }}" = "success" ]; then
-            echo "✅ **All quality checks passed! Application deployed successfully.**" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **Quality checks failed. Deployment blocked for quality assurance.**" >> $GITHUB_STEP_SUMMARY
-          fi
