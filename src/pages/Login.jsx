@@ -121,6 +121,7 @@ export default function Login() {
               value={formData.email}
               onChange={handleInputChange}
               required
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-offset-2 ${
                 errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
@@ -129,6 +130,7 @@ export default function Login() {
               autoComplete="email"
               aria-describedby={errors.email ? 'email-error' : undefined}
               aria-invalid={errors.email ? 'true' : 'false'}
+              data-testid="email-input"
             />
             {errors.email && (
               <p id="email-error" className="text-red-500 text-xs mt-1" role="alert">{errors.email}</p>

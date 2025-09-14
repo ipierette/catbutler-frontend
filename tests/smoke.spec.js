@@ -27,6 +27,21 @@ test.describe('Smoke Tests', () => {
   });
 
   test('Menu navega para página Tarefas', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    
+    // Detectar se é mobile e abrir menu se necessário
+    const isMobile = await page.evaluate(() => window.innerWidth < 1024);
+    
+    if (isMobile) {
+      // Abrir menu mobile primeiro - seletor mais específico
+      const menuButton = page.locator('button[aria-label*="menu"], button[title="Menu"], button.lg\\:hidden');
+      if (await menuButton.count() > 0) {
+        await menuButton.first().click();
+        await page.waitForTimeout(1000);
+      }
+    }
+    
     // Aguarda o menu estar visível
     const tarefasLink = page.locator('a:has-text("Tarefas")').first();
     await expect(tarefasLink).toBeVisible({ timeout: 10000 });

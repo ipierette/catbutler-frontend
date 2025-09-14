@@ -17,7 +17,25 @@ const menuLinks = [
 menuLinks.forEach(link => {
   test(`Menu navega para ${link.text}`, async ({ page }) => {
     await page.goto('/');
-    await page.click(`a:has-text("${link.text}")`);
+    await page.waitForLoadState('networkidle');
+    
+    // Detectar se é mobile e abrir menu se necessário
+    const isMobile = await page.evaluate(() => window.innerWidth < 1024);
+    
+    if (isMobile) {
+      // Abrir menu mobile primeiro - seletor mais específico
+      const menuButton = page.locator('button[aria-label*="menu"], button[title="Menu"], button.lg\\:hidden');
+      if (await menuButton.count() > 0) {
+        await menuButton.first().click();
+        await page.waitForTimeout(1000);
+      }
+    }
+    
+    // Tentar clicar no link
+    const linkSelector = `a:has-text("${link.text}")`;
+    await page.waitForSelector(linkSelector, { state: 'visible', timeout: 5000 });
+    await page.click(linkSelector);
+    
     await expect(page).toHaveURL(new RegExp(link.url.replace('/', '.*')));
   });
 });

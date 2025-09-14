@@ -22,6 +22,29 @@
     -moz-osx-font-smoothing: grayscale;
     /* Permitir que o fundo interativo seja visível */
     position: relative;
+    
+    /* Reduzir CLS - reservar espaço para elementos críticos */
+    min-height: 100vh;
+  }
+
+  /* Reduzir Cumulative Layout Shift (CLS) */
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+
+  /* Reservar espaço para ícones Font Awesome */
+  .fa-solid, .fa-brands, .fa-regular {
+    display: inline-block;
+    min-width: 1em;
+    text-align: center;
+  }
+
+  /* Otimização de layout para reduzir CLS */
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+    /* Reservar altura mínima durante animação */
+    min-height: 2rem;
   }
 
   /* Transições suaves para mudança de tema - otimizadas para performance */

@@ -6,7 +6,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { ToastProvider } from "./components/Toast";
 import { ConfirmationProvider } from "./components/ConfirmationDialog";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { initializePerformanceOptimizations } from "./utils/performance-optimization";
+import { initializePerformanceOptimizations } from "./utils/performance";
 
 function App() {
   useEffect(() => {

@@ -1,11 +1,15 @@
 /**
- * Utilitário para monitoramento de performance
- * Fornece funções para medir e reportar métricas importantes
- * Compatível com navegadores modernos
+ * Performance Optimization & Monitoring Utilities
+ * 
+ * Utilitários consolidados para melhorar a performance da aplicação
+ * e monitorar métricas importantes como Core Web Vitals
+ * 
+ * Combina otimizações para FID, CLS, LCP e monitoramento de performance
  */
 
+// ============= PERFORMANCE MONITORING =============
+
 // Reporta métricas para um serviço de analytics
-// Substitua pela implementação real quando tiver um serviço
 export const reportMetric = (metricName, value, options = {}) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`[Métrica] ${metricName}: ${value}`, options);
@@ -31,11 +35,10 @@ export const measurePerformance = (fn, label) => {
   
   performance.measure(measureName, startMark, endMark);
   
-  // Obter duração da medição
   const entries = performance.getEntriesByName(measureName);
   const duration = entries.length > 0 ? entries[0].duration : 0;
   
-  // Limpar as marcas e medidas para evitar vazamento de memória
+  // Limpar para evitar vazamento de memória
   performance.clearMarks(startMark);
   performance.clearMarks(endMark);
   performance.clearMeasures(measureName);
@@ -45,37 +48,110 @@ export const measurePerformance = (fn, label) => {
   return result;
 };
 
-// Para monitorar componentes React
-export const useComponentPerformance = (componentName) => {
-  // Usa useEffect para medir tempo de renderização
-  React.useEffect(() => {
-    const start = performance.now();
-    
-    return () => {
-      const duration = performance.now() - start;
-      reportMetric(`${componentName}-render`, duration, { unit: 'ms' });
-    };
-  });
-};
+// ============= PERFORMANCE OPTIMIZATION =============
 
-// Medir tempo de interação (TTI - Time To Interactive)
-export const measureTTI = () => {
-  if (!window.performance || !window.performance.timing) {
-    return;
-  }
-  
-  // Aguarda carregamento completo
-  window.addEventListener('load', () => {
-    // Espera até que o navegador esteja ocioso
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        const timing = performance.timing;
-        const tti = timing.domInteractive - timing.navigationStart;
-        reportMetric('time-to-interactive', tti, { unit: 'ms' });
-      });
+// Debounce function para reduzir execuções desnecessárias
+export function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+// Throttle function para limitar execuções por tempo
+export function throttle(func, limit) {
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
     }
+  };
+}
+
+// Lazy loading para imagens
+export function setupImageLazyLoading() {
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove('lazy');
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+
+    document.querySelectorAll('img[data-src]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+}
+
+// Otimização de animações para 60fps
+export function optimizeAnimations() {
+  // Force hardware acceleration for key elements
+  const animatedElements = document.querySelectorAll('.animate-fade-in-up, .scale-hover, [class*="animate"], [style*="transition"]');
+  animatedElements.forEach(el => {
+    el.style.transform = 'translateZ(0)';
+    el.style.willChange = 'transform, opacity';
   });
-};
+}
+
+// Redução do First Input Delay (FID)
+export function reduceInputDelay() {
+  // Preload critical interactive elements
+  const criticalButtons = document.querySelectorAll('button[type="submit"], .btn-primary, button');
+  
+  criticalButtons.forEach(button => {
+    button.addEventListener('mouseenter', function() {
+      this.style.willChange = 'transform, background-color';
+    }, { passive: true });
+    
+    button.addEventListener('mouseleave', function() {
+      this.style.willChange = 'auto';
+    }, { passive: true });
+  });
+
+  // Optimize input fields
+  const inputs = document.querySelectorAll('input, textarea, select');
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      this.style.willChange = 'border-color, box-shadow';
+    }, { passive: true });
+    
+    input.addEventListener('blur', function() {
+      this.style.willChange = 'auto';
+    }, { passive: true });
+  });
+}
+
+// Preload de recursos críticos
+export function preloadCriticalResources() {
+  // Preload fonts
+  const fontLink = document.createElement('link');
+  fontLink.rel = 'preload';
+  fontLink.as = 'font';
+  fontLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2';
+  fontLink.type = 'font/woff2';
+  fontLink.crossOrigin = 'anonymous';
+  document.head.appendChild(fontLink);
+
+  // Preload critical images
+  const criticalImages = ['/images/gato-optimized.gif', '/images/logo-catbutler.webp'];
+  criticalImages.forEach(src => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = src;
+    document.head.appendChild(link);
+  });
+}
+
+// ============= WEB VITALS MONITORING =============
 
 // Medir Largest Contentful Paint (LCP)
 export const observeLCP = () => {
@@ -113,41 +189,47 @@ export const observeFID = () => {
   }
 };
 
-// Inicializar todas as métricas
-export const initPerformanceMonitoring = () => {
-  // Não executa se não estiver no navegador ou for uma requisição de server-side rendering
-  if (typeof window === 'undefined') return;
+// Medir Cumulative Layout Shift (CLS)
+export const observeCLS = () => {
+  if (!('PerformanceObserver' in window)) return;
   
-  // Inicializa todas as métricas disponíveis
-  measureTTI();
-  observeLCP();
-  observeFID();
-  
-  // Medir Cumulative Layout Shift (CLS)
-  if ('web-vitals' in window) {
-    window['web-vitals'].getCLS(metric => {
-      reportMetric('cumulative-layout-shift', metric.value);
+  let clsValue = 0;
+  try {
+    const clsObserver = new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        if (!entry.hadRecentInput) {
+          clsValue += entry.value;
+        }
+      }
+      reportMetric('cumulative-layout-shift', clsValue);
     });
+    
+    clsObserver.observe({ entryTypes: ['layout-shift'] });
+  } catch (e) {
+    console.warn('CLS monitoring failed:', e);
   }
 };
 
-// Exporta utilitário para análise de desempenho de eventos
-export const trackEventPerformance = (category, action, callback) => {
-  const startTime = performance.now();
-  
-  const done = () => {
-    const duration = performance.now() - startTime;
-    reportMetric(`${category}-${action}`, duration, { unit: 'ms' });
-  };
-  
-  if (callback) {
-    return callback(done);
+// Medir tempo de interação (TTI - Time To Interactive)
+export const measureTTI = () => {
+  if (!window.performance || !window.performance.timing) {
+    return;
   }
   
-  return done;
+  window.addEventListener('load', () => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        const timing = performance.timing;
+        const tti = timing.domInteractive - timing.navigationStart;
+        reportMetric('time-to-interactive', tti, { unit: 'ms' });
+      });
+    }
+  });
 };
 
-// Utilitário para detectar memória vazando
+// ============= ADVANCED MONITORING =============
+
+// Detectar vazamentos de memória
 export const detectMemoryLeaks = () => {
   if (!window.performance || !window.performance.memory) {
     return;
@@ -176,4 +258,89 @@ export const detectMemoryLeaks = () => {
   
   // Verifica a cada 10 segundos
   setInterval(checkMemory, 10000);
+};
+
+// Monitorar FPS de animações
+export function monitorFPS() {
+  let frames = 0;
+  let lastTime = performance.now();
+  
+  function countFrames(currentTime) {
+    frames++;
+    if (currentTime >= lastTime + 1000) {
+      const fps = Math.round((frames * 1000) / (currentTime - lastTime));
+      reportMetric('animation-fps', fps);
+      frames = 0;
+      lastTime = currentTime;
+    }
+    requestAnimationFrame(countFrames);
+  }
+  
+  requestAnimationFrame(countFrames);
+}
+
+// ============= INITIALIZATION =============
+
+// Inicialização completa de performance
+export function initializePerformanceOptimizations() {
+  if (typeof window === 'undefined') return;
+  
+  // Executar após DOM estar pronto
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setupImageLazyLoading();
+      optimizeAnimations();
+      reduceInputDelay();
+      preloadCriticalResources();
+    });
+  } else {
+    setupImageLazyLoading();
+    optimizeAnimations();
+    reduceInputDelay();
+    preloadCriticalResources();
+  }
+}
+
+// Inicializar monitoramento de métricas
+export const initPerformanceMonitoring = () => {
+  if (typeof window === 'undefined') return;
+  
+  measureTTI();
+  observeLCP();
+  observeFID();
+  observeCLS();
+  detectMemoryLeaks();
+  
+  if (process.env.NODE_ENV === 'development') {
+    monitorFPS();
+  }
+};
+
+// Utilitário para eventos com tracking
+export const trackEventPerformance = (category, action, callback) => {
+  const startTime = performance.now();
+  
+  const done = () => {
+    const duration = performance.now() - startTime;
+    reportMetric(`${category}-${action}`, duration, { unit: 'ms' });
+  };
+  
+  if (callback) {
+    return callback(done);
+  }
+  
+  return done;
+};
+
+// Export default com todas as funções de inicialização
+export default {
+  init: () => {
+    initializePerformanceOptimizations();
+    initPerformanceMonitoring();
+  },
+  reportMetric,
+  measurePerformance,
+  debounce,
+  throttle,
+  trackEventPerformance
 };
