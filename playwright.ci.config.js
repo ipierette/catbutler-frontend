@@ -3,48 +3,70 @@ import { defineConfig, devices } from '@playwright/test';
 const { CI } = process.env;
 
 /**
- * Configuração específica para CI/CD
+ * Configuração rigorosa para CI/CD - Testes de qualidade máxima
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['**/basic-smoke.spec.js'], // Usar apenas testes mais robustos no CI
+  testMatch: [
+    '**/quality-assurance.spec.js',
+    '**/integration.spec.js', 
+    '**/performance.spec.js',
+    '**/accessibility-wcag.spec.js'
+  ], // Apenas testes rigorosos de alta qualidade
   /* Run tests in files in parallel */
-  fullyParallel: false, // Desabilita paralelismo total no CI
+  fullyParallel: false, // Desabilita paralelismo para testes rigorosos
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!CI,
   /* Retry on CI only */
-  retries: 1, // Menos retries para ser mais rápido
+  retries: 2, // Permite retries para testes rigorosos
   /* Opt out of parallel tests on CI. */
   workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html'], ['json', { outputFile: 'playwright-report/results.json' }]],
-  timeout: 30000, // Timeout menor
+  reporter: [
+    ['html'], 
+    ['json', { outputFile: 'playwright-report/results.json' }],
+    ['junit', { outputFile: 'playwright-report/junit.xml' }]
+  ],
+  timeout: 90000, // Timeout maior para testes rigorosos
   expect: {
-    timeout: 10000, // Timeout de expectativas menor
+    timeout: 20000, // Timeout maior para expects complexos
   },
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  /* Shared settings for all the projects below. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:5174',
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    /* Collect trace when retrying the failed test. */
     trace: 'on-first-retry',
     /* Take screenshot on failure */
     screenshot: 'only-on-failure',
     /* Record video on failure */
     video: 'retain-on-failure',
-    /* Timeouts otimizados para CI */
-    navigationTimeout: 20000,
-    actionTimeout: 10000,
+    /* Timeouts otimizados para testes rigorosos */
+    navigationTimeout: 45000,
+    actionTimeout: 20000,
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'Desktop Chrome',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Configurações específicas para testes rigorosos
+        viewport: { width: 1920, height: 1080 },
+      },
     },
-    // Executa apenas Chrome no CI para ser mais rápido
+    {
+      name: 'Mobile Chrome',
+      use: { 
+        ...devices['Pixel 5'],
+      },
+    },
+    {
+      name: 'Desktop Firefox', 
+      use: { ...devices['Desktop Firefox'] },
+    },
   ],
 
   /* Start dev server before running tests */
@@ -52,6 +74,6 @@ export default defineConfig({
     command: 'vite preview --port=5174',
     port: 5174,
     reuseExistingServer: true,
-    timeout: 60 * 1000, // Timeout menor para CI
+    timeout: 120 * 1000,
   },
 });

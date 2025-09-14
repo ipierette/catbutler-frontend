@@ -1,4 +1,4 @@
-name: 🚀 CI/CD Pipeline
+name: 🚀 CI/CD Pipeline - Quality First
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: 🧪 Test
+  quality-tests:
+    name: 🧪 Quality Assurance Tests
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
@@ -30,35 +30,40 @@ jobs:
       - name: 🏗️ Build project
         run: npm run build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:3001' }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY || 'dummy-key' }}
 
       - name: 🧪 Run unit tests
         run: npm run test:unit
 
-      - name: 🧹 Cleanup ports
+      - name: 🧹 Cleanup ports and processes
         run: |
           sudo lsof -t -i:5173 | xargs -r sudo kill -9 || true
           sudo lsof -t -i:5174 | xargs -r sudo kill -9 || true
-          sleep 2
+          pkill -f "vite" || true
+          pkill -f "preview" || true
+          sleep 3
 
-      - name: 🧪 Run Playwright tests
+      - name: 🏆 Run Quality Assurance Tests (Rigorous)
         run: npx playwright test --config playwright.ci.config.js
         env:
           CI: true
 
-      - name: 📊 Upload Playwright report
+      - name: 📊 Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: quality-test-results
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 30
 
   build:
-    name: 🏗️ Build
+    name: 🏗️ Build for Production
     runs-on: ubuntu-latest
-    needs: test
+    needs: quality-tests # Só executa se os testes passaram
+    if: needs.quality-tests.result == 'success'
 
     steps:
       - name: 📥 Checkout
@@ -73,23 +78,23 @@ jobs:
       - name: 📥 Install dependencies
         run: npm ci
 
-      - name: 🏗️ Build project
+      - name: 🏗️ Build optimized production bundle
         run: npm run build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:3001' }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY || 'dummy-key' }}
 
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-files
+          name: production-build
           path: dist/
 
   deploy:
-    name: 🚀 Deploy
+    name: 🚀 Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
+    needs: [quality-tests, build] # Precisa de ambos
+    if: github.ref == 'refs/heads/main' && needs.quality-tests.result == 'success' && needs.build.result == 'success'
 
     steps:
       - name: 📥 Checkout
@@ -98,14 +103,41 @@ jobs:
       - name: 📦 Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-files
+          name: production-build
           path: dist/
 
       - name: 🚀 Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
           working-directory: ./
           vercel-args: '--prod'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.PROJECT_ID }}
+
+  quality-report:
+    name: 📋 Quality Report
+    runs-on: ubuntu-latest
+    needs: [quality-tests, build, deploy]
+    if: always()
+    
+    steps:
+      - name: 📊 Generate Quality Summary
+        run: |
+          echo "# 🎯 Quality Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Results:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🧪 Quality Tests: ${{ needs.quality-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏗️ Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 Deploy: ${{ needs.deploy.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.quality-tests.result }}" = "success" ] && [ "${{ needs.build.result }}" = "success" ] && [ "${{ needs.deploy.result }}" = "success" ]; then
+            echo "✅ **All quality checks passed! Application deployed successfully.**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Quality checks failed. Deployment blocked for quality assurance.**" >> $GITHUB_STEP_SUMMARY
+          fi
