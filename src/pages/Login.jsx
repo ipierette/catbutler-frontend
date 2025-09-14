@@ -236,7 +236,7 @@ export default function Login() {
             aria-label="Entrar com Facebook"
           >
             <i className="fa-brands fa-facebook" aria-hidden="true"></i>
-            Facebook
+            {' '}Facebook
           </button>
           <button 
             type="button"
@@ -244,7 +244,7 @@ export default function Login() {
             aria-label="Entrar com Google"
           >
             <i className="fa-brands fa-google" aria-hidden="true"></i>
-            Google
+            {' '}Google
           </button>
         </div>
       </section>

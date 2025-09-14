@@ -92,12 +92,20 @@ function Header() {
     <div
       className="md:hidden fixed inset-0 bg-black/40 z-[98]"
       onClick={() => setMobileMenuOpen(false)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setMobileMenuOpen(false);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label="Fechar menu"
     />
 
     {/* Menu mobile em tela cheia (acima do header) */}
-    <div
-      className="lg:hidden fixed inset-0 z-[99] bg-gray-900 text-white"
-      role="dialog"
+    <dialog
+      className="lg:hidden fixed inset-0 z-[99] bg-gray-900 text-white border-0 p-0 max-w-none max-h-none w-full h-full"
+      open={mobileMenuOpen}
       aria-modal="true"
     >
       <div className="flex flex-col h-full min-h-0">
@@ -134,8 +142,8 @@ function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="btn-primary !rounded-none py-3 text-center font-semibold flex items-center justify-center gap-2"
               >
-                <i className="fa-solid fa-user-plus text-xs" />
-                Criar Conta
+                <i className="fa-solid fa-user-plus text-xs" aria-hidden="true"></i>
+                {' '}Criar Conta
               </Link>
 
               {/* Entrar (neutro) */}
@@ -144,14 +152,14 @@ function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="bg-gray-800 hover:bg-gray-700 text-white py-3 text-center font-semibold flex items-center justify-center gap-2"
               >
-                <i className="fa-solid fa-right-to-bracket text-xs" />
-                Entrar
+                <i className="fa-solid fa-right-to-bracket text-xs" aria-hidden="true"></i>
+                {' '}Entrar
               </Link>
             </div>
           </div>
         </nav>
       </div>
-    </div>
+    </dialog>
   </>
 )}
 

@@ -21,7 +21,7 @@ export const reportMetric = (metricName, value, options = {}) => {
 
 // Mede a performance de uma função
 export const measurePerformance = (fn, label) => {
-  if (!window.performance || !window.performance.mark) {
+  if (!window.performance?.mark) {
     return fn();
   }
 
@@ -210,18 +210,21 @@ export const observeCLS = () => {
   }
 };
 
-// Medir tempo de interação (TTI - Time To Interactive)
+// Medir tempo de interação (TTI - Time To Interactive) 
 export const measureTTI = () => {
-  if (!window.performance || !window.performance.timing) {
+  if (!window.performance?.getEntriesByType) {
     return;
   }
   
   window.addEventListener('load', () => {
     if ('requestIdleCallback' in window) {
       requestIdleCallback(() => {
-        const timing = performance.timing;
-        const tti = timing.domInteractive - timing.navigationStart;
-        reportMetric('time-to-interactive', tti, { unit: 'ms' });
+        // Use modern Navigation Timing API
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (navigation) {
+          const tti = navigation.domInteractive - navigation.fetchStart;
+          reportMetric('time-to-interactive', tti, { unit: 'ms' });
+        }
       });
     }
   });
@@ -231,7 +234,7 @@ export const measureTTI = () => {
 
 // Detectar vazamentos de memória
 export const detectMemoryLeaks = () => {
-  if (!window.performance || !window.performance.memory) {
+  if (!window.performance?.memory) {
     return;
   }
   

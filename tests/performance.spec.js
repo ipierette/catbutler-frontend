@@ -120,9 +120,10 @@ test.describe('Performance Tests - Core Web Vitals & Optimization', () => {
   test.describe('Resource Optimization', () => {
     test('Images are optimized and load efficiently', async ({ page }) => {
       const imageMetrics = [];
+      const imageRegex = /\.(jpg|jpeg|png|gif|webp|avif)$/i;
       
       page.on('response', response => {
-        if (response.url().match(/\.(jpg|jpeg|png|gif|webp|avif)$/i)) {
+        if (imageRegex.exec(response.url())) {
           imageMetrics.push({
             url: response.url(),
             size: response.headers()['content-length'],
@@ -154,10 +155,11 @@ test.describe('Performance Tests - Core Web Vitals & Optimization', () => {
 
     test('CSS and JS bundles are appropriately sized', async ({ page }) => {
       const resourceSizes = [];
+      const bundleRegex = /\.(css|js)$/;
       
       page.on('response', response => {
         const url = response.url();
-        if (url.match(/\.(css|js)$/) && !url.includes('node_modules')) {
+        if (bundleRegex.exec(url) && !url.includes('node_modules')) {
           const size = response.headers()['content-length'];
           resourceSizes.push({
             type: url.endsWith('.css') ? 'CSS' : 'JS',
@@ -205,12 +207,14 @@ test.describe('Performance Tests - Core Web Vitals & Optimization', () => {
         const styles = Array.from(document.styleSheets);
         return styles.some(sheet => {
           try {
-            const rules = Array.from(sheet.cssRules || sheet.rules);
+            const rules = Array.from(sheet.cssRules || []);
             return rules.some(rule => 
               rule.cssText?.includes('font-display') ||
               rule.cssText?.includes('swap')
             );
           } catch (e) {
+            // StyleSheet access pode falhar por CORS - normal em alguns casos
+            console.warn('Não foi possível acessar stylesheet:', e.message);
             return false;
           }
         });
@@ -332,9 +336,10 @@ test.describe('Performance Tests - Core Web Vitals & Optimization', () => {
   test.describe('Caching and Network Efficiency', () => {
     test('Static resources are properly cached', async ({ page }) => {
       const cacheHeaders = [];
+      const staticResourceRegex = /\.(css|js|jpg|jpeg|png|gif|webp|ico)$/;
       
       page.on('response', response => {
-        if (response.url().match(/\.(css|js|jpg|jpeg|png|gif|webp|ico)$/)) {
+        if (staticResourceRegex.exec(response.url())) {
           cacheHeaders.push({
             url: response.url(),
             cacheControl: response.headers()['cache-control'],
@@ -356,9 +361,10 @@ test.describe('Performance Tests - Core Web Vitals & Optimization', () => {
 
     test('Compression is enabled for text resources', async ({ page }) => {
       const compressionData = [];
+      const textResourceRegex = /\.(html|css|js|json|xml|txt)$/;
       
       page.on('response', response => {
-        if (response.url().match(/\.(html|css|js|json|xml|txt)$/)) {
+        if (textResourceRegex.exec(response.url())) {
           compressionData.push({
             url: response.url(),
             encoding: response.headers()['content-encoding'],

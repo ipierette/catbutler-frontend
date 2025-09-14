@@ -1,4 +1,4 @@
-import { getCLS, getFID, getLCP, getFCP, getTTFB } from 'web-vitals';
+import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals';
 
 function sendToAnalytics(metric) {
   const body = JSON.stringify(metric);
@@ -11,8 +11,9 @@ function sendToAnalytics(metric) {
   }
 }
 
-getCLS(sendToAnalytics);
-getFID(sendToAnalytics);
-getLCP(sendToAnalytics);
-getFCP(sendToAnalytics);
-getTTFB(sendToAnalytics);
+// Use modern web-vitals functions
+onCLS(sendToAnalytics);
+onINP(sendToAnalytics); // INP replaces FID as the new responsiveness metric
+onLCP(sendToAnalytics);
+onFCP(sendToAnalytics);
+onTTFB(sendToAnalytics);

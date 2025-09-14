@@ -25,7 +25,8 @@ test.describe('Integration Tests - User Journey & Forms', () => {
       try {
         await submitButton.click({ force: true, timeout: 5000 });
       } catch (error) {
-        // Tenta com scroll e força se falhar
+        // Tenta com scroll e força se falhar - fallback necessário para elementos não visíveis
+        console.warn('Botão não clicável, tentando com scroll:', error.message);
         await submitButton.scrollIntoViewIfNeeded();
         await submitButton.click({ force: true });
       }
@@ -36,7 +37,6 @@ test.describe('Integration Tests - User Journey & Forms', () => {
       const isEmailRequired = await emailField.getAttribute('required') !== null;
       const hasEmailType = await emailField.getAttribute('type') === 'email';
       const hasPattern = await emailField.getAttribute('pattern') !== null;
-      const hasTestId = await emailField.getAttribute('data-testid') !== null;
       
       // Verifica validação HTML5 nativa
       const emailValid = await emailField.evaluate(el => el.validity.valid);
@@ -176,8 +176,7 @@ test.describe('Integration Tests - User Journey & Forms', () => {
       const heading = page.locator('h1, h2').first();
       await expect(heading).toBeVisible();
       
-      // Verifica elementos de tarefas
-      const taskElements = page.locator('.task, .todo, [data-testid*="task"], li');
+      // Verifica elementos de interface de tarefas
       const addTaskButton = page.locator('button:has-text("Adicionar"), button:has-text("Nova"), button[title*="tarefa"]').first();
       
       // Se há botão de adicionar tarefa

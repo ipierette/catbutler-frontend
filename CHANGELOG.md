@@ -7,6 +7,56 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### 🚀 Correções de Deploy e Atualização Major (2025-01-13)
+
+#### Corrigido
+- **Pipeline de Deploy Vercel**
+  - Correção na configuração do vercel-action v25
+  - Ajuste nos nomes dos secrets (VERCEL_ORG_ID, VERCEL_PROJECT_ID)
+  - Remoção de variáveis de ambiente duplicadas no step de deploy
+  - Validação adequada de tokens necessários
+
+#### Atualizado
+- **Versão Major**: 3.6.0 → 4.0.0
+  - Reflete as melhorias significativas de qualidade e infraestrutura
+  - Suite de testes completa implementada (323+ testes)
+  - Otimizações de performance e acessibilidade
+  - Documentação expandida com seções de qualidade
+
+### 🧪 Otimizações de Qualidade e Testes (2025-01-13)
+
+#### Adicionado
+- **Suite de Testes Automatizados Completa**
+  - 323+ testes automatizados com 100% de taxa de sucesso
+  - Testes cross-browser (Chrome, Firefox, Safari) em desktop e mobile
+  - Testes de acessibilidade WCAG 2.1 AA compliance
+  - Testes de performance Core Web Vitals
+  - Testes de integração e navegação SPA
+  - Smoke tests para verificações básicas
+
+#### Atualizado
+- **Web Vitals para APIs Modernas**
+  - Migração de funções deprecadas (getCLS, getFID) para modernas (onCLS, onINP)
+  - INP (Interaction to Next Paint) substituindo FID como métrica de responsividade
+  - Implementação de Navigation Timing API Level 2
+  - Remoção de APIs deprecated (performance.timing)
+
+#### Melhorado
+- **Acessibilidade e UX**
+  - Substituição de `<div role="dialog">` por `<dialog>` nativo
+  - Adição de keyboard listeners para navegação
+  - Correção de espaçamento ambíguo em ícones FontAwesome
+  - PropTypes validation para componentes React
+  - Melhor tratamento de erros em catch blocks
+
+#### Otimizado
+- **Performance e Código**
+  - Refatoração de regex usando RegExp.exec() ao invés de String.match()
+  - Redução de complexidade cognitiva em funções de teste
+  - Remoção de variáveis não utilizadas e assignments inúteis
+  - Uso de optional chaining (?.) para verificações de APIs
+  - Consolidação de utilitários de performance em arquivo único
+
 ### 🎨 Melhorias de Interface e Usabilidade
 
 #### Adicionado

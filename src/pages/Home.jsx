@@ -179,8 +179,8 @@ export default function Home() {
                     to={suggestionRoute}
                     className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2"
                   >
-                    <i className="fa-solid fa-play text-xs"></i>
-                    Começar
+                    <i className="fa-solid fa-play text-xs" aria-hidden="true"></i>
+                    {' '}Começar
                   </Link>
                 </div>
               </div>
