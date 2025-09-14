@@ -24,9 +24,32 @@
     position: relative;
   }
 
-  /* Transições suaves para mudança de tema */
+  /* Transições suaves para mudança de tema - otimizadas para performance */
   * {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  /* Melhor suporte a foco para acessibilidade */
+  *:focus-visible {
+    outline: 2px solid theme('colors.blue.500');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remover outline padrão apenas quando focus-visible é suportado */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Garantir que elementos focáveis sejam visíveis */
+  button, a, input, select, textarea, [tabindex] {
+    position: relative;
+  }
+
+  /* Melhor contraste para elementos desabilitados */
+  button:disabled, input:disabled, select:disabled, textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 

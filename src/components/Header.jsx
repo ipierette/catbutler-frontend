@@ -25,24 +25,29 @@ function Header() {
         {/* Search Bar - Desktop */}
         <div className="hidden lg:flex flex-1 max-w-md mx-8">
           <div className="relative w-full">
+            <label htmlFor="search-desktop" className="sr-only">Buscar receitas, tarefas, dicas</label>
             <input
+              id="search-desktop"
               type="text"
               placeholder="Buscar receitas, tarefas, dicas..."
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:ring-offset-2"
+              aria-label="Campo de busca"
             />
-            <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+            <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" aria-hidden="true"></i>
           </div>
         </div>
 
         {/* Botão Menu Mobile */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-3 min-w-11 min-h-11 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex items-center justify-center"
+          className="lg:hidden p-3 min-w-11 min-h-11 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          type="button"
           title="Menu"
           aria-label={mobileMenuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
           aria-expanded={mobileMenuOpen}
+          tabIndex="0"
         >
-          <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             {mobileMenuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -56,16 +61,18 @@ function Header() {
           {/* Toggle de tema */}
           <button
             onClick={toggleTheme}
-            className="p-2.5 min-w-11 min-h-11 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-300 dark:border-gray-600 flex items-center justify-center"
+            className="p-2.5 min-w-11 min-h-11 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-300 dark:border-gray-600 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            type="button"
             title={`Alternar para tema ${theme === "light" ? "escuro" : "claro"}`}
             aria-label={`Alternar para tema ${theme === "light" ? "escuro" : "claro"}`}
+            tabIndex="0"
           >
             {theme === "light" ? (
-              <svg className="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
               </svg>
             ) : (
-              <svg className="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
               </svg>
             )}
@@ -186,11 +193,14 @@ function ShareTooltip({ theme }) {
   return (
     <div className="relative" ref={tooltipRef}>
       <button
-        className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 transition border border-blue-200 dark:border-blue-700"
+        className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 transition border border-blue-200 dark:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        type="button"
         title="Compartilhar CatButler"
+        aria-label="Compartilhar CatButler"
         onClick={() => setOpen((v) => !v)}
+        tabIndex="0"
       >
-        <svg className="w-4 h-4 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
         </svg>
       </button>
@@ -199,10 +209,20 @@ function ShareTooltip({ theme }) {
           <div className="font-bold mb-2  text-gray-100 dark:text-gray-900">Compartilhe o CatButler</div>
           <div className="text-sm mb-2 text-gray-300 dark:text-gray-700 ">Conheça o CatButler! Organize sua casa com IA: receitas, faxina, mercado e mais. Acesse: <span className="font-mono text-blue-600">https://catbutler.app</span></div>
           <div className="flex gap-2">
-            <button onClick={handleCopy} className="btn-primary px-3 py-1 text-sm">
+            <button 
+              onClick={handleCopy} 
+              className="btn-primary px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              type="button"
+              aria-label={copied ? 'Link copiado' : 'Copiar link'}
+            >
               {copied ? 'Copiado!' : 'Copiar link'}
             </button>
-            <button onClick={handleNativeShare} className="btn-secondary px-3 py-1 text-sm">
+            <button 
+              onClick={handleNativeShare} 
+              className="btn-secondary px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              type="button"
+              aria-label="Compartilhar"
+            >
               Compartilhar
             </button>
           </div>

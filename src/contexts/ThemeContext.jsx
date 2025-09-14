@@ -20,7 +20,7 @@ export const ThemeProvider = ({ children }) => {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme) {
         setTheme(savedTheme);
-        document.documentElement.className = savedTheme;
+        applyTheme(savedTheme);
         return;
       }
       
@@ -30,10 +30,21 @@ export const ThemeProvider = ({ children }) => {
       setTheme(newTheme);
       
       // Aplicar classe no HTML
-      document.documentElement.className = newTheme;
+      applyTheme(newTheme);
       
       // Salvar no localStorage
       localStorage.setItem('theme', newTheme);
+    };
+
+    // Função para aplicar tema ao documento
+    const applyTheme = (themeValue) => {
+      if (themeValue === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
     };
     
     detectTheme();
@@ -44,7 +55,7 @@ export const ThemeProvider = ({ children }) => {
       const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const newTheme = isDark ? "dark" : "light";
       setTheme(newTheme);
-      document.documentElement.className = newTheme;
+      applyTheme(newTheme);
       localStorage.setItem('theme', newTheme);
     };
     
@@ -55,7 +66,13 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     // Aplicar classe no HTML quando o tema mudar
-    document.documentElement.className = theme;
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
   }, [theme]);
 
   const toggleTheme = () => {

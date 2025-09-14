@@ -120,14 +120,18 @@ export default function Login() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm ${
+              required
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-offset-2 ${
                 errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="seu@email.com"
               maxLength={255}
+              autoComplete="email"
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              aria-invalid={errors.email ? 'true' : 'false'}
             />
             {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              <p id="email-error" className="text-red-500 text-xs mt-1" role="alert">{errors.email}</p>
             )}
           </div>
 
@@ -142,26 +146,31 @@ export default function Login() {
               name="senha"
               value={formData.senha}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm ${
+              required
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-offset-2 ${
                 errors.senha ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Digite sua senha"
               maxLength={128}
+              autoComplete="current-password"
+              aria-describedby={errors.senha ? 'senha-error' : undefined}
+              aria-invalid={errors.senha ? 'true' : 'false'}
             />
             {errors.senha && (
-              <p className="text-red-500 text-xs mt-1">{errors.senha}</p>
+              <p id="senha-error" className="text-red-500 text-xs mt-1" role="alert">{errors.senha}</p>
             )}
           </div>
 
           {/* Lembrar de mim */}
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer" htmlFor="lembrar">
               <input
                 type="checkbox"
+                id="lembrar"
                 name="lembrar"
                 checked={formData.lembrar}
                 onChange={handleInputChange}
-                className="text-green-600 focus:ring-green-500 rounded"
+                className="text-green-600 focus:ring-green-500 rounded focus:ring-2 focus:ring-offset-2"
               />
               <span className="text-sm text-gray-900 dark:text-gray-300 font-semibold">
                 Lembrar de mim
@@ -179,7 +188,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-2 px-4 rounded-lg font-semibold text-sm transition-colors ${
+            className={`w-full py-2 px-4 rounded-lg font-semibold text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
               isSubmitting
                 ? 'bg-gray-400 cursor-not-allowed text-gray-600'
                 : 'bg-green-500 hover:bg-green-600 text-white'
@@ -219,13 +228,21 @@ export default function Login() {
           Ou entre com
         </h3>
         <div className="grid grid-cols-2 gap-3">
-          <button className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-semibold">
-            <i className="fa-brands fa-facebook"></i>
-            {' '}Facebook
+          <button 
+            type="button"
+            className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            aria-label="Entrar com Facebook"
+          >
+            <i className="fa-brands fa-facebook" aria-hidden="true"></i>
+            Facebook
           </button>
-          <button className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors text-sm font-semibold">
-            <i className="fa-brands fa-google"></i>
-            {' '}Google
+          <button 
+            type="button"
+            className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2"
+            aria-label="Entrar com Google"
+          >
+            <i className="fa-brands fa-google" aria-hidden="true"></i>
+            Google
           </button>
         </div>
       </section>
