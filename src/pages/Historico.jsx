@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import FilterButton from '../components/ui/FilterButton';
 
+// Detecta modo visitante via flag de ambiente
+const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+
 // Dados mockados do histórico
 const historicoDados = [
   {
@@ -164,24 +167,26 @@ export default function Historico() {
   };
 
   return (
-    <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-            <i className="fa-solid fa-history text-xl text-indigo-600 dark:text-indigo-400"></i>
+    <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">      
+      {/* Header padronizado */}
+      <div className="mb-4">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg shrink-0">
+            <i className="fa-solid fa-history text-lg sm:text-xl text-purple-600 dark:text-purple-400" aria-label="historico"></i>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
               Histórico de Atividades
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Acompanhe sua evolução e conquistas
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+              Acompanhe seu progresso e atividades realizadas
             </p>
           </div>
         </div>
-
-        {/* Seletor de período */}
+      </div>
+      
+      {/* Seletor de período */}
+      <div className="flex items-center justify-end mb-6">
         <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
           {[
             { id: '7d', label: '7 dias' },
@@ -378,6 +383,38 @@ export default function Historico() {
 
       {/* Espaço adicional no final */}
       <div className="h-20"></div>
+      
+      {/* Overlay para bloquear interações em modo visitante */}
+      {isVisitorMode && (
+        <>
+          {/* Blur apenas na área de conteúdo - z-index menor que sidebar */}
+          <div className="fixed top-0 right-0 bottom-0 left-0 lg:left-48 xl:left-56 bg-black/20 backdrop-blur-sm z-30"></div>
+          {/* Modal centralizado - z-index maior que sidebar */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <div 
+              className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-2xl p-6 m-4 max-w-md border border-purple-200 dark:border-purple-600 pointer-events-auto"
+            >
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="fa-solid fa-lock text-white text-lg"></i>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Modo Somente Leitura
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  Esta é uma visualização do seu histórico de atividades. Para acompanhar e gerenciar seu próprio progresso, crie uma conta gratuita!
+                </p>
+                <button
+                  onClick={() => window.location.href = '/criar-conta'}
+                  className="w-full px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-semibold"
+                >
+                  Criar Conta Grátis
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

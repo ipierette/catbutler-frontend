@@ -1,5 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
+// Detecta modo visitante via flag de ambiente
+const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+
 // Dados estáticos otimizados
 const COMODOS = [
   { name: "Cozinha", icon: "fa-utensils", color: "from-red-500 to-orange-500", tasks: 8 },
@@ -118,6 +121,15 @@ export default function FaxinaIA() {
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
     
+    // Contar mensagens de usuário para visitantes
+    const mensagensUsuario = conversas.filter(c => c.tipo === 'usuario').length;
+    
+    if (isVisitorMode && mensagensUsuario >= 4) {
+      alert('Limite de 4 mensagens mensais atingido! Crie uma conta para conversar ilimitadamente com a IA.');
+      window.location.href = '/criar-conta';
+      return;
+    }
+    
     const novaMensagem = mensagem;
     setMensagem("");
     
@@ -129,10 +141,12 @@ export default function FaxinaIA() {
     setTimeout(() => {
       setConversas(prev => [...prev, {
         tipo: 'ia',
-        texto: "Ótima pergunta! Vou te ajudar com dicas específicas de limpeza."
+        texto: isVisitorMode && mensagensUsuario >= 3 
+          ? "Esta é sua última mensagem gratuita! Crie uma conta para continuar conversando comigo sobre limpeza eficiente! 🧽✨"
+          : "Ótima pergunta! Vou te ajudar com dicas específicas de limpeza."
       }]);
     }, 1000);
-  }, [mensagem]);
+  }, [mensagem, conversas, isVisitorMode]);
 
   return (
     <div className="h-full overflow-y-auto custom-scrollbar">
@@ -361,8 +375,15 @@ export default function FaxinaIA() {
                 </h3>
                 <input
                   type="button"
-                  onClick={() => setTecnicasAberto(true)}
-                  value="Ver Dicas"
+                  onClick={() => {
+                    if (isVisitorMode) {
+                      alert('Crie uma conta para acessar todas as técnicas e dicas de limpeza!');
+                      window.location.href = '/criar-conta';
+                    } else {
+                      setTecnicasAberto(true);
+                    }
+                  }}
+                  value={isVisitorMode ? "Ver Preview Dicas" : "Ver Dicas"}
                   className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm transition-colors duration-200"
                 />
               </div>
@@ -400,11 +421,14 @@ export default function FaxinaIA() {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                  <i className="fa-solid fa-robot text-white"></i>
+                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-broom text-white"></i>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">Assistente de Limpeza</h3>
+                  <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-green-500 rounded-full" /> Online
+                  </p>
                 </div>
               </div>
               <button
@@ -417,6 +441,30 @@ export default function FaxinaIA() {
 
             {/* Messages */}
             <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              {/* Banner de aviso para visitantes */}
+              {isVisitorMode && conversas.length === 0 && (
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-600 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i className="fa-solid fa-info text-white text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-purple-800 dark:text-purple-200 mb-1">
+                        Modo Visitante - {4 - conversas.filter(c => c.tipo === 'usuario').length} mensagens mensais restantes
+                      </p>
+                      <p className="text-xs text-purple-700 dark:text-purple-300">
+                        <button
+                          onClick={() => window.location.href = '/criar-conta'}
+                          className="underline hover:no-underline font-medium"
+                        >
+                          Criar conta para conversas ilimitadas sobre limpeza!
+                        </button>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {conversas.length === 0 ? (
                 <div className="text-center py-8">
                   <i className="fa-solid fa-broom text-4xl text-gray-400 mb-4"></i>
@@ -428,17 +476,31 @@ export default function FaxinaIA() {
                 conversas.map((conversa, index) => (
                   <div
                     key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
-                    className={`flex ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex items-end gap-3 mb-4 ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        conversa.tipo === 'usuario'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                      }`}
-                    >
-                      {conversa.texto}
+                    {conversa.tipo === 'ia' && (
+                      <div className="w-8 h-8 bg-purple-500 rounded-full grid place-items-center flex-shrink-0">
+                        <i className="fa-solid fa-broom text-white text-sm" />
+                      </div>
+                    )}
+
+                    <div className="max-w-xs lg:max-w-md">
+                      <div
+                        className={`px-4 py-2 rounded-lg ${
+                          conversa.tipo === 'usuario'
+                            ? 'bg-blue-500 text-white rounded-br-sm'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-sm'
+                        }`}
+                      >
+                        {conversa.texto}
+                      </div>
                     </div>
+
+                    {conversa.tipo === 'usuario' && (
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full grid place-items-center flex-shrink-0">
+                        <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-sm" />
+                      </div>
+                    )}
                   </div>
                 ))
               )}
@@ -456,7 +518,14 @@ export default function FaxinaIA() {
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <button
-                  onClick={enviarMensagem}
+                  onClick={() => {
+                    if (isVisitorMode) {
+                      alert('Crie uma conta para conversar com o assistente IA de faxina!');
+                      window.location.href = '/criar-conta';
+                    } else {
+                      enviarMensagem();
+                    }
+                  }}
                   className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
                 >
                   <i className="fa-solid fa-paper-plane"></i>

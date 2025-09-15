@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+// Detecta modo visitante via flag de ambiente
+const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
 import { Link, useNavigate } from 'react-router-dom';
 import { TermsModal, useModal } from '../components/Modals';
 import StatsOffcanvas from '../components/StatsOffcanvas';
@@ -138,7 +140,7 @@ export default function Home() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                    {greeting}, <span className="text-primary-600 dark:text-primary-400">visitante</span>
+                    {greeting}, <span className="text-primary-600 dark:text-primary-400">Visitante</span>
                   </h1>
                   <i className="fa-solid fa-hand-peace text-2xl text-primary-500 dark:text-accent-400 animate-pulse"></i>
                 </div>
@@ -232,7 +234,7 @@ export default function Home() {
             </div>
           </article>
 
-          {/* Recent Activity Card */}
+          {/* Recent Activity Card - modo visitante bloqueado */}
           <article className="card-glass rounded-xl shadow-lg p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 border border-green-200 dark:border-gray-600">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -248,23 +250,34 @@ export default function Home() {
                 Ver tudo
               </Link>
             </div>
-            
             <div className="space-y-3">
-              {ACTIVITIES.map((activity) => (
-                <button
-                  key={activity.id}
-                  onClick={() => handleActivityClick(activity)}
-                  className={`w-full bg-gradient-to-r ${activity.color} p-3 rounded-lg text-white text-left hover:scale-[1.02] transition-transform duration-200`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-sm">{activity.title}</div>
-                      <div className="text-xs opacity-90">{activity.subtitle}</div>
+              {isVisitorMode ? (
+                <div className="text-center text-gray-600 dark:text-gray-300 text-sm py-4">
+                  <div className="mb-2">Crie uma conta para visualizar suas atividades recentes!</div>
+                  <Link
+                    to="/criar-conta"
+                    className="mt-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold shadow"
+                  >
+                    Criar Conta Grátis
+                  </Link>
+                </div>
+              ) : (
+                ACTIVITIES.map((activity) => (
+                  <button
+                    key={activity.id}
+                    onClick={() => handleActivityClick(activity)}
+                    className={`w-full bg-gradient-to-r ${activity.color} p-3 rounded-lg text-white text-left hover:scale-[1.02] transition-transform duration-200`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-sm">{activity.title}</div>
+                        <div className="text-xs opacity-90">{activity.subtitle}</div>
+                      </div>
+                      <div className="text-xs opacity-75">{activity.time}</div>
                     </div>
-                    <div className="text-xs opacity-75">{activity.time}</div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))
+              )}
             </div>
           </article>
 

@@ -213,6 +213,8 @@
 
   .spa-sidebar {
     @apply flex-none w-64 lg:w-48 xl:w-56 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-r border-gray-200 dark:border-gray-700 overflow-y-auto scrollbar-hide;
+    z-index: 40;
+    position: relative;
   }
 
   .spa-content {

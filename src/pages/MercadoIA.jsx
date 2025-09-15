@@ -1,5 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
+// Detecta modo visitante via flag de ambiente
+const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+
 // Dados estáticos otimizados
 const CATEGORIAS = [
   { name: "Hortifruti", icon: "fa-carrot", color: "from-green-500 to-emerald-500", items: 15 },
@@ -36,6 +39,20 @@ export default function MercadoIA() {
   const [chatAberto, setChatAberto] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [conversas, setConversas] = useState([]);
+  const [monthlyMessages, setMonthlyMessages] = useState(() => {
+    if (isVisitorMode) {
+      const saved = localStorage.getItem('mercadoMonthlyMessages');
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
+  // Atualizar contador no localStorage
+  useEffect(() => {
+    if (isVisitorMode) {
+      localStorage.setItem('mercadoMonthlyMessages', monthlyMessages.toString());
+    }
+  }, [monthlyMessages]);
 
   // Cálculos memoizados
   const totalCompras = useMemo(() => {
@@ -103,6 +120,15 @@ export default function MercadoIA() {
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
     
+    // Verificar limite de mensagens para visitantes
+    if (isVisitorMode) {
+      if (monthlyMessages >= 4) {
+        alert('Você atingiu o limite de 4 mensagens mensais para visitantes. Crie uma conta para conversar sem limites!');
+        return;
+      }
+      setMonthlyMessages(prev => prev + 1);
+    }
+    
     const novaMensagem = mensagem;
     setMensagem("");
     
@@ -117,7 +143,7 @@ export default function MercadoIA() {
         texto: "Ótima pergunta sobre compras! Vou ajudar você a encontrar os melhores preços e produtos."
       }]);
     }, 1000);
-  }, [mensagem]);
+  }, [mensagem, isVisitorMode, monthlyMessages, setMonthlyMessages]);
 
   return (
     <div className="h-full overflow-y-auto custom-scrollbar">
@@ -191,7 +217,28 @@ export default function MercadoIA() {
         </div>
 
         {/* Orçamento Progress */}
-        <div className="card-glass rounded-xl shadow-lg p-6">
+        <div className="card-glass rounded-xl shadow-lg p-6 relative">
+          {isVisitorMode && (
+            <div className="absolute inset-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <i className="fa-solid fa-lock text-white text-lg"></i>
+                </div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  Controle de Orçamento
+                </h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                  Gerencie seu orçamento mensal e acompanhe gastos em tempo real
+                </p>
+                <button
+                  onClick={() => window.location.href = '/criar-conta'}
+                  className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-medium"
+                >
+                  Criar Conta Grátis
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Orçamento Mensal
@@ -203,6 +250,7 @@ export default function MercadoIA() {
                 value={orcamentoMeta}
                 onChange={(e) => setOrcamentoMeta(Number(e.target.value))}
                 className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                disabled={isVisitorMode}
               />
             </div>
           </div>
@@ -221,8 +269,8 @@ export default function MercadoIA() {
         {/* Tabs Principais */}
         <div className="flex gap-2 justify-center">
           {[
-            { id: 'lista', nome: 'Lista Inteligente', icone: 'fa-clipboard-list' },
-            { id: 'comparar', nome: 'Comparar Preços', icone: 'fa-scale-balanced' }
+            { id: 'lista', nome: 'Minha Lista', icone: 'fa-clipboard-list' },
+            { id: 'comparar', nome: 'Melhores Preços', icone: 'fa-scale-balanced' }
           ].map(aba => (
             <button
               key={aba.id}
@@ -257,11 +305,19 @@ export default function MercadoIA() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button
-                        onClick={gerarListaIA}
-                        className="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm shrink-0"
+                        onClick={() => {
+                          if (isVisitorMode) {
+                            alert('Sugestões inteligentes disponíveis apenas para usuários cadastrados! Crie sua conta para ter listas personalizadas.');
+                            window.location.href = '/criar-conta';
+                          } else {
+                            gerarListaIA();
+                          }
+                        }}
+                        className="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm shrink-0 disabled:opacity-50"
+                        title={isVisitorMode ? "Disponível apenas para usuários cadastrados" : ""}
                       >
                         <i className="fa-solid fa-magic-wand-sparkles"></i>
-                        <span className="hidden sm:inline">Gerar IA</span>
+                        <span className="hidden sm:inline">Sugestões IA</span>
                         <span className="sm:hidden">IA</span>
                       </button>
                       <button
@@ -269,7 +325,7 @@ export default function MercadoIA() {
                         className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm shrink-0"
                       >
                         <i className="fa-solid fa-comments"></i>
-                        <span className="hidden sm:inline">Consultor</span>
+                        <span className="hidden sm:inline">Assistente de Compras</span>
                         <span className="sm:hidden">Chat</span>
                       </button>
                     </div>
@@ -301,7 +357,7 @@ export default function MercadoIA() {
                       className="w-full sm:w-auto px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm"
                     >
                       <i className="fa-solid fa-plus"></i>
-                      <span>Adicionar</span>
+                      <span>Adicionar Item</span>
                     </button>
                   </div>
 
@@ -453,25 +509,50 @@ export default function MercadoIA() {
       {/* Chat Modal */}
       {chatAberto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[31.25rem] flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                  <i className="fa-solid fa-robot text-white"></i>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Consultor de Compras</h3>
-                </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[31.25rem] flex flex-col">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-shopping-cart text-white"></i>
               </div>
-              <button
-                onClick={() => setChatAberto(false)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                <i className="fa-solid fa-times text-gray-500 dark:text-gray-400"></i>
-              </button>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Assistente de Compras</h3>
+                <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full" /> Online
+                </p>
+              </div>
             </div>
-
-            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+            <button
+              onClick={() => setChatAberto(false)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <i className="fa-solid fa-times text-gray-500 dark:text-gray-400"></i>
+            </button>
+          </div>            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              {/* Banner de aviso para visitantes */}
+              {isVisitorMode && conversas.length === 0 && (
+                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-600 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i className="fa-solid fa-info text-white text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
+                        Modo Visitante - {4 - monthlyMessages} mensagens mensais restantes
+                      </p>
+                      <p className="text-xs text-amber-700 dark:text-amber-300">
+                        <button
+                          onClick={() => window.location.href = '/criar-conta'}
+                          className="underline hover:no-underline font-medium"
+                        >
+                          Criar conta para conversas ilimitadas sobre compras!
+                        </button>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {conversas.length === 0 ? (
                 <div className="text-center py-8">
                   <i className="fa-solid fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
@@ -483,17 +564,31 @@ export default function MercadoIA() {
                 conversas.map((conversa, index) => (
                   <div
                     key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
-                    className={`flex ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex items-end gap-3 mb-4 ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        conversa.tipo === 'usuario'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                      }`}
-                    >
-                      {conversa.texto}
+                    {conversa.tipo === 'ia' && (
+                      <div className="w-8 h-8 bg-green-500 rounded-full grid place-items-center flex-shrink-0">
+                        <i className="fa-solid fa-shopping-cart text-white text-sm" />
+                      </div>
+                    )}
+
+                    <div className="max-w-xs lg:max-w-md">
+                      <div
+                        className={`px-4 py-2 rounded-lg ${
+                          conversa.tipo === 'usuario'
+                            ? 'bg-blue-500 text-white rounded-br-sm'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-sm'
+                        }`}
+                      >
+                        {conversa.texto}
+                      </div>
                     </div>
+
+                    {conversa.tipo === 'usuario' && (
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full grid place-items-center flex-shrink-0">
+                        <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-sm" />
+                      </div>
+                    )}
                   </div>
                 ))
               )}
@@ -511,7 +606,9 @@ export default function MercadoIA() {
                 />
                 <button
                   onClick={enviarMensagem}
-                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
+                  disabled={isVisitorMode && monthlyMessages >= 4}
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={isVisitorMode && monthlyMessages >= 4 ? "Limite de mensagens mensais atingido" : ""}
                 >
                   <i className="fa-solid fa-paper-plane"></i>
                 </button>

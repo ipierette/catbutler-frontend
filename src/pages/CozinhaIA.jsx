@@ -1,4 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+
+// Detecta modo visitante via flag de ambiente
+const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+
 // Dados estáticos otimizados
 const INGREDIENTES_SUGERIDOS = [
   { name: "Frango", category: "proteina", icon: "🍗" },
@@ -150,6 +154,15 @@ export default function CozinhaIA() {
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
     
+    // Contar mensagens de usuário para visitantes
+    const mensagensUsuario = conversas.filter(c => c.tipo === 'usuario').length;
+    
+    if (isVisitorMode && mensagensUsuario >= 4) {
+      alert('Limite de 4 mensagens mensais atingido! Crie uma conta para conversar ilimitadamente com a IA.');
+      window.location.href = '/criar-conta';
+      return;
+    }
+    
     const novaMensagem = mensagem;
     setMensagem("");
     
@@ -162,10 +175,12 @@ export default function CozinhaIA() {
     setTimeout(() => {
       setConversas(prev => [...prev, {
         tipo: 'ia',
-        texto: "Ótima pergunta! Deixe-me ajudar você com essa receita..."
+        texto: isVisitorMode && mensagensUsuario >= 3 
+          ? "Esta é sua última mensagem gratuita! Crie uma conta para continuar conversando comigo sobre receitas incríveis! 🍳✨"
+          : "Ótima pergunta! Deixe-me ajudar você com essa receita..."
       }]);
     }, 1000);
-  }, [mensagem]);
+  }, [mensagem, conversas, isVisitorMode]);
 
   return (
     <div className="h-full overflow-y-auto custom-scrollbar">
@@ -218,7 +233,14 @@ export default function CozinhaIA() {
               ))}
             </div>
             <button
-              onClick={gerarReceitaIA}
+              onClick={() => {
+                if (isVisitorMode) {
+                  alert('Crie uma conta para gerar receitas personalizadas com IA!');
+                  window.location.href = '/criar-conta';
+                } else {
+                  gerarReceitaIA();
+                }
+              }}
               disabled={gerandoReceita}
               className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                 gerandoReceita
@@ -234,7 +256,7 @@ export default function CozinhaIA() {
               ) : (
                 <>
                   <i className="fa-solid fa-magic-wand-sparkles"></i>
-                  Gerar Receita com IA
+                  {isVisitorMode ? 'Ver Funcionalidade IA' : 'Gerar Receita com IA'}
                 </>
               )}
             </button>
@@ -254,7 +276,14 @@ export default function CozinhaIA() {
               </p>
             </div>
             <button
-              onClick={gerarCardapioSemanal}
+              onClick={() => {
+                if (isVisitorMode) {
+                  alert('Crie uma conta para gerar cardápios personalizados com IA!');
+                  window.location.href = '/criar-conta';
+                } else {
+                  gerarCardapioSemanal();
+                }
+              }}
               disabled={gerandoCardapio}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 mx-auto ${
                 gerandoCardapio
@@ -270,7 +299,7 @@ export default function CozinhaIA() {
               ) : (
                 <>
                   <i className="fa-solid fa-magic-wand-sparkles"></i>
-                  Gerar Cardápio IA
+                  {isVisitorMode ? 'Ver Funcionalidade IA' : 'Gerar Cardápio IA'}
                 </>
               )}
             </button>
@@ -506,16 +535,18 @@ export default function CozinhaIA() {
       {/* Chat Modal */}
       {chatAberto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[37.5rem] flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[31.25rem] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                  <i className="fa-solid fa-robot text-white"></i>
+                <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-chef-hat text-white"></i>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">Chef IA</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Seu assistente culinário</p>
+                  <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-green-500 rounded-full" /> Online
+                  </p>
                 </div>
               </div>
               <button
@@ -528,6 +559,30 @@ export default function CozinhaIA() {
 
             {/* Messages */}
             <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              {/* Banner de aviso para visitantes */}
+              {isVisitorMode && conversas.length === 0 && (
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-600 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i className="fa-solid fa-info text-white text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-orange-800 dark:text-orange-200 mb-1">
+                        Modo Visitante - {4 - conversas.filter(c => c.tipo === 'usuario').length} mensagens mensais restantes
+                      </p>
+                      <p className="text-xs text-orange-700 dark:text-orange-300">
+                        <button
+                          onClick={() => window.location.href = '/criar-conta'}
+                          className="underline hover:no-underline font-medium"
+                        >
+                          Criar conta para conversas ilimitadas com o Chef IA!
+                        </button>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {conversas.length === 0 ? (
                 <div className="text-center py-8">
                   <i className="fa-solid fa-chef-hat text-4xl text-gray-400 mb-4"></i>
@@ -539,17 +594,31 @@ export default function CozinhaIA() {
                 conversas.map((conversa, index) => (
                   <div
                     key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
-                    className={`flex ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex items-end gap-3 mb-4 ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        conversa.tipo === 'usuario'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                      }`}
-                    >
-                      {conversa.texto}
+                    {conversa.tipo === 'ia' && (
+                      <div className="w-8 h-8 bg-orange-500 rounded-full grid place-items-center flex-shrink-0">
+                        <i className="fa-solid fa-chef-hat text-white text-sm" />
+                      </div>
+                    )}
+
+                    <div className="max-w-xs lg:max-w-md">
+                      <div
+                        className={`px-4 py-2 rounded-lg ${
+                          conversa.tipo === 'usuario'
+                            ? 'bg-blue-500 text-white rounded-br-sm'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-sm'
+                        }`}
+                      >
+                        {conversa.texto}
+                      </div>
                     </div>
+
+                    {conversa.tipo === 'usuario' && (
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full grid place-items-center flex-shrink-0">
+                        <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-sm" />
+                      </div>
+                    )}
                   </div>
                 ))
               )}

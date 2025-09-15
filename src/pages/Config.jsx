@@ -1,6 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
+// Detecta modo visitante via flag de ambiente
+const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+
 // Dados estáticos das configurações
 const CONFIGURACOES_SECTIONS = [
   {
@@ -314,7 +317,21 @@ export default function Config() {
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                     Informações da Conta
                   </h3>
-                  
+                  {isVisitorMode ? (
+                    <div className="text-center text-gray-600 dark:text-gray-300 text-sm py-8">
+                      <div className="mb-4">
+                        <i className="fa-solid fa-user-lock text-4xl text-gray-400 mb-3"></i>
+                        <h4 className="text-lg font-semibold mb-2">Configurações Pessoais</h4>
+                        <p>Crie uma conta para personalizar suas configurações e dados pessoais!</p>
+                      </div>
+                      <button
+                        onClick={() => window.location.href = '/criar-conta'}
+                        className="mt-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold shadow"
+                      >
+                        Criar Conta Grátis
+                      </button>
+                    </div>
+                  ) : (
                   <div className="space-y-4">
                     <div>
                       <label htmlFor="user-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -363,6 +380,7 @@ export default function Config() {
                       Salvar Alterações
                     </button>
                   </div>
+                  )}
                 </div>
               )}
 
@@ -552,6 +570,38 @@ export default function Config() {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Overlay para bloquear interações em modo visitante */}
+      {isVisitorMode && (
+        <>
+          {/* Blur apenas na área de conteúdo - z-index menor que sidebar */}
+          <div className="fixed top-0 right-0 bottom-0 left-0 lg:left-48 xl:left-56 bg-black/20 backdrop-blur-sm z-30"></div>
+          {/* Modal centralizado - z-index maior que sidebar */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <div 
+              className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-2xl p-6 m-4 max-w-md border border-gray-200 dark:border-gray-600 pointer-events-auto"
+            >
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="fa-solid fa-lock text-white text-lg"></i>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Modo Somente Leitura
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  Esta é uma visualização das configurações do sistema. Para personalizar suas preferências e gerenciar sua conta, crie uma conta gratuita!
+                </p>
+                <button
+                  onClick={() => window.location.href = '/criar-conta'}
+                  className="w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-semibold"
+                >
+                  Criar Conta Grátis
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
