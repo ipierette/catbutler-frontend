@@ -330,8 +330,8 @@ export default function CozinhaIA() {
                   }}
                   className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors duration-200"
                 >
-                  <i className="fa-solid fa-copy mr-1"></i>
-                  Copiar
+                  <i className="fa-solid fa-copy mr-1" aria-hidden="true"></i>
+                  <span>Copiar</span>
                 </button>
                 <button
                   onClick={() => setCardapioSemanal(null)}
@@ -366,6 +366,35 @@ export default function CozinhaIA() {
             </div>
           </div>
         )}
+
+        {/* Contribuição de Receitas */}
+        <div className="card-glass rounded-xl shadow-lg p-6 text-center bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-200 dark:border-emerald-700">
+          <div className="mb-4">
+            <i className="fa-solid fa-heart text-4xl text-emerald-500 mb-3"></i>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Ajude nosso banco de Receitas
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Compartilhe suas receitas favoritas e ajude outros usuários a descobrir pratos incríveis. 
+              Receitas aprovadas ganham créditos ao autor!
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              if (isVisitorMode) {
+                alert('Crie uma conta para contribuir com receitas e ganhar créditos!');
+                window.location.href = '/criar-conta';
+              } else {
+                // Abrir modal de contribuição
+                document.getElementById('modal-contribuir-receitas').style.display = 'flex';
+              }
+            }}
+            className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 mx-auto bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white hover:scale-105"
+          >
+            <i className="fa-solid fa-plus-circle"></i>
+            {isVisitorMode ? 'Ver Funcionalidade' : 'Contribuir com Receita'}
+          </button>
+        </div>
 
         {/* Grid Principal */}
         <div className="grid lg:grid-cols-3 gap-6">
@@ -468,8 +497,8 @@ export default function CozinhaIA() {
                   onClick={() => setChatAberto(true)}
                   className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
                 >
-                  <i className="fa-solid fa-comments"></i>
-                  Chef IA
+                  <i className="fa-solid fa-comments" aria-hidden="true"></i>
+                  <span>Chef IA</span>
                 </button>
               </div>
 
@@ -530,6 +559,183 @@ export default function CozinhaIA() {
 
         {/* Spacing for mobile */}
         <div className="h-16"></div>
+      </div>
+
+      {/* Modal Contribuir Receitas */}
+      <div id="modal-contribuir-receitas" className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-heart text-white"></i>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Contribuir com Receita</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Compartilhe sua receita favorita</p>
+                </div>
+              </div>
+              <button
+                onClick={() => document.getElementById('modal-contribuir-receitas').style.display = 'none'}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <i className="fa-solid fa-times text-gray-500 dark:text-gray-400"></i>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Nome da Receita *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Bolo de Chocolate da Vovó"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Tempo de Preparo
+                  </label>
+                  <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white">
+                    <option>15 min</option>
+                    <option>30 min</option>
+                    <option>45 min</option>
+                    <option>1 hora</option>
+                    <option>1h+</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Dificuldade
+                  </label>
+                  <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white">
+                    <option>Fácil</option>
+                    <option>Médio</option>
+                    <option>Difícil</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tipo de Refeição
+                </label>
+                <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white">
+                  <option>Café da manhã</option>
+                  <option>Almoço</option>
+                  <option>Jantar</option>
+                  <option>Lanche</option>
+                  <option>Sobremesa</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Ingredientes *
+                </label>
+                <textarea
+                  placeholder="Liste todos os ingredientes, um por linha&#10;Ex:&#10;2 xícaras de farinha&#10;3 ovos&#10;1 xícara de açúcar"
+                  rows="4"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white resize-none"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Modo de Preparo *
+                </label>
+                <textarea
+                  placeholder="Descreva o passo a passo da receita..."
+                  rows="6"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white resize-none"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Dicas Especiais (opcional)
+                </label>
+                <textarea
+                  placeholder="Alguma dica especial para o sucesso da receita?"
+                  rows="3"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:text-white resize-none"
+                ></textarea>
+              </div>
+
+              {/* Informação sobre identificação do autor */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                <div className="flex items-start gap-3">
+                  <i className="fa-solid fa-user-tag text-blue-600 dark:text-blue-400 mt-0.5"></i>
+                  <div className="text-sm text-blue-800 dark:text-blue-200">
+                    <p className="font-medium mb-1">👤 Identificação do Autor</p>
+                    <ul className="space-y-1 text-blue-700 dark:text-blue-300">
+                      <li>• <strong>Usuários cadastrados:</strong> Nome automático</li>
+                      <li>• <strong>Visitantes:</strong> Aparecerão como "Visitante"</li>
+                      <li>• <strong>Dica:</strong> Inclua seu nome no título da receita!</li>
+                      <li>• Ex: "Bolo da Maria" ou "Receita do João"</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-700">
+                <div className="flex items-start gap-3">
+                  <i className="fa-solid fa-award text-emerald-600 dark:text-emerald-400 mt-0.5"></i>
+                  <div className="text-sm text-emerald-800 dark:text-emerald-200">
+                    <p className="font-medium mb-1">🏆 Sistema de Créditos</p>
+                    <ul className="space-y-1 text-emerald-700 dark:text-emerald-300">
+                      <li>• Receita aprovada: Crédito ao autor</li>
+                      <li>• Receitas únicas são priorizadas</li>
+                      <li>• Verificamos se já existe no sistema</li>
+                      <li>• Análise em até 48h</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <button
+                onClick={() => document.getElementById('modal-contribuir-receitas').style.display = 'none'}
+                className="py-3 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  document.getElementById('modal-contribuir-receitas').style.display = 'none';
+                  document.getElementById('modal-receita-enviada').style.display = 'flex';
+                  setTimeout(() => {
+                    document.getElementById('modal-receita-enviada').style.display = 'none';
+                  }, 3000);
+                }}
+                className="py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors duration-200"
+              >
+                Enviar Receita
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Receita Enviada */}
+      <div id="modal-receita-enviada" className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 text-center max-w-sm w-full">
+          <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i className="fa-solid fa-paper-plane text-white text-xl"></i>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Receita Enviada! 🎉
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Sua receita será analisada em até 48h. Obrigado por contribuir com nossa comunidade!
+          </p>
+        </div>
       </div>
 
       {/* Chat Modal */}
@@ -705,8 +911,8 @@ export default function CozinhaIA() {
                   }}
                   className="w-full py-3 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white rounded-lg font-semibold transition-all duration-200"
                 >
-                  <i className="fa-solid fa-comments mr-2"></i>
-                  Perguntar ao Chef IA
+                  <i className="fa-solid fa-comments mr-2" aria-hidden="true"></i>
+                  <span>Perguntar ao Chef IA</span>
                 </button>
               </div>
             </div>

@@ -56,6 +56,9 @@ Acesse a aplicação em: **[catbutler-frontend.vercel.app](https://catbutler-fro
 - **Receitas Inteligentes**: Sugestões baseadas em ingredientes disponíveis
 - **Chef IA**: Chat especializado para dúvidas culinárias
 - **Filtros Avançados**: Por tempo de preparo, dificuldade e tipo de refeição
+- **🆕 Sistema de Contribuição**: "Ajude nosso banco de Receitas" - usuários podem compartilhar receitas
+- **🆕 Sistema de Créditos**: Receitas aprovadas geram créditos ao autor
+- **🆕 Identificação Inteligente**: Usuários cadastrados têm nome automático, visitantes podem se identificar via título
 
 ### 🧹 **FaxinaIA - Gestão Doméstica**
 - **Configuração Personalizada**: Defina número de cômodos (1-8)
@@ -64,6 +67,9 @@ Acesse a aplicação em: **[catbutler-frontend.vercel.app](https://catbutler-fro
 - **Produtos Recomendados**: Sugestões com dicas de economia
 - **Progresso Visual**: Tracking em tempo real com estatísticas
 - **Assistente Especializado**: Chat para dúvidas de limpeza e organização
+- **🆕 Sistema de Contribuição**: "Ajude com dicas de limpeza" - usuários podem compartilhar técnicas
+- **🆕 Sistema de Créditos**: Dicas aprovadas geram créditos ao autor
+- **🆕 Validação de Segurança**: Verificamos eficácia e segurança das técnicas compartilhadas
 
 ### 🛒 **MercadoIA - Compras Otimizadas**
 - **Lista Inteligente**: Gerenciamento completo com quantidades e categorias
@@ -90,6 +96,14 @@ Acesse a aplicação em: **[catbutler-frontend.vercel.app](https://catbutler-fro
 - **Gestão de Membros**: Convites por email com roles
 - **Sincronização Real-time**: Atualizações instantâneas
 - **Controle de Permissões**: Admin/membro para acesso controlado
+
+### ⚙️ **Configurações Modernizadas**
+- **🆕 Layout Atualizado**: Interface em 4 seções (Geral, Notificações, Privacidade, Suporte)
+- **🆕 Gestão de Conta**: Troca de senha com validação de segurança
+- **🆕 Preview Conta Familiar**: Visualização de slots para até 4 membros
+- **🆕 Configurações Granulares**: Controle detalhado de notificações e privacidade
+- **Tema Dinâmico**: Alternância entre modo claro/escuro
+- **Export de Dados**: Backup completo das configurações
 
 ## 🛠️ Tecnologias
 

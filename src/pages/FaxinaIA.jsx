@@ -235,6 +235,35 @@ export default function FaxinaIA() {
           </div>
         </div>
 
+        {/* Contribuição de Dicas de Limpeza */}
+        <div className="card-glass rounded-xl shadow-lg p-6 text-center bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/30 dark:to-blue-900/30 border border-cyan-200 dark:border-cyan-700">
+          <div className="mb-4">
+            <i className="fa-solid fa-lightbulb text-4xl text-cyan-500 mb-3"></i>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Ajude com dicas de limpeza
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Compartilhe suas melhores técnicas de limpeza e truques caseiros. 
+              Dicas aprovadas ganham créditos ao autor e ajudam toda a comunidade!
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              if (isVisitorMode) {
+                alert('Crie uma conta para contribuir com dicas de limpeza e ganhar créditos!');
+                window.location.href = '/criar-conta';
+              } else {
+                // Abrir modal de contribuição
+                document.getElementById('modal-contribuir-dicas').style.display = 'flex';
+              }
+            }}
+            className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 mx-auto bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white hover:scale-105"
+          >
+            <i className="fa-solid fa-plus-circle"></i>
+            {isVisitorMode ? 'Ver Funcionalidade' : 'Compartilhar Dica'}
+          </button>
+        </div>
+
         {/* Grid Principal */}
         <div className="grid lg:grid-cols-3 gap-6">
           
@@ -249,8 +278,8 @@ export default function FaxinaIA() {
                   onClick={() => setChatAberto(true)}
                   className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
                 >
-                  <i className="fa-solid fa-comments"></i>
-                  Assistente
+                  <i className="fa-solid fa-comments" aria-hidden="true"></i>
+                  <span>Assistente</span>
                 </button>
               </div>
 
@@ -412,6 +441,182 @@ export default function FaxinaIA() {
         </div>
 
         <div className="h-16"></div>
+      </div>
+
+      {/* Modal Contribuir Dicas */}
+      <div id="modal-contribuir-dicas" className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-lightbulb text-white"></i>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Compartilhar Dica de Limpeza</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Ajude outros com seus truques</p>
+                </div>
+              </div>
+              <button
+                onClick={() => document.getElementById('modal-contribuir-dicas').style.display = 'none'}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <i className="fa-solid fa-times text-gray-500 dark:text-gray-400"></i>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Título da Dica *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Como remover manchas de gordura do fogão"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Categoria
+                </label>
+                <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white">
+                  <option>Cozinha</option>
+                  <option>Banheiro</option>
+                  <option>Quarto</option>
+                  <option>Sala</option>
+                  <option>Área de serviço</option>
+                  <option>Geral</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Dificuldade
+                </label>
+                <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white">
+                  <option>Fácil</option>
+                  <option>Médio</option>
+                  <option>Difícil</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Produtos/Materiais Necessários
+                </label>
+                <textarea
+                  placeholder="Liste os produtos ou materiais necessários&#10;Ex:&#10;- Bicarbonato de sódio&#10;- Vinagre branco&#10;- Pano de limpeza&#10;- Escova velha"
+                  rows="4"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white resize-none"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Passo a Passo *
+                </label>
+                <textarea
+                  placeholder="Descreva o passo a passo da sua técnica de limpeza..."
+                  rows="6"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white resize-none"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tempo Estimado
+                </label>
+                <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white">
+                  <option>2-5 min</option>
+                  <option>5-10 min</option>
+                  <option>10-15 min</option>
+                  <option>15-30 min</option>
+                  <option>30+ min</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Dicas Extras (opcional)
+                </label>
+                <textarea
+                  placeholder="Alguma observação importante ou dica especial?"
+                  rows="3"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent dark:text-white resize-none"
+                ></textarea>
+              </div>
+
+              {/* Informação sobre identificação do autor */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                <div className="flex items-start gap-3">
+                  <i className="fa-solid fa-user-tag text-blue-600 dark:text-blue-400 mt-0.5"></i>
+                  <div className="text-sm text-blue-800 dark:text-blue-200">
+                    <p className="font-medium mb-1">👤 Identificação do Autor</p>
+                    <ul className="space-y-1 text-blue-700 dark:text-blue-300">
+                      <li>• <strong>Usuários cadastrados:</strong> Nome automático</li>
+                      <li>• <strong>Visitantes:</strong> Aparecerão como "Visitante"</li>
+                      <li>• <strong>Dica:</strong> Inclua seu nome no título!</li>
+                      <li>• Ex: "Truque da Ana" ou "Método do Pedro"</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-cyan-200 dark:border-cyan-700">
+                <div className="flex items-start gap-3">
+                  <i className="fa-solid fa-award text-cyan-600 dark:text-cyan-400 mt-0.5"></i>
+                  <div className="text-sm text-cyan-800 dark:text-cyan-200">
+                    <p className="font-medium mb-1">🏆 Sistema de Créditos</p>
+                    <ul className="space-y-1 text-cyan-700 dark:text-cyan-300">
+                      <li>• Dica aprovada: Crédito ao autor</li>
+                      <li>• Técnicas únicas são priorizadas</li>
+                      <li>• Verificamos eficácia e segurança</li>
+                      <li>• Análise em até 48h</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <button
+                onClick={() => document.getElementById('modal-contribuir-dicas').style.display = 'none'}
+                className="py-3 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  document.getElementById('modal-contribuir-dicas').style.display = 'none';
+                  document.getElementById('modal-dica-enviada').style.display = 'flex';
+                  setTimeout(() => {
+                    document.getElementById('modal-dica-enviada').style.display = 'none';
+                  }, 3000);
+                }}
+                className="py-3 px-4 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors duration-200"
+              >
+                Enviar Dica
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Dica Enviada */}
+      <div id="modal-dica-enviada" className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 text-center max-w-sm w-full">
+          <div className="w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i className="fa-solid fa-paper-plane text-white text-xl"></i>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Dica Enviada! 🎉
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Sua dica será analisada em até 48h. Obrigado por ajudar nossa comunidade a limpar melhor!
+          </p>
+        </div>
       </div>
 
       {/* Chat Modal */}

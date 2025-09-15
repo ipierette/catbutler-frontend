@@ -371,6 +371,21 @@ Fixes #123
 
 ## 🎯 Tipos de Contribuição
 
+### 🆕 Contribuições In-App
+
+#### Contribuir com Receitas (CozinhaIA)
+- Acesse o **CozinhaIA** e clique em "Ajude nosso banco de Receitas"
+- Preencha o formulário com sua receita favorita
+- **Usuários cadastrados**: Nome atribuído automaticamente
+- **Visitantes**: Inclua seu nome no título (ex: "Bolo da Maria")
+- Receitas aprovadas geram créditos ao autor
+
+#### Contribuir com Dicas de Limpeza (FaxinaIA)
+- Acesse o **FaxinaIA** e clique em "Ajude com dicas de limpeza"
+- Compartilhe suas técnicas e truques de limpeza
+- Verificamos eficácia e segurança antes da aprovação
+- Dicas aprovadas geram créditos ao autor
+
 ### 🐛 Reportar Bugs
 
 #### Template de Bug Report

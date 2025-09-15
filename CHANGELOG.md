@@ -7,6 +7,33 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### 🆕 Sistemas de Contribuição e Modernização Config (2025-09-15)
+
+#### Adicionado
+- **CozinhaIA - Sistema de Contribuição**
+  - Modal "Ajude nosso banco de Receitas" para usuários compartilharem receitas
+  - Sistema de créditos para receitas aprovadas
+  - Formulário completo com ingredientes, modo de preparo, tempo e dificuldade
+  - Identificação inteligente: usuários cadastrados automático, visitantes via título
+
+- **FaxinaIA - Sistema de Contribuição**
+  - Modal "Ajude com dicas de limpeza" para compartilhamento de técnicas
+  - Sistema de créditos para dicas aprovadas
+  - Validação de eficácia e segurança das técnicas compartilhadas
+  - Categorização por cômodo e nível de dificuldade
+
+- **Config - Modernização Completa**
+  - Layout redesenhado em 4 seções: Geral, Notificações, Privacidade, Suporte
+  - Sistema de troca de senha com validação de segurança
+  - Preview de conta familiar com slots para até 4 membros
+  - Configurações granulares de notificações e privacidade
+
+#### Corrigido
+- **Modo Visitante**
+  - Resolução de conflito entre `.env` e `.env.local`
+  - Overlays funcionando corretamente em todas as páginas
+  - Limitação de 4 mensagens mensais em chats para visitantes
+
 ### 🚀 Correções de Deploy e Atualização Major (2025-01-13)
 
 #### Corrigido
