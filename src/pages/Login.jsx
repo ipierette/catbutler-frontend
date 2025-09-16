@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { sanitizeInput, validateEmail } from '../utils/security';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../utils/supabase';
 import logoCatButler from '../assets/images/logo-catbutler.webp';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     senha: '',
@@ -11,6 +15,7 @@ export default function Login() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Função para lidar com mudanças nos inputs
   const handleInputChange = (e) => {
@@ -53,7 +58,46 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Função para lidar com envio do formulário
+  // Função para login com provedores sociais
+  const handleSocialLogin = async (provider) => {
+    try {
+      setIsSubmitting(true);
+      console.log(`🔄 Iniciando login com ${provider}...`);
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          redirectTo: `${window.location.origin}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+
+      if (error) {
+        console.error(`🚨 Erro no login ${provider}:`, error);
+        setErrors({
+          submit: `Erro no login com ${provider}: ${error.message}`
+        });
+        return;
+      }
+
+      // O redirecionamento será automático
+      console.log(`✅ Login ${provider} iniciado com sucesso!`);
+      setSuccessMessage(`Redirecionando para ${provider}...`);
+
+    } catch (error) {
+      console.error(`🚨 Erro inesperado no login ${provider}:`, error);
+      setErrors({
+        submit: `Erro inesperado no login com ${provider}. Tente novamente.`
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+    // Função para submeter o formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -62,24 +106,39 @@ export default function Login() {
     }
 
     setIsSubmitting(true);
+    setErrors({});
 
     try {
-      // Simular autenticação (aqui você integraria com seu backend)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Autenticação via AuthContext
+      const result = await login(formData.email, formData.senha);
       
-      // Sucesso - redirecionar ou mostrar mensagem
-      alert('Login realizado com sucesso! Bem-vindo de volta ao CatButler! 🐱');
-      
-      // Limpar formulário
-      setFormData({
-        email: '',
-        senha: '',
-        lembrar: false
-      });
+      if (result.success) {
+        // Mostrar mensagem de sucesso profissional
+        setSuccessMessage('Login realizado com sucesso! Redirecionando...');
+        
+        // Redirecionar mais rapidamente para evitar tela preta
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 800);
+        
+        // Limpar formulário
+        setFormData({
+          email: '',
+          senha: '',
+          lembrar: false
+        });
+      } else {
+        // Erro na autenticação
+        setErrors({
+          submit: result.error || 'Erro desconhecido no login'
+        });
+      }
       
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      alert('Email ou senha incorretos. Tente novamente.');
+      console.error('🚨 Erro no login:', error);
+      setErrors({
+        submit: 'Erro inesperado. Tente novamente em alguns momentos.'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -109,6 +168,14 @@ export default function Login() {
         <div className="absolute bottom-0 left-0 w-12 h-12 bg-emerald-200 dark:bg-emerald-600 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
         
         <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+          {/* Mensagem de Sucesso */}
+          {successMessage && (
+            <div className="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2">
+              <i className="fa-solid fa-check-circle"></i>
+              {successMessage}
+            </div>
+          )}
+          
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -232,19 +299,23 @@ export default function Login() {
         <div className="grid grid-cols-2 gap-3">
           <button 
             type="button"
-            className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            onClick={() => handleSocialLogin('facebook')}
+            disabled={isSubmitting}
+            className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Entrar com Facebook"
           >
             <i className="fa-brands fa-facebook" aria-hidden="true"></i>
-            {' '}Facebook
+            {isSubmitting ? 'Conectando...' : 'Facebook'}
           </button>
           <button 
             type="button"
-            className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2"
+            onClick={() => handleSocialLogin('google')}
+            disabled={isSubmitting}
+            className="flex items-center justify-center gap-2 py-2 px-4 bg-red-600 hover:bg-red-800 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Entrar com Google"
           >
             <i className="fa-brands fa-google" aria-hidden="true"></i>
-            {' '}Google
+            {isSubmitting ? 'Conectando...' : 'Google'}
           </button>
         </div>
       </section>

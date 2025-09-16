@@ -1,13 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import logoCatButler from "../assets/images/logo-catbutler.webp";
 
 function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { isVisitorMode, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setMobileMenuOpen(false);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
 
   return (
     <>
@@ -133,28 +144,39 @@ function Header() {
           {/* divisor opcional */}
           <hr className="my-3 border-gray-800/70" />
 
-          {/* BOTÃO DUPLO (uma peça só com duas ações) */}
+          {/* BOTÕES CONDICIONAIS */}
           <div className="rounded-xl overflow-hidden ring-1 ring-gray-700">
-            <div className="grid grid-cols-2">
-              {/* Criar Conta (primário) */}
-              <Link
-                to="/criar-conta"
-                onClick={() => setMobileMenuOpen(false)}
-                className="btn-primary !rounded-none py-3 text-center font-semibold flex items-center justify-center gap-2"
-              >
-                <i className="fa-solid fa-user-plus text-xs" aria-hidden="true"></i>
-                {' '}Criar Conta
-              </Link>
-
-              {/* Entrar (neutro) */}
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="bg-gray-800 hover:bg-gray-700 text-white py-3 text-center font-semibold flex items-center justify-center gap-2"
-              >
-                <i className="fa-solid fa-right-to-bracket text-xs" aria-hidden="true"></i>
-                {' '}Entrar
-              </Link>
+            <div className={isVisitorMode ? "grid grid-cols-2" : "grid grid-cols-1"}>
+              {isVisitorMode ? (
+                // Botões para visitantes (não logados)
+                <>
+                  <Link
+                    to="/criar-conta"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-primary !rounded-none py-3 text-center font-semibold flex items-center justify-center gap-2"
+                  >
+                    <i className="fa-solid fa-user-plus text-xs" aria-hidden="true"></i>
+                    <span>Criar Conta</span>
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="bg-green-600 hover:bg-gray-700 text-white py-3 text-center font-semibold flex items-center justify-center gap-2"
+                  >
+                    <i className="fa-solid fa-right-to-bracket text-xs" aria-hidden="true"></i>
+                    <span>Entrar</span>
+                  </Link>
+                </>
+              ) : (
+                // Botão para usuários logados
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 hover:bg-red-700 text-white py-3 text-center font-semibold flex items-center justify-center gap-2 rounded-xl"
+                >
+                  <i className="fa-solid fa-sign-out-alt text-xs" aria-hidden="true"></i>
+                  <span>Sair</span>
+                </button>
+              )}
             </div>
           </div>
         </nav>

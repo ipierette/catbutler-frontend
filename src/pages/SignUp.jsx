@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { sanitizeInput, validateEmail, validatePassword, validateName } from '../utils/security';
 import { TermsModal, PrivacyModal, useModal } from '../components/Modals';
+import { signUp } from '../utils/supabase';
 import logoCatButler from '../assets/images/logo-catbutler.webp';
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -91,24 +93,67 @@ export default function SignUp() {
     setIsSubmitting(true);
 
     try {
-      // Simular envio para API (aqui você integraria com seu backend)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Sucesso - redirecionar ou mostrar mensagem
-      alert('Conta criada com sucesso! Bem-vindo ao CatButler! 🐱');
-      
-      // Limpar formulário
-      setFormData({
-        nome: '',
-        email: '',
-        senha: '',
-        confirmarSenha: '',
-        aceitarTermos: false
+      // Cadastro real via Supabase
+      const result = await signUp(formData.email, formData.senha, {
+        displayName: formData.nome,
+        display_name: formData.nome // Adicionar ambas as chaves para compatibilidade
       });
       
+      if (result.success) {
+        if (result.needsConfirmation) {
+          // Usuário precisa confirmar email
+          alert(
+            '🎉 Conta criada com sucesso!\n\n' +
+            `Enviamos um email de confirmação para:\n${formData.email}\n\n` +
+            'Clique no link de confirmação para ativar sua conta e começar a usar o CatButler! 🐱\n\n' +
+            'Não esqueça de verificar sua caixa de spam se não encontrar o email.'
+          );
+          
+          // Redirecionar para página de login com mensagem
+          navigate('/login', { 
+            state: { 
+              message: 'Verifique seu email para confirmar sua conta',
+              email: formData.email
+            }
+          });
+        } else {
+          // Login imediato (email já confirmado - improvável em produção)
+          alert('🎉 Conta criada e ativada com sucesso! Bem-vindo ao CatButler! 🐱');
+          navigate('/');
+        }
+        
+        // Limpar formulário
+        setFormData({
+          nome: '',
+          email: '',
+          senha: '',
+          confirmarSenha: '',
+          aceitarTermos: false
+        });
+        
+      } else {
+        // Erro no cadastro
+        let errorMessage = result.error || 'Erro desconhecido no cadastro';
+        
+        // Mensagens mais amigáveis para erros comuns
+        if (errorMessage.includes('User already registered')) {
+          errorMessage = `Este email já possui uma conta. Tente fazer login ou recuperar sua senha.`;
+        } else if (errorMessage.includes('Invalid email')) {
+          errorMessage = 'Email inválido. Verifique se digitou corretamente.';
+        } else if (errorMessage.includes('Password')) {
+          errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
+        }
+        
+        setErrors({
+          submit: errorMessage
+        });
+      }
+      
     } catch (error) {
-      console.error('Erro ao criar conta:', error);
-      alert('Erro ao criar conta. Tente novamente.');
+      console.error('🚨 Erro no cadastro:', error);
+      setErrors({
+        submit: 'Erro inesperado. Verifique sua conexão e tente novamente.'
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -207,14 +207,22 @@
     @apply flex-none h-16 lg:h-12;
   }
 
+  .spa-layout {
+    @apply min-h-screen flex flex-col;
+  }
+
   .spa-main {
     @apply flex-1 flex overflow-hidden;
+    min-height: calc(100vh - 120px); /* Header + Footer space */
   }
 
   .spa-sidebar {
-    @apply flex-none w-64 lg:w-48 xl:w-56 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-r border-gray-200 dark:border-gray-700 overflow-y-auto scrollbar-hide;
+    @apply flex-none w-64 lg:w-56 xl:w-64 2xl:w-72 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-r border-gray-200 dark:border-gray-700 scrollbar-hide;
     z-index: 40;
     position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .spa-content {

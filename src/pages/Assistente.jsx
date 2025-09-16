@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+import { useAuth } from '../contexts/AuthContext';
 
 /** -----------------------------
  *  Dados base (mock)
@@ -71,6 +70,7 @@ const fmtTime = (ts) =>
   new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
 export default function Assistente() {
+  const { isVisitorMode } = useAuth();
   const [personalidadeAtiva, setPersonalidadeAtiva] = useState('geral');
   const [messages, setMessages] = useState(mockMessages);
   const [isTyping, setIsTyping] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import VisitorModeWrapper from '../components/VisitorModeWrapper';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import VisitorModeWrapper from '../components/VisitorModeWrapper.jsx';
 
 // Configurações das seções
 const SECOES_CONFIG = [

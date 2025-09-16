@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-
-// Detecta modo visitante via flag de ambiente
-const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+import VisitorModeWrapper from '../components/VisitorModeWrapper';
 
 // Mock data otimizado - dados estáticos para melhor performance
 const MOCK_EVENTS = [
@@ -162,8 +160,9 @@ export default function Agenda() {
   }, [selectedDate]);
 
   return (
-    <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
-      {/* Header Otimizado com ícone */}
+    <VisitorModeWrapper pageName="a agenda">
+      <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
+        {/* Header Otimizado com ícone */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3 mb-2 sm:mb-0">
           <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg shrink-0">
@@ -282,38 +281,7 @@ export default function Agenda() {
           Nova Tarefa
         </button>
       </div>
-      
-      {/* Overlay para bloquear interações em modo visitante */}
-      {isVisitorMode && (
-        <>
-          {/* Blur apenas na área de conteúdo - z-index menor que sidebar */}
-          <div className="fixed top-0 right-0 bottom-0 left-0 lg:left-48 xl:left-56 bg-black/20 backdrop-blur-sm z-30"></div>
-          {/* Modal centralizado - z-index maior que sidebar */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <div 
-              className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-2xl p-6 m-4 max-w-md border border-indigo-200 dark:border-indigo-600 pointer-events-auto"
-            >
-              <div className="text-center">
-                <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fa-solid fa-lock text-white text-lg"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Modo Somente Leitura
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                  Esta é uma visualização do sistema de agenda. Para criar, editar e gerenciar seus próprios eventos, crie uma conta gratuita!
-                </p>
-                <button
-                  onClick={() => window.location.href = '/criar-conta'}
-                  className="w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-semibold"
-                >
-                  Criar Conta Grátis
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+      </div>
+    </VisitorModeWrapper>
   );
 }

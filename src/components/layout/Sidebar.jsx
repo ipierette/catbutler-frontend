@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const menuItems = [
   {
@@ -83,29 +84,55 @@ const menuItems = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const { getDisplayName, getUserAvatar, isVisitorMode, logout } = useAuth();
+  
+  const userAvatar = getUserAvatar();
+  const displayName = getDisplayName();
+
+  console.log('🔍 Sidebar Debug:', {
+    isVisitorMode,
+    userAvatar,
+    displayName
+  });
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
 
   return (
-    <aside className="spa-sidebar h-screen">
-      <div className="p-4 h-full flex flex-col">
+    <aside className="spa-sidebar">
+      <div className="p-4 h-full flex flex-col min-h-0">
         {/* User Section */}
         <div className="mb-7 mt-1">
           <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-              <i className="fa-solid fa-user text-white text-sm"></i>
+            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-primary-500">
+              {userAvatar ? (
+                <img
+                  src={userAvatar}
+                  alt={displayName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <i className="fa-solid fa-user text-white text-sm"></i>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                Visitante
+                {displayName}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                Bem-vindo ao CatButler
+                Bem-vindo(a)!!
               </p>
             </div>
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto min-h-0 scrollbar-hide">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             
@@ -131,22 +158,38 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* Quick Actions */}
-        <div className="mt-6 space-y-2">
-          <Link 
-            to="/criar-conta"
-            className="w-full btn-primary text-xs py-2 px-3 flex items-center justify-center gap-2"
-          >
-            <i className="fa-solid fa-user-plus text-xs"></i>
-            Criar Conta
-          </Link>
-          <Link 
-            to="/login"
-            className="w-full btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-2"
-          >
-            <i className="fa-solid fa-sign-in-alt text-xs"></i>
-            Entrar
-          </Link>
+        {/* Action Buttons */}
+        <div className="mt-6 space-y-2 flex-shrink-0">
+          {isVisitorMode ? (
+            // Botões para visitantes (não logados)
+            <div className="space-y-2">
+              <Link 
+                to="/criar-conta"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200"
+              >
+                <i className="fa-solid fa-user-plus text-xs"></i>
+                <span>Criar Conta</span>
+              </Link>
+              <Link 
+                to="/login"
+                className="w-full bg-green-600 hover:bg-green-700 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200"
+              >
+                <i className="fa-solid fa-sign-in-alt text-xs"></i>
+                <span>Entrar</span>
+              </Link>
+            </div>
+          ) : (
+            // Botão para usuários logados (apenas logout)
+            <div className="space-y-2">
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-600 hover:bg-red-700 text-white text-xs py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                <i className="fa-solid fa-sign-out-alt text-xs" />
+                <span>Sair</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </aside>
