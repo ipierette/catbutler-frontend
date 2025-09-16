@@ -1,0 +1,57 @@
+# Vercel Ignore File - CatButler Frontend
+# Ignora arquivos desnecessários durante o deploy
+
+# Development files
+.env.local
+.env.development
+.env.test
+
+# Testing
+/tests
+/test-results
+/playwright-report
+coverage/
+*.test.*
+*.spec.*
+jest.config.*
+playwright.config.*
+
+# Development tools
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.tmp
+*.swp
+
+# Documentation (opcional - remova se quiser incluir)
+README.md
+CHANGELOG.md
+OAUTH_SETUP.md
+
+# Scripts development 
+scripts/cleanup-ports.sh
+optimize-avatars.js
+process-images.js
+
+# Large source images (keep optimized versions only)
+src/assets/images/*.png
+src/assets/images/*.jpg
+src/assets/images/*.jpeg
+
+# Keep these for build:
+# package.json
+# package-lock.json 
+# vite.config.js
+# vercel.json
+# src/
+# public/
