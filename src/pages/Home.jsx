@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-// Detecta modo visitante via flag de ambiente
-const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
 import { Link, useNavigate } from 'react-router-dom';
 import { TermsModal, useModal } from '../components/Modals';
 import StatsOffcanvas from '../components/StatsOffcanvas';
 import OptimizedImage from '../components/OptimizedImage';
+import { useAuth } from '../contexts/AuthContext';
 
 // Dados estáticos otimizados
 const TIPS = [
@@ -30,8 +29,8 @@ const CAT_FACTS = [
 ];
 
 const ACTIVITIES = [
-  { id: 1, title: "Pasta Carbonara", subtitle: "Receita sugerida", time: "2h atrás", icon: "fa-utensils", color: "from-blue-500 to-blue-600", route: "/cozinha" },
-  { id: 2, title: "Mercado Central", subtitle: "Lista de compras", time: "Ontem", icon: "fa-shopping-cart", color: "from-green-500 to-green-600", route: "/mercado" }
+  { id: 1, title: "Pasta Carbonara", subtitle: "Receita sugerida", time: "2h atrás", icon: "fa-utensils", color: "from-blue-500 to-blue-600", route: "/cozinha-ia" },
+  { id: 2, title: "Mercado Central", subtitle: "Lista de compras", time: "Ontem", icon: "fa-shopping-cart", color: "from-green-500 to-green-600", route: "/mercado-ia" }
 ];
 
 const ACHIEVEMENTS = {
@@ -51,6 +50,7 @@ export default function Home() {
   
   const termsModal = useModal();
   const navigate = useNavigate();
+  const { getDisplayName, getUserAvatar, isVisitorMode } = useAuth();
 
   // Atualizar relógio a cada minuto
   useEffect(() => {
@@ -72,22 +72,22 @@ export default function Home() {
     let suggestion, suggestionRoute;
     if (hour >= 6 && hour < 10) {
       suggestion = "Que tal preparar um café da manhã nutritivo?";
-      suggestionRoute = "/cozinha";
+      suggestionRoute = "/cozinha-ia";
     } else if (hour >= 10 && hour < 12) {
       suggestion = "Hora de organizar as tarefas do dia!";
       suggestionRoute = "/tarefas";
     } else if (hour >= 12 && hour < 14) {
       suggestion = "Vamos preparar o almoço com ingredientes frescos?";
-      suggestionRoute = "/cozinha";
+      suggestionRoute = "/cozinha-ia";
     } else if (hour >= 14 && hour < 17) {
       suggestion = "Que tal uma faxina rápida na casa?";
-      suggestionRoute = "/faxina";
+      suggestionRoute = "/faxina-ia";
     } else if (hour >= 17 && hour < 20) {
       suggestion = "Hora de fazer as compras para o jantar!";
-      suggestionRoute = "/mercado";
+      suggestionRoute = "/mercado-ia";
     } else if (hour >= 20 && hour < 22) {
       suggestion = "Vamos preparar um jantar especial?";
-      suggestionRoute = "/cozinha";
+      suggestionRoute = "/cozinha-ia";
     } else {
       suggestion = "Que tal planejar o dia de amanhã?";
       suggestionRoute = "/agenda";
@@ -138,11 +138,22 @@ export default function Home() {
             <div className="lg:col-span-2 space-y-6">
               {/* Greeting */}
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                    {greeting}, <span className="text-primary-600 dark:text-primary-400">Visitante</span>
-                  </h1>
-                  <i className="fa-solid fa-hand-peace text-2xl text-primary-500 dark:text-accent-400 animate-pulse"></i>
+                <div className="flex items-center gap-4">
+                  {getUserAvatar() && (
+                    <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-primary-200 dark:border-primary-600 shadow-lg">
+                      <img
+                        src={getUserAvatar()}
+                        alt={getDisplayName()}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+                      {greeting}, <span className="text-primary-600 dark:text-primary-400">{getDisplayName()}</span>
+                    </h1>
+                    <i className="fa-solid fa-hand-peace text-2xl text-primary-500 dark:text-accent-400 animate-pulse"></i>
+                  </div>
                 </div>
                 <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl leading-relaxed">
                   Organize sua casa com IA — receitas, faxina e compras numa experiência fluida.
@@ -282,7 +293,7 @@ export default function Home() {
           </article>
 
           {/* Tips & Facts Card */}
-          <article className="card-glass rounded-xl shadow-lg p-6 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border border-yellow-200 dark:border-gray-600">
+          <article className="card-glass rounded-xl shadow-lg p-6 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border border-yellow-200 dark:border-gray-600 relative">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
                 <i className={`fa-solid ${showCatFact ? 'fa-cat' : 'fa-lightbulb'} text-white`}></i>
@@ -292,52 +303,79 @@ export default function Home() {
               </h3>
             </div>
             
-            <div className="space-y-4">
-              <button
-                onClick={toggleTipFact}
-                className="w-full text-left p-3 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors duration-200"
-              >
-                {isGenerating ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-600 border-t-transparent"></div>
-                    <span className="text-sm text-yellow-800 dark:text-yellow-200">
-                      Gerando {showCatFact ? "novo fato" : "nova dica"}...
-                    </span>
+            {isVisitorMode ? (
+              /* Versão bloqueada para visitantes */
+              <div className="space-y-4">
+                <div className="w-full p-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg relative overflow-hidden">
+                  <div className="flex items-center gap-2 mb-2">
+                    <i className="fa-solid fa-lock text-gray-400 text-sm"></i>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Conteúdo Premium</span>
                   </div>
-                ) : (
-                  <div>
-                    <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium leading-relaxed">
-                      {showCatFact ? currentFact : currentTip}
-                    </p>
-                    <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-2 opacity-75">
-                      Clique para {showCatFact ? "ver dica" : "ver fato sobre gatos"}
-                    </p>
-                  </div>
-                )}
-              </button>
-              
-              <button
-                onClick={generateNew}
-                disabled={isGenerating}
-                className={`w-full px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
-                  isGenerating 
-                    ? 'bg-yellow-400 text-yellow-800 cursor-not-allowed' 
-                    : 'bg-yellow-500 hover:bg-yellow-600 text-white hover:scale-105'
-                }`}
-              >
-                {isGenerating ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-800 border-t-transparent"></div>
-                    Gerando...
-                  </>
-                ) : (
-                  <>
-                    <i className={`fa-solid ${showCatFact ? 'fa-cat' : 'fa-lightbulb'}`}></i>
-                    {showCatFact ? 'Novo fato' : 'Nova dica'}
-                  </>
-                )}
-              </button>
-            </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed blur-sm select-none">
+                    Organize sua geladeira por categorias para facilitar o acesso!
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 blur-sm select-none">
+                    Clique para ver fato sobre gatos
+                  </p>
+                </div>
+                
+                <button
+                  disabled
+                  className="w-full px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-lg font-medium text-sm cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <i className="fa-solid fa-lock"></i>
+                  Disponível para usuários
+                </button>
+              </div>
+            ) : (
+              /* Funcionalidade normal para usuários logados */
+              <div className="space-y-4">
+                <button
+                  onClick={toggleTipFact}
+                  className="w-full text-left p-3 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors duration-200"
+                >
+                  {isGenerating ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-600 border-t-transparent"></div>
+                      <span className="text-sm text-yellow-800 dark:text-yellow-200">
+                        Gerando {showCatFact ? "novo fato" : "nova dica"}...
+                      </span>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium leading-relaxed">
+                        {showCatFact ? currentFact : currentTip}
+                      </p>
+                      <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-2 opacity-75">
+                        Clique para {showCatFact ? "ver dica" : "ver fato sobre gatos"}
+                      </p>
+                    </div>
+                  )}
+                </button>
+                
+                <button
+                  onClick={generateNew}
+                  disabled={isGenerating}
+                  className={`w-full px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+                    isGenerating 
+                      ? 'bg-yellow-400 text-yellow-800 cursor-not-allowed' 
+                      : 'bg-yellow-500 hover:bg-yellow-600 text-white hover:scale-105'
+                  }`}
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-800 border-t-transparent"></div>
+                      Gerando...
+                    </>
+                  ) : (
+                    <>
+                      <i className={`fa-solid ${showCatFact ? 'fa-cat' : 'fa-lightbulb'}`}></i>
+                      {showCatFact ? 'Novo fato' : 'Nova dica'}
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </article>
         </section>
 

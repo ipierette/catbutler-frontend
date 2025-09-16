@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-
-// Detecta modo visitante via flag de ambiente
-const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+import { useAuth } from '../contexts/AuthContext';
+import VisitorModeWrapper from '../components/VisitorModeWrapper';
 
 // Dados estáticos otimizados
 const COMODOS = [
@@ -85,6 +84,9 @@ export default function FaxinaIA() {
     console.log('FaxinaIA carregado');
   }, []);
 
+  // Auth context
+  const { isVisitorMode } = useAuth();
+
   // Estados essenciais
   const [rotinaAtiva, setRotinaAtiva] = useState("diaria");
   const [tarefasConcluidas, setTarefasConcluidas] = useState(new Set());
@@ -149,7 +151,8 @@ export default function FaxinaIA() {
   }, [mensagem, conversas, isVisitorMode]);
 
   return (
-    <div className="h-full overflow-y-auto custom-scrollbar">
+    <VisitorModeWrapper pageName="a faxina IA">
+      <div className="h-full overflow-y-auto custom-scrollbar">
       <div className="p-4 lg:p-6 space-y-6">
         {/* Header padronizado */}
         <div className="mb-4">
@@ -896,6 +899,7 @@ export default function FaxinaIA() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </VisitorModeWrapper>
   );
 }

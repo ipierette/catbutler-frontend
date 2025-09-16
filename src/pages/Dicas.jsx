@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import FilterButton from '../components/ui/FilterButton';
-
-// Detecta modo visitante
-const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+import VisitorModeWrapper from '../components/VisitorModeWrapper';
 
 // Dados das dicas domésticas
 const dicasDomesticas = [
@@ -116,6 +115,9 @@ const categoriasFatos = [
 ];
 
 export default function Dicas() {
+  // Auth context
+  const { isVisitorMode } = useAuth();
+  
   // Define aba inicial baseado no modo visitante
   const [activeTab, setActiveTab] = useState(isVisitorMode ? 'fatos' : 'dicas');
   const [selectedCategory, setSelectedCategory] = useState('todas');
@@ -157,7 +159,8 @@ export default function Dicas() {
   };
 
   return (
-    <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
+    <VisitorModeWrapper pageName="as dicas">
+      <div className="h-full p-4 lg:p-6 overflow-y-auto custom-scrollbar">
       {/* Header padronizado */}
       <div className="mb-4">
           <div className="flex items-center gap-3 mb-4">
@@ -448,6 +451,7 @@ export default function Dicas() {
             </div>
           )}
         </div>
-    </div>
+      </div>
+    </VisitorModeWrapper>
   );
 }

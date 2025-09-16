@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-
-// Detecta modo visitante via flag de ambiente
-const isVisitorMode = import.meta.env.VITE_VISITOR_MODE === 'true';
+import { useAuth } from '../contexts/AuthContext';
+import VisitorModeWrapper from '../components/VisitorModeWrapper';
 
 // Dados estáticos otimizados
 const INGREDIENTES_SUGERIDOS = [
@@ -61,6 +60,9 @@ export default function CozinhaIA() {
   useEffect(() => {
     console.log('CozinhaIA carregado');
   }, []);
+
+  // Auth context
+  const { getUserAvatar, getDisplayName, isVisitorMode } = useAuth();
 
   // Estados essenciais
   const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
@@ -183,7 +185,8 @@ export default function CozinhaIA() {
   }, [mensagem, conversas, isVisitorMode]);
 
   return (
-    <div className="h-full overflow-y-auto custom-scrollbar">
+    <VisitorModeWrapper pageName="a cozinha IA">
+      <div className="h-full overflow-y-auto custom-scrollbar">
       <div className="p-4 lg:p-6 space-y-6">
         {/* Header padronizado */}
         <div className="mb-4">
@@ -821,8 +824,18 @@ export default function CozinhaIA() {
                     </div>
 
                     {conversa.tipo === 'usuario' && (
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full grid place-items-center flex-shrink-0">
-                        <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-sm" />
+                      <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-200 dark:border-blue-600">
+                        {getUserAvatar() ? (
+                          <img
+                            src={getUserAvatar()}
+                            alt={getDisplayName()}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-blue-100 dark:bg-blue-900/30 grid place-items-center">
+                            <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-sm" />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -919,6 +932,7 @@ export default function CozinhaIA() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </VisitorModeWrapper>
   );
 }

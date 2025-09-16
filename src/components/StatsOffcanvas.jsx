@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-// Importa o hook de autenticação
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import PropTypes from 'prop-types';
 
 
 export default function StatsOffcanvas({ achievements = {} }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { isVisitorMode } = useAuth();
 
-  // Detecta modo visitante via flag de ambiente
-  const isVisitor = import.meta.env.VITE_VISITOR_MODE === 'true';
+  // Detecta modo visitante via hook de autenticação
+  const isVisitor = isVisitorMode;
 
   const toggleOffcanvas = () => {
     setIsOpen(!isOpen);
