@@ -1,5 +1,4 @@
 import React from 'react';
-import izadoraProfile from '../assets/images/izadora-profile.jpg';
 
 export default function Sobre() {
   return (
@@ -63,7 +62,7 @@ export default function Sobre() {
             <div className="flex-shrink-0 text-center lg:text-left">
               <div className="w-32 h-32 mx-auto lg:mx-0 mb-4 relative">
                 <img 
-                  src={izadoraProfile} 
+                  src="/images/izadora-profile.webp" 
                   alt="Izadora Pierette" 
                   className="w-full h-full object-cover rounded-full border-4 border-white dark:border-gray-700 shadow-lg"
                   onError={(e) => {
