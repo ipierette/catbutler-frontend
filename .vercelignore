@@ -43,9 +43,12 @@ scripts/cleanup-ports.sh
 optimize-avatars.js
 
 # Large source images (as optimized versions are in public/)
-src/assets/images/*.png
-src/assets/images/*.jpg
-src/assets/images/*.jpeg
+# Keep only source images that are actually needed for build
+src/assets/images/axel.png
+src/assets/images/frajonilda.png
+src/assets/images/misscat.png
+src/assets/images/oliver.png
+src/assets/images/izadora-profile.jpg
 
 # Keep these for build:
 # package.json

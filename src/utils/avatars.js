@@ -1,8 +1,9 @@
 // Componente simples para otimizar imagens de avatar
-import axelImg from '../assets/images/avatars/axel.png';
-import frajonildaImg from '../assets/images/avatars/frajonilda.png';
-import misscatImg from '../assets/images/avatars/misscat.png';
-import oliverImg from '../assets/images/avatars/oliver.png';
+// Usando imagens otimizadas da pasta public
+const axelImg = '/images/axel.webp';
+const frajonildaImg = '/images/frajonilda.webp';
+const misscatImg = '/images/misscat.webp';
+const oliverImg = '/images/oliver.webp';
 
 export const avatarImages = {
   axel: axelImg,
