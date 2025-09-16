@@ -38,12 +38,11 @@ README.md
 CHANGELOG.md
 OAUTH_SETUP.md
 
-# Scripts development 
+# Scripts development (exceto process-images.js que é usado no build)
 scripts/cleanup-ports.sh
 optimize-avatars.js
-process-images.js
 
-# Large source images (keep optimized versions only)
+# Large source images (as optimized versions are in public/)
 src/assets/images/*.png
 src/assets/images/*.jpg
 src/assets/images/*.jpeg
@@ -55,3 +54,4 @@ src/assets/images/*.jpeg
 # vercel.json
 # src/
 # public/
+# scripts/process-images.js

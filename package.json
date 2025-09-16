@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:with-images": "npm run process-images && vite build",
     "lint": "eslint . --ext .js,.jsx --fix",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
@@ -34,7 +35,7 @@
     "test:report": "playwright show-report",
     "test:coverage": "playwright test --reporter=html,json --coverage",
     "process-images": "node scripts/process-images.js",
-    "prebuild": "npm run process-images"
+    "prebuild:dev": "npm run process-images"
   },
   "keywords": [
     "catbutler",
