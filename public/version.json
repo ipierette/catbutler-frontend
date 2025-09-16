@@ -1,0 +1,21 @@
+{
+  "version": "4.0.0",
+  "lastUpdate": "2025-09-16T22:40:00.000Z",
+  "deployHash": "309dbe4",
+  "features": [
+    "OAuth Login (Facebook & Google)",
+    "Persistent Settings with Supabase",
+    "Improved SignUp with Email Confirmation", 
+    "Family Account Management (4 members max)",
+    "PWA with Service Worker",
+    "Optimized Images and Performance",
+    "Mobile Responsive Design",
+    "Dark/Light Theme Support"
+  ],
+  "buildInfo": {
+    "node": "22.x",
+    "vite": "7.1.5",
+    "react": "18.2.0",
+    "tailwind": "3.3.0"
+  }
+}
