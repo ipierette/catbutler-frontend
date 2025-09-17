@@ -8,11 +8,12 @@ import { ToastProvider } from "./components/Toast";
 import { ConfirmationProvider } from "./components/ConfirmationDialog";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { initializePerformanceOptimizations } from "./utils/performance";
+import { BUILD_INFO } from "./build-info.js";
 
 function App() {
   useEffect(() => {
     // Inicializar otimizações de performance
-    console.log('🚀 App iniciando...');
+    console.log('🚀 App iniciando...', BUILD_INFO);
     try {
       initializePerformanceOptimizations();
     } catch (error) {
