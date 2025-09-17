@@ -37,6 +37,11 @@ const Sobre = withLazyLoading(() => import("./pages/Sobre"), {
   description: "Conhecendo o CatButler" 
 });
 
+const Debug = withLazyLoading(() => import("./pages/Debug"), { 
+  title: "Carregando Debug...", 
+  description: "Verificando versão do sistema" 
+});
+
 const Dicas = withLazyLoading(() => import("./pages/Dicas"), { 
   title: "Carregando Dicas...", 
   description: "Coletando dicas úteis" 
@@ -96,6 +101,7 @@ export default function AppRoutes() {
               <Route path="/assistente" element={<Assistente />} />
               <Route path="/config" element={<Config />} />
               <Route path="/sobre" element={<Sobre />} />
+              <Route path="/debug" element={<Debug />} />
               <Route path="/dicas" element={<Dicas />} />
               <Route path="/historico" element={<Historico />} />
               <Route path="/mercado-ia" element={<MercadoIA />} />
