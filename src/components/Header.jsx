@@ -38,7 +38,7 @@ function Header() {
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <div className="flex items-center justify-center">
             <img
-              src="/images/logo-catbutler.webp"
+              src="/logo-catbutler.webp"
               alt="CatButler"
               className="w-8 h-8 object-contain"
             />

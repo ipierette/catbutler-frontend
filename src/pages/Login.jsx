@@ -149,7 +149,7 @@ export default function Login() {
       <section className="relative flex items-center justify-center w-full mx-auto glass-effect rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 fade-in-up bg-white/95 dark:bg-gray-700 border border-gray-200 dark:border-gray-500 h-20 sm:h-24">
         <div className="flex items-center gap-3">
           <img 
-            src="/images/logo-catbutler.webp" 
+            src="/logo-catbutler.webp" 
             alt="CatButler Logo" 
             className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
           />
