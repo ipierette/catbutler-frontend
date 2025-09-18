@@ -18,9 +18,7 @@ export const withLazyLoading = (importFunction, fallbackProps = {}) => {
   
   return (props) => (
     <Suspense
-      fallback={
-        startTransition(() => <LazyFallback {...fallbackProps} />)
-      }
+      fallback={<LazyFallback {...fallbackProps} />}
     >
       <LazyComponent {...props} />
     </Suspense>

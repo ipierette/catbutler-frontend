@@ -12,6 +12,19 @@ const CustomBackground = () => {
   const [fps, setFps] = useState(null);
 
   useEffect(() => {
+    console.log('🎨 CustomBackground: Inicializando...');
+    
+    // Verificações de ambiente primeiro
+    if (typeof window === 'undefined') {
+      console.warn('🎨 CustomBackground: Window não disponível (SSR?)');
+      return;
+    }
+
+    if (!canvasRef.current) {
+      console.warn('🎨 CustomBackground: Canvas ref não disponível');
+      return;
+    }
+
     let attempts = 0;
     const maxAttempts = 30; // ~6s
     const timer = setTimeout(() => {
@@ -22,12 +35,14 @@ const CustomBackground = () => {
       attempts++;
 
       if (attempts > maxAttempts) {
-        console.warn('NEAT: Timeout após múltiplas tentativas');
+        console.warn('🎨 NEAT: Timeout após múltiplas tentativas');
         setIsLoaded(false);
         stopFpsMeter();
         return;
       }
+      
       if (!window.THREE) {
+        console.log(`🎨 NEAT: Aguardando THREE.js (tentativa ${attempts}/${maxAttempts})...`);
         // aguarda three carregar
         setTimeout(initializeNEAT, 200);
         return;
