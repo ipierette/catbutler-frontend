@@ -4,7 +4,6 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
-import logoCatButler from "../assets/images/logo-catbutler.webp";
 
 function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -26,9 +25,9 @@ function Header() {
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <div className="flex items-center justify-center">
             <img
-              src={logoCatButler}
-              alt="CatButler Logo"
-              className="w-8 h-8 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
+              src="/images/logo-catbutler.webp"
+              alt="CatButler"
+              className="w-8 h-8 object-contain"
             />
           </div>
           <span className="font-bold text-base lg:text-lg tracking-wide text-gray-900 dark:text-gray-100">CatButler</span>
