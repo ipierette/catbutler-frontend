@@ -9,6 +9,7 @@ import { ConfirmationProvider } from "./components/ConfirmationDialog";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { initializePerformanceOptimizations } from "./utils/performance";
 import { BUILD_INFO } from "./build-info.js";
+import "./debug-env.js"; // Import debug das env vars
 
 function App() {
   useEffect(() => {
@@ -16,6 +17,7 @@ function App() {
     console.log('🚀 App iniciando...', BUILD_INFO);
     try {
       initializePerformanceOptimizations();
+      console.log('✅ Otimizações de performance inicializadas');
     } catch (error) {
       console.error('❌ Erro ao inicializar otimizações:', error);
     }

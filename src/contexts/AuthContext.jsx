@@ -5,8 +5,19 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+
+console.log('🔐 AuthContext: Iniciando...');
+
+// Imports com debugging
 import { supabase, getUserProfile, onAuthStateChange } from '../utils/supabase';
 import { avatarList } from '../utils/avatars';
+
+console.log('✅ AuthContext: Imports realizados com sucesso', {
+  supabase: !!supabase,
+  getUserProfile: !!getUserProfile,
+  onAuthStateChange: !!onAuthStateChange,
+  avatarList: !!avatarList
+});
 
 // Tipos para TypeScript-like behavior
 const AuthContext = createContext();
