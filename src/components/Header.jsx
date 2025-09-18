@@ -42,10 +42,9 @@ function Header() {
               alt="CatButler"
               className="w-8 h-8 object-contain"
               onError={(e) => {
-                console.error('Erro ao carregar logo:', e);
-                e.target.style.display = 'none';
+                // Fallback silencioso - usar emoji se logo falhar
+                e.target.outerHTML = '<div class="w-8 h-8 flex items-center justify-center text-2xl">🐱</div>';
               }}
-              onLoad={() => console.log('Logo carregada com sucesso!')}
             />
           </div>
           <span className="font-bold text-base lg:text-lg tracking-wide text-gray-900 dark:text-gray-100">CatButler</span>

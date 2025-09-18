@@ -26,7 +26,7 @@ const CustomBackground = () => {
     }
 
     let attempts = 0;
-    const maxAttempts = 30; // ~6s
+    const maxAttempts = 15; // Reduzir tentativas para ~3s
     const timer = setTimeout(() => {
       initializeNEAT();
     }, 300);
@@ -35,23 +35,21 @@ const CustomBackground = () => {
       attempts++;
 
       if (attempts > maxAttempts) {
-        console.warn('🎨 NEAT: Timeout após múltiplas tentativas');
+        console.log('🎨 NEAT: Background animado indisponível - usando fallback estático');
         setIsLoaded(false);
         stopFpsMeter();
         return;
       }
       
-      if (!window.THREE) {
-        console.log(`🎨 NEAT: Aguardando THREE.js (tentativa ${attempts}/${maxAttempts})...`);
-        // aguarda three carregar
+      if (!window.THREE || !window.FireCMS?.NeatGradient) {
+        // Log apenas a cada 5 tentativas para reduzir spam
+        if (attempts % 5 === 0) {
+          console.log(`🎨 NEAT: Aguardando bibliotecas... (${attempts}/${maxAttempts})`);
+        }
         setTimeout(initializeNEAT, 200);
         return;
       }
-      if (!window.FireCMS || !window.FireCMS.NeatGradient) {
-        // aguarda NEAT (index.umd.js)
-        setTimeout(initializeNEAT, 200);
-        return;
-      }
+      
       if (!canvasRef.current) {
         setTimeout(initializeNEAT, 100);
         return;
