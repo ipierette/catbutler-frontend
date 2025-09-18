@@ -41,4 +41,7 @@ function App() {
   );
 }
 
+// Export explícito para evitar problemas de minificação
+App.displayName = 'CatButlerApp';
+export { App };
 export default App;
