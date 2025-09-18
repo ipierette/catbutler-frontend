@@ -9,32 +9,63 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    '🚨 Configuração Supabase incompleta!\n' +
-    'Verifique se VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY estão definidas no .env.local'
+// Modo degradado - se não há configuração Supabase, funciona em modo visitante
+const hasSupabaseConfig = !!(supabaseUrl && supabaseAnonKey);
+
+if (!hasSupabaseConfig) {
+  console.warn(
+    '⚠️ Configuração Supabase incompleta - funcionando em modo visitante!\n' +
+    'Para autenticação completa, configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY'
   );
 }
 
-// Criar cliente Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    // Configurações de autenticação
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-  // Configurações globais
-  global: {
-    headers: {
-      'X-Client-Info': 'catbutler-frontend@4.0.0'
-    }
-  }
-});
+// Exportar status da configuração para uso em outros componentes
+export { hasSupabaseConfig };
+
+// Criar cliente Supabase ou mock para modo visitante
+export const supabase = hasSupabaseConfig 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        // Configurações de autenticação
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+      // Configurações globais
+      global: {
+        headers: {
+          'X-Client-Info': 'catbutler-frontend@4.0.0'
+        }
+      }
+    })
+  : {
+      // Mock client para modo visitante
+      auth: {
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        onAuthStateChange: (callback) => {
+          callback('SIGNED_OUT', null);
+          return { data: { subscription: { unsubscribe: () => {} } } };
+        },
+        signUp: () => Promise.resolve({ error: { message: 'Supabase não configurado' } }),
+        signInWithPassword: () => Promise.resolve({ error: { message: 'Supabase não configurado' } }),
+        signOut: () => Promise.resolve({ error: null })
+      },
+      from: () => ({
+        select: () => Promise.resolve({ data: [], error: null }),
+        insert: () => Promise.resolve({ error: { message: 'Supabase não configurado' } }),
+        update: () => Promise.resolve({ error: { message: 'Supabase não configurado' } }),
+        delete: () => Promise.resolve({ error: { message: 'Supabase não configurado' } })
+      })
+    };
 
 // Função para verificar se o usuário está autenticado
 export const isAuthenticated = async () => {
   try {
+    if (!hasSupabaseConfig) {
+      console.log('🔄 Supabase não configurado - modo visitante ativo');
+      return false;
+    }
+    
     const { data: { session }, error } = await supabase.auth.getSession();
     
     if (error) {
