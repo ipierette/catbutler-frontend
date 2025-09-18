@@ -55,22 +55,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: process.env.NODE_ENV === 'development',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-      mangle: {
-        // Preservar nomes de função para evitar problemas de export
-        keep_fnames: true,
-        keep_classnames: true
-      },
-      output: {
-        // Preservar nomes de export
-        keep_quoted_props: true
-      }
-    },
+    minify: false, // Desabilita minificação temporariamente para debug
     rollupOptions: {
       output: {
         manualChunks(id) {
