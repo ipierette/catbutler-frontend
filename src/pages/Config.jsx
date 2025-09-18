@@ -73,7 +73,7 @@ export default function Config() {
   
   // Estados
   const [secaoAtiva, setSecaoAtiva] = useState('geral');
-  const [autoTheme, setAutoTheme] = useState(false);
+  const [autoTheme, setAutoTheme] = useState(profile?.auto_theme_change || false);
   const [configuracoes, setConfiguracoes] = useState({
     notificacoes: {
       tarefas: true,
@@ -105,8 +105,24 @@ export default function Config() {
   const [newMemberEmail, setNewMemberEmail] = useState('');
 
   // Funções
-  const toggleAutoTheme = () => {
-    setAutoTheme(!autoTheme);
+  const toggleAutoTheme = async () => {
+    const novoEstado = !autoTheme;
+    setAutoTheme(novoEstado);
+    
+    // Salvar no perfil
+    if (isAuthenticated) {
+      try {
+        await updateProfile({
+          display_name: profile?.display_name,
+          endereco: profile?.endereco,
+          avatar_url: profile?.avatar_url,
+          auto_theme_change: novoEstado
+        });
+        console.log('✅ Tema automático atualizado:', novoEstado);
+      } catch (error) {
+        console.error('❌ Erro ao atualizar tema automático:', error);
+      }
+    }
   };
 
   const toggleNotificacao = (key) => {
@@ -185,7 +201,8 @@ export default function Config() {
       const result = await updateProfile({
         display_name: perfilEditando.nome,
         endereco: perfilEditando.endereco,
-        avatar_url: perfilEditando.avatarSelecionado
+        avatar_url: perfilEditando.avatarSelecionado,
+        auto_theme_change: autoTheme
       });
       
       if (result.success) {
@@ -218,6 +235,9 @@ export default function Config() {
         endereco: profile.endereco || '',
         avatarSelecionado: profile.avatar || 'axel'
       });
+      
+      // Atualizar estado do tema automático
+      setAutoTheme(profile.auto_theme_change || false);
     }
   }, [isAuthenticated, profile]);
 

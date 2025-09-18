@@ -7,6 +7,7 @@ CREATE TABLE public.profiles (
   display_name TEXT,
   avatar_url TEXT,
   endereco TEXT,
+  auto_theme_change BOOLEAN DEFAULT FALSE,
   preferences JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

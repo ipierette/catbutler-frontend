@@ -337,6 +337,8 @@ export const updateUserProfile = async (userId, profileData) => {
       .update({
         display_name: profileData.display_name,
         avatar_url: profileData.avatar_url,
+        endereco: profileData.endereco,
+        auto_theme_change: profileData.auto_theme_change,
         preferences: profileData.preferences,
         updated_at: new Date().toISOString(),
         ...profileData
