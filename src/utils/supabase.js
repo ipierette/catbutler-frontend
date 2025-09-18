@@ -387,4 +387,217 @@ export const updateUserProfile = async (userId, profileData) => {
   }
 };
 
+// ==========================================
+// 📝 FUNÇÕES DE TAREFAS (TASKS)
+// ==========================================
+
+// Função para criar uma nova tarefa
+export const createTask = async (taskData) => {
+  try {
+    if (!hasSupabaseConfig) {
+      console.warn('🔄 Supabase não configurado - simulando criação de tarefa');
+      return {
+        success: true,
+        task: { 
+          id: Math.random().toString(36).substr(2, 9),
+          user_id: 'mock-user',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          data_criacao: new Date().toISOString(),
+          ...taskData 
+        }
+      };
+    }
+
+    console.log('🔄 Criando tarefa no Supabase...', taskData);
+    
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert([{
+        titulo: taskData.titulo,
+        descricao: taskData.descricao,
+        categoria: taskData.categoria || 'Outros',
+        prioridade: taskData.prioridade || 'Média',
+        status: taskData.status || 'Pendente',
+        data_vencimento: taskData.data_vencimento || null
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('🚨 Erro ao criar tarefa:', error);
+      throw new Error(`Erro ao criar tarefa: ${error.message}`);
+    }
+
+    console.log('✅ Tarefa criada com sucesso:', data);
+    return { success: true, task: data };
+
+  } catch (error) {
+    console.error('🚨 Erro ao criar tarefa:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Função para buscar todas as tarefas do usuário
+export const getTasks = async (filters = {}) => {
+  try {
+    if (!hasSupabaseConfig) {
+      console.warn('🔄 Supabase não configurado - retornando tarefas mockadas');
+      return {
+        success: true,
+        tasks: [
+          {
+            id: 1,
+            titulo: "Limpar a cozinha",
+            descricao: "Lavar louça, limpar bancada e organizar geladeira",
+            categoria: "Faxina",
+            prioridade: "Alta",
+            status: "Pendente",
+            data_criacao: "2025-01-15",
+            data_vencimento: "2025-01-16"
+          }
+        ]
+      };
+    }
+
+    console.log('🔄 Buscando tarefas no Supabase...', filters);
+    
+    let query = supabase
+      .from('tasks')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Aplicar filtros
+    if (filters.status && filters.status !== 'Todas') {
+      query = query.eq('status', filters.status);
+    }
+    
+    if (filters.categoria && filters.categoria !== 'Todas') {
+      query = query.eq('categoria', filters.categoria);
+    }
+    
+    if (filters.busca) {
+      query = query.or(`titulo.ilike.%${filters.busca}%,descricao.ilike.%${filters.busca}%`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('🚨 Erro ao buscar tarefas:', error);
+      throw new Error(`Erro ao buscar tarefas: ${error.message}`);
+    }
+
+    console.log(`✅ ${data.length} tarefas encontradas`);
+    return { success: true, tasks: data };
+
+  } catch (error) {
+    console.error('🚨 Erro ao buscar tarefas:', error);
+    return { success: false, error: error.message, tasks: [] };
+  }
+};
+
+// Função para atualizar uma tarefa
+export const updateTask = async (taskId, updates) => {
+  try {
+    if (!hasSupabaseConfig) {
+      console.warn('🔄 Supabase não configurado - simulando atualização de tarefa');
+      return {
+        success: true,
+        task: { id: taskId, ...updates, updated_at: new Date().toISOString() }
+      };
+    }
+
+    console.log('🔄 Atualizando tarefa no Supabase...', { taskId, updates });
+    
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', taskId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('🚨 Erro ao atualizar tarefa:', error);
+      throw new Error(`Erro ao atualizar tarefa: ${error.message}`);
+    }
+
+    console.log('✅ Tarefa atualizada com sucesso:', data);
+    return { success: true, task: data };
+
+  } catch (error) {
+    console.error('🚨 Erro ao atualizar tarefa:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Função para deletar uma tarefa
+export const deleteTask = async (taskId) => {
+  try {
+    if (!hasSupabaseConfig) {
+      console.warn('🔄 Supabase não configurado - simulando exclusão de tarefa');
+      return { success: true };
+    }
+
+    console.log('🔄 Deletando tarefa no Supabase...', taskId);
+    
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', taskId);
+
+    if (error) {
+      console.error('🚨 Erro ao deletar tarefa:', error);
+      throw new Error(`Erro ao deletar tarefa: ${error.message}`);
+    }
+
+    console.log('✅ Tarefa deletada com sucesso');
+    return { success: true };
+
+  } catch (error) {
+    console.error('🚨 Erro ao deletar tarefa:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Função para obter estatísticas das tarefas
+export const getTasksStats = async () => {
+  try {
+    if (!hasSupabaseConfig) {
+      console.warn('🔄 Supabase não configurado - retornando estatísticas mockadas');
+      return {
+        success: true,
+        stats: {
+          total_tasks: 5,
+          pending_tasks: 2,
+          in_progress_tasks: 1,
+          completed_tasks: 2,
+          overdue_tasks: 1
+        }
+      };
+    }
+
+    console.log('🔄 Buscando estatísticas das tarefas...');
+    
+    const user = await getCurrentUser();
+    if (!user) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    const { data, error } = await supabase
+      .rpc('get_tasks_stats', { user_uuid: user.id });
+
+    if (error) {
+      console.error('🚨 Erro ao buscar estatísticas:', error);
+      throw new Error(`Erro ao buscar estatísticas: ${error.message}`);
+    }
+
+    console.log('✅ Estatísticas obtidas:', data[0]);
+    return { success: true, stats: data[0] };
+
+  } catch (error) {
+    console.error('🚨 Erro ao buscar estatísticas:', error);
+    return { success: false, error: error.message, stats: null };
+  }
+};
+
 export default supabase;
