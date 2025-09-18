@@ -1,8 +1,8 @@
--- 🐱 CatButler - Criação da Tabela Profiles
+-- 🐱 CatButler - Criação da Tabela Profiles (VERSÃO SEGURA)
 -- Execute este SQL no Supabase Dashboard > SQL Editor
 
--- 1. Criar tabela profiles
-CREATE TABLE public.profiles (
+-- 1. Criar tabela profiles (somente se não existir)
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   display_name TEXT,
   avatar_url TEXT,
@@ -16,7 +16,11 @@ CREATE TABLE public.profiles (
 -- 2. Habilitar RLS (Row Level Security)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- 3. Criar políticas de acesso
+-- 3. Criar políticas de acesso (removendo se existirem)
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+
 -- Usuários podem ver apenas seu próprio perfil
 CREATE POLICY "Users can view own profile" 
 ON public.profiles FOR SELECT 
@@ -41,7 +45,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 5. Criar trigger para updated_at
+-- 5. Criar trigger para updated_at (removendo se existir)
+DROP TRIGGER IF EXISTS profiles_updated_at ON public.profiles;
 CREATE TRIGGER profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW
@@ -55,12 +60,13 @@ BEGIN
   VALUES (
     NEW.id, 
     COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1))
-  );
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 7. Criar trigger para novos usuários (com verificação de existência)
+-- 7. Criar trigger para novos usuários (removendo se existir)
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
@@ -68,10 +74,26 @@ CREATE TRIGGER on_auth_user_created
   EXECUTE FUNCTION handle_new_user();
 
 -- 8. Criar perfil para usuários existentes (se houver)
-INSERT INTO public.profiles (id, display_name)
+INSERT INTO public.profiles (id, display_name, auto_theme_change)
 SELECT 
   id, 
-  COALESCE(raw_user_meta_data->>'display_name', split_part(email, '@', 1))
+  COALESCE(raw_user_meta_data->>'display_name', split_part(email, '@', 1)),
+  FALSE
 FROM auth.users 
 WHERE id NOT IN (SELECT id FROM public.profiles)
 ON CONFLICT (id) DO NOTHING;
+
+-- 9. Adicionar campo auto_theme_change se a tabela já existir mas sem o campo
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'profiles' 
+        AND column_name = 'auto_theme_change'
+    ) THEN
+        ALTER TABLE public.profiles ADD COLUMN auto_theme_change BOOLEAN DEFAULT FALSE;
+    END IF;
+END $$;
+
+-- ✅ Execução concluída com sucesso!
+-- A tabela profiles foi criada/atualizada com todos os campos necessários.

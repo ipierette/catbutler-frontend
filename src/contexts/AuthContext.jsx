@@ -237,7 +237,10 @@ export const AuthProvider = ({ children }) => {
       // Atualizar estado local apenas se salvou com sucesso
       setProfile(prev => ({
         ...prev,
-        ...result.profile
+        ...result.profile,
+        // Mapear campos do banco para o formato esperado pelo contexto
+        avatar: result.profile.avatar_url || result.profile.avatar,
+        nome: result.profile.display_name || result.profile.nome
       }));
 
       console.log('✅ Perfil atualizado com sucesso!', result.profile);
@@ -251,8 +254,8 @@ export const AuthProvider = ({ children }) => {
 
   // Função para obter nome de exibição
   const getDisplayName = () => {
-    if (isAuthenticated && profile?.display_name) {
-      return profile.display_name;
+    if (isAuthenticated && (profile?.display_name || profile?.nome)) {
+      return profile.display_name || profile.nome;
     }
     return 'Visitante';
   };
@@ -282,11 +285,14 @@ export const AuthProvider = ({ children }) => {
       isVisitorMode,
       profile,
       profileAvatar: profile?.avatar,
+      profileAvatarUrl: profile?.avatar_url,
       availableAvatars: availableAvatars.length
     });
     
-    if (!isVisitorMode && profile?.avatar) {
-      const avatar = availableAvatars.find(a => a.id === profile.avatar);
+    if (!isVisitorMode && (profile?.avatar || profile?.avatar_url)) {
+      // Suportar tanto avatar quanto avatar_url
+      const avatarId = profile?.avatar || profile?.avatar_url;
+      const avatar = availableAvatars.find(a => a.id === avatarId);
       console.log('🖼️ Avatar encontrado:', avatar);
       return avatar ? avatar.src : availableAvatars[0].src;
     }
