@@ -42,9 +42,11 @@ function Header() {
               alt="CatButler"
               className="w-8 h-8 object-contain"
               onError={(e) => {
-                // Fallback silencioso - usar emoji se logo falhar
-                e.target.outerHTML = '<div class="w-8 h-8 flex items-center justify-center text-2xl">🐱</div>';
+                console.log('🐱 Logo não carregou, mantendo elemento para layout');
+                // Manter elemento mas com fallback visual
+                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj7wn5CxPC90ZXh0Pgo8L3N2Zz4K';
               }}
+              onLoad={() => console.log('🐱 Logo carregada com sucesso!')}
             />
           </div>
           <span className="font-bold text-base lg:text-lg tracking-wide text-gray-900 dark:text-gray-100">CatButler</span>
