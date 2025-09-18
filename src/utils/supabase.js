@@ -149,7 +149,9 @@ export const signUp = async (email, password, metadata = {}) => {
           ...metadata
         },
         // Configuração de confirmação por email
-        emailRedirectTo: `${window.location.origin}/login?confirmed=true`
+        emailRedirectTo: import.meta.env.PROD 
+          ? 'https://catbutler-frontend.vercel.app/login?confirmed=true'
+          : `${window.location.origin}/login?confirmed=true`
       }
     });
     

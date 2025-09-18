@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { sanitizeInput, validateEmail } from '../utils/security';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../utils/supabase';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -15,6 +16,25 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Processar confirmação de email quando usuário volta do link
+  useEffect(() => {
+    const handleEmailConfirmation = async () => {
+      const confirmed = searchParams.get('confirmed');
+      const error = searchParams.get('error');
+      const errorDescription = searchParams.get('error_description');
+
+      if (error) {
+        setErrors({ form: `Erro na confirmação: ${errorDescription || error}` });
+      } else if (confirmed === 'true') {
+        setSuccessMessage('✅ Email confirmado com sucesso! Você pode fazer login agora.');
+        // Limpar URL params
+        window.history.replaceState({}, document.title, '/login');
+      }
+    };
+
+    handleEmailConfirmation();
+  }, [searchParams]);
 
   // Função para lidar com mudanças nos inputs
   const handleInputChange = (e) => {
