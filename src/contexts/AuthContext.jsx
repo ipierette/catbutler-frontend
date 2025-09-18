@@ -77,15 +77,33 @@ export const AuthProvider = ({ children }) => {
       
       if (error) {
         console.error('🚨 Erro ao verificar sessão:', error);
+        // Se houver erro, limpa tudo para garantir
+        setUser(null);
+        setProfile(null);
       } else if (session?.user) {
-        console.log('✅ Sessão ativa encontrada:', session.user.email);
-        setUser(session.user);
-        await loadUserProfile(session.user);
+        // Verifica se há flag de logout forçado
+        const forceLogout = sessionStorage.getItem('force_logout');
+        if (forceLogout) {
+          console.log('🚨 Logout forçado detectado, ignorando sessão...');
+          sessionStorage.removeItem('force_logout');
+          await supabase.auth.signOut({ scope: 'global' });
+          setUser(null);
+          setProfile(null);
+        } else {
+          console.log('✅ Sessão ativa encontrada:', session.user.email);
+          setUser(session.user);
+          await loadUserProfile(session.user);
+        }
       } else {
         console.log('ℹ️ Nenhuma sessão ativa - modo visitante');
+        setUser(null);
+        setProfile(null);
       }
     } catch (error) {
       console.error('🚨 Erro na inicialização:', error);
+      // Em caso de erro, garante que está limpo
+      setUser(null);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
@@ -126,21 +144,64 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       console.log('🔄 Fazendo logout...');
 
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error('🚨 Erro no logout:', error);
-        return { success: false, error: error.message };
-      }
+      // Define flag de logout forçado ANTES de tudo
+      sessionStorage.setItem('force_logout', 'true');
 
-      console.log('✅ Logout realizado com sucesso!');
+      // Primeiro, limpa o estado local imediatamente
       setUser(null);
       setProfile(null);
+      
+      // Limpa localStorage e sessionStorage (exceto a flag)
+      const forceLogoutFlag = sessionStorage.getItem('force_logout');
+      localStorage.clear();
+      sessionStorage.clear();
+      sessionStorage.setItem('force_logout', forceLogoutFlag);
+      
+      // Tenta fazer logout do Supabase
+      const { error } = await supabase.auth.signOut({
+        scope: 'global'  // Desloga de todas as sessões
+      });
+      
+      if (error) {
+        console.error('🚨 Erro no logout do Supabase:', error);
+        // Mesmo com erro, considera o logout como sucesso já que limpamos tudo
+        console.log('✅ Estado local limpo, continuando logout...');
+      } else {
+        console.log('✅ Logout do Supabase realizado com sucesso!');
+      }
+
+      // Força limpeza adicional
+      try {
+        // Limpa cookies relacionados ao Supabase
+        document.cookie.split(";").forEach(function(c) { 
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+      } catch (cookieError) {
+        console.warn('Aviso: Não foi possível limpar cookies:', cookieError);
+      }
+
+      console.log('✅ Logout completo realizado!');
+      
+      // Força reinicialização após um pequeno delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
 
       return { success: true };
     } catch (error) {
       console.error('🚨 Erro inesperado no logout:', error);
-      return { success: false, error: error.message };
+      // Mesmo com erro, força limpeza do estado local
+      sessionStorage.setItem('force_logout', 'true');
+      setUser(null);
+      setProfile(null);
+      localStorage.clear();
+      
+      // Força reload em caso de erro também
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      
+      return { success: true }; // Retorna sucesso pois limpamos o estado
     } finally {
       setLoading(false);
     }
@@ -287,7 +348,21 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = onAuthStateChange(async (event, session) => {
       console.log('🔐 Auth state changed:', event, session?.user?.email || 'No user');
       
+      if (event === 'SIGNED_OUT' || !session) {
+        console.log('🚪 Limpando estado após logout/sem sessão...');
+        setUser(null);
+        setProfile(null);
+        
+        // Limpa storage novamente para garantir
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log('✅ Estado limpo no listener');
+        setLoading(false);
+        return;
+      }
+      
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('🔑 Processando login...');
         setUser(session.user);
         await loadUserProfile(session.user);
         
@@ -298,9 +373,6 @@ export const AuthProvider = ({ children }) => {
             window.location.href = '/';
           }, 1000);
         }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setProfile(null);
       } else if (event === 'TOKEN_REFRESHED') {
         console.log('🔄 Token refreshed');
       }
