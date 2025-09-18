@@ -98,10 +98,10 @@
     <div id="root"></div>
     
     <!-- Three.js - Must load before NEAT -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" async onerror="console.warn('Three.js failed to load')"></script>
     
-    <!-- NEAT Background - Load after Three.js -->
-    <script src="/js/vendor/index.umd.js" defer></script>
+    <!-- NEAT Background - Load after Three.js with error handling -->
+    <script src="/js/vendor/index.umd.js" defer onerror="console.warn('NEAT Background failed to load')"></script>
     
     <!-- Main app script -->
     <script type="module" src="/src/main.jsx" defer></script>

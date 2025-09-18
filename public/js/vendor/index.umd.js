@@ -7,6 +7,12 @@
 })(this, function (u, d) {
   "use strict";
 
+  // Verificar se Three.js está disponível
+  if (!d || typeof d !== 'object') {
+    console.warn('Three.js not available, NEAT background disabled');
+    return;
+  }
+
   function T(t) {
     if (t && t.__esModule) return t;
     const e = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -24,7 +30,22 @@
 
   // Constantes originais
   const _ = 50, g = 80, D = !0, b = 5;
-  const k = new n.Clock();
+  
+  // Verificação segura para Clock
+  let k;
+  try {
+    const ClockClass = n.Clock || n.default?.Clock || d.Clock || (typeof THREE !== 'undefined' ? THREE.Clock : null);
+    if (ClockClass) {
+      k = new ClockClass();
+    } else {
+      console.warn('Three.js Clock not found, using fallback timer');
+      k = { getElapsedTime: () => Date.now() / 1000 };
+    }
+  } catch (error) {
+    console.warn('Error initializing Three.js Clock, using fallback', error);
+    k = { getElapsedTime: () => Date.now() / 1000 };
+  }
+  
   const F = V();
 
   class NeatGradient {
