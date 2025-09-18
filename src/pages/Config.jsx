@@ -182,13 +182,19 @@ export default function Config() {
     
     setSalvandoPerfil(true);
     try {
-      await updateProfile({
-        nome: perfilEditando.nome,
+      const result = await updateProfile({
+        display_name: perfilEditando.nome,
         endereco: perfilEditando.endereco,
-        avatar: perfilEditando.avatarSelecionado
+        avatar_url: perfilEditando.avatarSelecionado
       });
-      setModalAberto('perfil-salvo');
-      setTimeout(() => setModalAberto(null), 2000);
+      
+      if (result.success) {
+        setModalAberto('perfil-salvo');
+        setTimeout(() => setModalAberto(null), 2000);
+      } else {
+        console.error('Erro ao salvar perfil:', result.error);
+        // Aqui você poderia mostrar uma mensagem de erro para o usuário
+      }
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);
     }

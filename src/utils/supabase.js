@@ -288,8 +288,55 @@ if (import.meta.env.VITE_DEBUG === 'true') {
   console.log('🐱 Supabase Client inicializado:', {
     url: supabaseUrl,
     hasAnonKey: !!supabaseAnonKey,
-    env: import.meta.env.VITE_ENV
+    config: hasSupabaseConfig
   });
 }
+
+// Função para atualizar perfil do usuário
+export const updateUserProfile = async (userId, profileData) => {
+  try {
+    if (!hasSupabaseConfig) {
+      console.warn('🔄 Supabase não configurado - simulando atualização de perfil');
+      return {
+        success: true,
+        profile: { ...profileData, id: userId }
+      };
+    }
+
+    console.log('🔄 Atualizando perfil no Supabase...', { userId, profileData });
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        display_name: profileData.display_name,
+        avatar_url: profileData.avatar_url,
+        preferences: profileData.preferences,
+        updated_at: new Date().toISOString(),
+        ...profileData
+      })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('🚨 Erro ao atualizar perfil:', error);
+      throw new Error(`Erro ao atualizar perfil: ${error.message}`);
+    }
+
+    console.log('✅ Perfil atualizado com sucesso:', data);
+    
+    return {
+      success: true,
+      profile: data
+    };
+
+  } catch (error) {
+    console.error('🚨 Erro ao atualizar perfil:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+};
 
 export default supabase;

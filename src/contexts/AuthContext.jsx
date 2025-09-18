@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 console.log('🔐 AuthContext: Iniciando...');
 
 // Imports com debugging
-import { supabase, getUserProfile, onAuthStateChange } from '../utils/supabase';
+import { supabase, getUserProfile, onAuthStateChange, updateUserProfile } from '../utils/supabase';
 import { avatarList } from '../utils/avatars';
 
 console.log('✅ AuthContext: Imports realizados com sucesso', {
@@ -223,14 +223,26 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('🔄 Atualizando perfil...', newProfileData);
 
-      // Aqui você pode implementar chamada para o backend para atualizar
-      // Por enquanto, vamos atualizar apenas localmente
+      if (!user?.id) {
+        throw new Error('Usuário não está autenticado');
+      }
+
+      // Salvar no Supabase
+      const result = await updateUserProfile(user.id, newProfileData);
+      
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      // Atualizar estado local apenas se salvou com sucesso
       setProfile(prev => ({
         ...prev,
-        ...newProfileData
+        ...result.profile
       }));
 
-      return { success: true };
+      console.log('✅ Perfil atualizado com sucesso!', result.profile);
+      return { success: true, profile: result.profile };
+
     } catch (error) {
       console.error('🚨 Erro ao atualizar perfil:', error);
       return { success: false, error: error.message };
