@@ -152,11 +152,6 @@ export default function Login() {
             src="/images/logo-catbutler.webp" 
             alt="CatButler Logo" 
             className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
-            onError={(e) => {
-              console.log('🐱 Logo Login não carregou, usando fallback');
-              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj7wn5CxPC90ZXh0Pgo8L3N2Zz4K';
-            }}
-            onLoad={() => console.log('🐱 Logo Login carregada!')}
           />
           <div>
             <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Fazer Login</h1>
