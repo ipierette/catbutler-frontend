@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Testes rigorosos de qualidade máxima
 test.describe('Quality Assurance Tests - Maximum Coverage', () => {

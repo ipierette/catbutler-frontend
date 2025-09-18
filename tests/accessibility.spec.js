@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 const routes = ['/', '/tarefas', '/cozinha', '/faxina', '/mercado', '/agenda', '/login', '/sobre', '/config'];
 

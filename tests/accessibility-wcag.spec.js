@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Testes de acessibilidade WCAG 2.1 AA compliance
 test.describe('Accessibility Tests - WCAG 2.1 AA Compliance', () => {

@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Testes de performance rigorosos baseados em Core Web Vitals
 test.describe('Performance Tests - Core Web Vitals & Optimization', () => {

@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Testes mais básicos e robustos
 test.describe('Basic Smoke Tests', () => {

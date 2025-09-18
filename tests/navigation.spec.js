@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Testa se o menu navega corretamente entre as páginas principais
 const menuLinks = [

@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Configurações para testes mais resilientes
 test.describe('Smoke Tests', () => {

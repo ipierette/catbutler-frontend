@@ -1,4 +1,4 @@
-const { expect, test } = require('@playwright/test');
+import { expect, test } from '@playwright/test';
 
 // Testes de integração completos
 test.describe('Integration Tests - User Journey & Forms', () => {
