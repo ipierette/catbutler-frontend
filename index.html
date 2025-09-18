@@ -2,106 +2,30 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    
-    <!-- Performance Critical -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-    
-    <!-- Preload critical font -->
-    <link rel="preload" as="font" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" type="font/woff2" crossorigin="anonymous" />
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" as="script">
-    <link rel="preload" href="/js/vendor/index.umd.js" as="script">
-    
-    <!-- Favicon Bundle -->
-    <link rel="icon" type="image/x-icon" href="/favicon-new.ico?v=3" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=3" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=3" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=3" />
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64x64.png?v=3" />
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=3" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-96x96.png?v=3" />
-    
-    <!-- Meta Tags -->
+    <!-- Basic SEO -->
     <title>CatButler - Seu Assistente Doméstico IA</title>
     <meta name="description" content="Organize sua casa com IA — receitas, faxina e compras numa experiência fluida." />
     
-    <!-- Font Awesome with font-display optimization -->
-    <style>
-      @font-face {
-        font-family: "Font Awesome 6 Free";
-        font-style: normal;
-        font-weight: 900;
-        font-display: swap;
-        src: url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2) format("woff2");
-      }
-    </style>
+    <!-- Essential Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon-new.ico" />
+    
+    <!-- Essential Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
   <body>
     <noscript>
-      <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: white;
-        z-index: 9999;
-      ">
-        <div style="
-          max-width: 500px;
-          padding: 2rem;
-          text-align: center;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        ">
-          <h1 style="margin-bottom: 1rem; font-size: 2rem; font-weight: bold;">🐱 CatButler</h1>
-          <h2 style="margin-bottom: 1.5rem; font-size: 1.2rem;">JavaScript Necessário</h2>
-          <p style="margin-bottom: 2rem; line-height: 1.6;">
-            Para usar o CatButler e todas as suas funcionalidades de IA para organização doméstica, 
-            você precisa ter o JavaScript habilitado em seu navegador.
-          </p>
-          <div style="
-            background: rgba(255, 255, 255, 0.15);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            text-align: left;
-            font-size: 0.9rem;
-            line-height: 1.5;
-          ">
-            <strong>Como habilitar JavaScript:</strong><br>
-            • <strong>Chrome:</strong> Configurações → Privacidade e segurança → Configurações do site → JavaScript<br>
-            • <strong>Firefox:</strong> about:config → javascript.enabled → true<br>
-            • <strong>Safari:</strong> Preferências → Segurança → Ativar JavaScript
-          </div>
-          <p style="font-size: 0.9rem; opacity: 0.8;">
-            Após habilitar o JavaScript, recarregue esta página para acessar o CatButler.
-          </p>
+      <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #667eea; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; color: white; text-align: center; padding: 2rem;">
+        <div>
+          <h1>🐱 CatButler</h1>
+          <p>JavaScript é necessário para usar esta aplicação.</p>
         </div>
       </div>
     </noscript>
+    
     <div id="root"></div>
     
-    <!-- Three.js - Must load before NEAT -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" async onerror="console.warn('Three.js failed to load')"></script>
-    
-    <!-- NEAT Background - Load after Three.js with error handling -->
-    <script src="/js/vendor/index.umd.js" defer onerror="console.warn('NEAT Background failed to load')"></script>
-    
-    <!-- Main app script -->
-    <script type="module" src="/src/main.jsx" defer></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
