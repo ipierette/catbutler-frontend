@@ -54,12 +54,21 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: process.env.NODE_ENV === 'development',
-    minify: 'terser',
+    sourcemap: true, // Sempre gerar sourcemap para debug
+    minify: process.env.NODE_ENV === 'production' ? 'terser' : false,
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false, // Manter console.log para debug do Vercel
         drop_debugger: true,
+        // Menos agressivo para evitar quebrar dependências externas
+        keep_fnames: true,
+        keep_classnames: true,
+      },
+      mangle: {
+        // Não alterar nomes de propriedades que podem ser acessadas dinamicamente
+        keep_fnames: true,
+        keep_classnames: true,
+        properties: false,
       },
     },
     rollupOptions: {
