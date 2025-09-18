@@ -1,6 +1,6 @@
 {
   "name": "catbutler-frontend",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Frontend React para CatButler - Assistente de IA para Casa",
   "main": "index.html",
   "scripts": {
