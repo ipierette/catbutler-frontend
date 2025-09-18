@@ -233,14 +233,29 @@ export const getUserProfile = async () => {
     
     // Busca o perfil diretamente no Supabase
     const { data: profileData, error: profileError } = await supabase
-      .from('user_profiles')
+      .from('profiles')
       .select('*')
       .eq('id', session.user.id)
       .single();
     
     if (profileError) {
+      // Se tabela não existir, tentar fallback do localStorage
+      if (profileError.message?.includes('table') && profileError.message?.includes('profiles')) {
+        console.warn('⚠️ Tabela profiles não existe - tentando localStorage');
+        
+        const fallbackData = localStorage.getItem(`profile_${session.user.id}`);
+        if (fallbackData) {
+          const profile = JSON.parse(fallbackData);
+          console.log('✅ Perfil carregado do localStorage:', profile);
+          return {
+            success: true,
+            profile
+          };
+        }
+      }
+      
       // Se o perfil não existir, criar um básico
-      if (profileError.code === 'PGRST116') {
+      if (profileError.code === 'PGRST116' || profileError.message?.includes('no rows')) {
         console.log('📝 Perfil não encontrado, criando perfil básico...');
         
         const newProfile = {
@@ -248,24 +263,34 @@ export const getUserProfile = async () => {
           display_name: session.user.email?.split('@')[0] || 'Usuário',
           first_name: session.user.user_metadata?.first_name || session.user.email?.split('@')[0] || 'Usuário',
           last_name: session.user.user_metadata?.last_name || '',
-          avatar: 'axel',
+          avatar_url: 'axel',
           theme: 'auto'
         };
         
-        const { data: createdProfile, error: createError } = await supabase
-          .from('user_profiles')
-          .insert(newProfile)
-          .select()
-          .single();
+        // Tentar criar no banco, se falhar, usar localStorage
+        try {
+          const { data: createdProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert(newProfile)
+            .select()
+            .single();
+            
+          if (createError) {
+            throw new Error(`Erro ao criar perfil: ${createError.message}`);
+          }
           
-        if (createError) {
-          throw new Error(`Erro ao criar perfil: ${createError.message}`);
+          return {
+            success: true,
+            profile: createdProfile
+          };
+        } catch (createErr) {
+          console.warn('⚠️ Não foi possível criar no banco, usando localStorage');
+          localStorage.setItem(`profile_${session.user.id}`, JSON.stringify(newProfile));
+          return {
+            success: true,
+            profile: newProfile
+          };
         }
-        
-        return {
-          success: true,
-          profile: createdProfile
-        };
       } else {
         throw new Error(`Erro ao buscar perfil: ${profileError.message}`);
       }
@@ -322,6 +347,25 @@ export const updateUserProfile = async (userId, profileData) => {
 
     if (error) {
       console.error('🚨 Erro ao atualizar perfil:', error);
+      
+      // Se tabela não existir, usar fallback local
+      if (error.message?.includes('table') && error.message?.includes('profiles')) {
+        console.warn('⚠️ Tabela profiles não existe - usando persistência local temporária');
+        
+        // Salvar no localStorage como fallback
+        const fallbackProfile = { 
+          id: userId, 
+          ...profileData, 
+          updated_at: new Date().toISOString() 
+        };
+        localStorage.setItem(`profile_${userId}`, JSON.stringify(fallbackProfile));
+        
+        return {
+          success: true,
+          profile: fallbackProfile
+        };
+      }
+      
       throw new Error(`Erro ao atualizar perfil: ${error.message}`);
     }
 
