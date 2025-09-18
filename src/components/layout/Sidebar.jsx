@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const menuItems = [
@@ -84,6 +84,7 @@ const menuItems = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { getDisplayName, getUserAvatar, isVisitorMode, logout } = useAuth();
   
   const userAvatar = getUserAvatar();
@@ -97,9 +98,21 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      console.log('🔄 Iniciando processo de logout...');
+      const result = await logout();
+      
+      if (result.success) {
+        console.log('✅ Logout bem-sucedido, redirecionando para home...');
+        navigate('/', { replace: true });
+      } else {
+        console.error('❌ Erro no logout:', result.error);
+        // Ainda assim, tenta navegar para home em caso de erro
+        navigate('/', { replace: true });
+      }
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      console.error('🚨 Erro inesperado no handleLogout:', error);
+      // Em caso de erro, ainda navega para home
+      navigate('/', { replace: true });
     }
   };
 

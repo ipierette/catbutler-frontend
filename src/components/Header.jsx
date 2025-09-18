@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import { createPortal } from "react-dom";
@@ -7,15 +7,28 @@ import PropTypes from "prop-types";
 
 function Header() {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const { isVisitorMode, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleLogout = async () => {
     try {
-      await logout();
-      setMobileMenuOpen(false);
+      console.log('🔄 Header: Iniciando logout...');
+      const result = await logout();
+      
+      if (result.success) {
+        console.log('✅ Header: Logout bem-sucedido, redirecionando...');
+        setMobileMenuOpen(false);
+        navigate('/', { replace: true });
+      } else {
+        console.error('❌ Header: Erro no logout:', result.error);
+        setMobileMenuOpen(false);
+        navigate('/', { replace: true });
+      }
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      console.error('🚨 Header: Erro inesperado no logout:', error);
+      setMobileMenuOpen(false);
+      navigate('/', { replace: true });
     }
   };
 
