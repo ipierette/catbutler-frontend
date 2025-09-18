@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:with-images": "npm run process-images && vite build",
     "lint": "eslint . --ext .js,.jsx --fix",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
@@ -33,9 +32,7 @@
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report",
-    "test:coverage": "playwright test --reporter=html,json --coverage",
-    "process-images": "node scripts/process-images.js",
-    "prebuild:dev": "npm run process-images"
+    "test:coverage": "playwright test --reporter=html,json --coverage"
   },
   "keywords": [
     "catbutler",
@@ -75,9 +72,6 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "gh-pages": "^6.3.0",
-    "imagemin": "^9.0.1",
-    "imagemin-mozjpeg": "^10.0.0",
-    "imagemin-pngquant": "^10.0.0",
     "jsdom": "^26.1.0",
     "prop-types": "^15.8.1",
     "start-server-and-test": "^2.1.0",

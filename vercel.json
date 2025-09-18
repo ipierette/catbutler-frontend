@@ -4,14 +4,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "env": {
-    "BUILD_TIMESTAMP": "@now"
-  },
-  "build": {
-    "env": {
-      "VITE_BUILD_TIME": "@now"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
