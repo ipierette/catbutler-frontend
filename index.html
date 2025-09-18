@@ -3,20 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- GitHub Pages SPA support -->
-    <script type="text/javascript">
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-          );
-        }
-      }(window.location))
-    </script>
-    
     <!-- Performance Critical -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
@@ -109,41 +95,11 @@
     </noscript>
     <div id="root"></div>
     
-    <!-- Three.js - Must load before NEAT with better error handling -->
-    <script>
-      // Carregar Three.js de forma mais segura
-      (function() {
-        var script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
-        script.async = true;
-        script.onload = function() {
-          console.log('✅ Three.js loaded successfully');
-          loadNEATBackground();
-        };
-        script.onerror = function() {
-          console.warn('⚠️ Three.js failed to load, skipping background animation');
-        };
-        document.head.appendChild(script);
-      })();
-
-      // NEAT Background - Load após Three.js com tratamento de erro melhorado
-      function loadNEATBackground() {
-        try {
-          var script = document.createElement('script');
-          script.src = '/js/vendor/index.umd.js';
-          script.defer = true;
-          script.onload = function() {
-            console.log('✅ NEAT Background loaded successfully');
-          };
-          script.onerror = function() {
-            console.warn('⚠️ NEAT Background failed to load, using fallback styling');
-          };
-          document.head.appendChild(script);
-        } catch (error) {
-          console.warn('⚠️ Error loading NEAT Background:', error);
-        }
-      }
-    </script>
+    <!-- Three.js - Must load before NEAT -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" async onerror="console.warn('Three.js failed to load')"></script>
+    
+    <!-- NEAT Background - Load after Three.js with error handling -->
+    <script src="/js/vendor/index.umd.js" defer onerror="console.warn('NEAT Background failed to load')"></script>
     
     <!-- Main app script -->
     <script type="module" src="/src/main.jsx" defer></script>
