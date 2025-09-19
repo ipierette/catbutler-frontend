@@ -88,9 +88,8 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
-      sourcemap: process.env.NODE_ENV === 'development',
-      minify: false, // Desabilita minificação temporariamente para debug
-      // Cache busting em desenvolvimento
+      sourcemap: !isProduction,
+      minify: isProduction, // Só minifica em produção
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -103,9 +102,9 @@ export default defineConfig(({ command, mode }) => {
               return 'vendor';
             }
           },
-          chunkFileNames: isProduction ? 'assets/js/[name]-[hash].js' : `assets/js/[name]-${Date.now()}.js`,
-          entryFileNames: isProduction ? 'assets/js/[name]-[hash].js' : `assets/js/[name]-${Date.now()}.js`,
-          assetFileNames: isProduction ? 'assets/[ext]/[name]-[hash].[ext]' : `assets/[ext]/[name]-${Date.now()}.[ext]`,
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
         },
       },
       treeshake: true,
@@ -116,22 +115,17 @@ export default defineConfig(({ command, mode }) => {
       host: true,
       hmr: {
         overlay: true,
-        port: 24678, // Porta específica para HMR
       },
       historyApiFallback: true,
       cors: true,
-      // Headers mais agressivos para desenvolvimento
-      middlewareMode: false,
-      fs: {
-        strict: false,
-      },
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-        'Surrogate-Control': 'no-store',
-        'Access-Control-Allow-Origin': '*',
-      },
+      ...(isProduction ? {} : {
+        // Headers apenas em desenvolvimento
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }),
       proxy: {
         '/api': {
           target: 'http://localhost:3000',
