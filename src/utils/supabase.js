@@ -411,9 +411,17 @@ export const createTask = async (taskData) => {
 
     console.log('🔄 Criando tarefa no Supabase...', taskData);
     
+    // Obter usuário atual
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      throw new Error('Usuário não autenticado');
+    }
+    
     const { data, error } = await supabase
       .from('tasks')
       .insert([{
+        user_id: user.id, // ADICIONAR user_id explicitamente
         titulo: taskData.titulo,
         descricao: taskData.descricao,
         categoria: taskData.categoria || 'Outros',
@@ -442,21 +450,10 @@ export const createTask = async (taskData) => {
 export const getTasks = async (filters = {}) => {
   try {
     if (!hasSupabaseConfig) {
-      console.warn('🔄 Supabase não configurado - retornando tarefas mockadas');
+      console.warn('🔄 Supabase não configurado - nenhuma tarefa disponível');
       return {
         success: true,
-        tasks: [
-          {
-            id: 1,
-            titulo: "Limpar a cozinha",
-            descricao: "Lavar louça, limpar bancada e organizar geladeira",
-            categoria: "Faxina",
-            prioridade: "Alta",
-            status: "Pendente",
-            data_criacao: "2025-01-15",
-            data_vencimento: "2025-01-16"
-          }
-        ]
+        tasks: []
       };
     }
 
@@ -563,15 +560,15 @@ export const deleteTask = async (taskId) => {
 export const getTasksStats = async () => {
   try {
     if (!hasSupabaseConfig) {
-      console.warn('🔄 Supabase não configurado - retornando estatísticas mockadas');
+      console.warn('🔄 Supabase não configurado - sem estatísticas disponíveis');
       return {
         success: true,
         stats: {
-          total_tasks: 5,
-          pending_tasks: 2,
-          in_progress_tasks: 1,
-          completed_tasks: 2,
-          overdue_tasks: 1
+          total_tasks: 0,
+          pending_tasks: 0,
+          in_progress_tasks: 0,
+          completed_tasks: 0,
+          overdue_tasks: 0
         }
       };
     }

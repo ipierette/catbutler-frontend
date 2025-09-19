@@ -9,12 +9,41 @@ export const useTasks = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Função de debug para desenvolvimento - força limpeza completa
+  const clearAllCaches = useCallback(() => {
+    if (import.meta.env.VITE_DEBUG === 'true') {
+      console.log('🧹 Limpando todos os caches de desenvolvimento...');
+      setTasks([]);
+      setStats(null);
+      setError(null);
+      setLoading(false);
+      
+      // Limpar storage específico
+      ['tasks_cache', 'visitor_tasks_cache', 'tasks_stats'].forEach(key => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      });
+    }
+  }, []);
+
+  // Expor função de limpeza no window para debug no console
+  useEffect(() => {
+    if (import.meta.env.VITE_DEBUG === 'true') {
+      window.debugClearTasksCache = clearAllCaches;
+      return () => {
+        delete window.debugClearTasksCache;
+      };
+    }
+  }, [clearAllCaches]);
+
   // Carregar tarefas
   const loadTasks = useCallback(async (filters = {}) => {
     if (!isAuthenticated) return;
 
     setLoading(true);
     setError(null);
+    // Limpar tarefas antigas imediatamente para evitar mostrar dados antigos
+    setTasks([]);
     
     try {
       const result = await getTasks(filters);
@@ -131,8 +160,24 @@ export const useTasks = () => {
     if (isAuthenticated) {
       loadTasks();
       loadStats();
+    } else {
+      // Limpar dados quando usuário não está autenticado
+      setTasks([]);
+      setStats(null);
+      setError(null);
+      setLoading(false); // Para de carregar também
     }
   }, [isAuthenticated, loadTasks, loadStats]);
+
+  // Limpar dados imediatamente quando authentication state muda
+  useEffect(() => {
+    // Limpar sempre que o hook for re-renderizado e não há usuário autenticado
+    if (!isAuthenticated) {
+      setTasks([]);
+      setStats(null);
+      setError(null);
+    }
+  }, [user, isAuthenticated]); // Reagir a mudanças de usuário E isAuthenticated
 
   return {
     tasks,

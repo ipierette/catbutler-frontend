@@ -6,6 +6,11 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
+// Fast Refresh signature para desenvolvimento
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
+
 console.log('🔐 AuthContext: Iniciando...');
 
 // Imports com debugging
@@ -41,6 +46,33 @@ export const AuthProvider = ({ children }) => {
   // Visitante = usuário não autenticado (independente de flags ambientais)
   const isVisitorMode = !user || !profile;
   const isAuthenticated = !!user && !!profile;
+
+  // 🧹 Função para limpeza forçada de cache
+  const forceClearCache = () => {
+    if (import.meta.env.DEV) {
+      console.log('🧹 Limpando cache após mudança de autenticação...');
+      
+      // Limpar storage
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (e) {
+        console.warn('Erro ao limpar storage:', e);
+      }
+      
+      // Limpar caches do browser
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => caches.delete(name));
+        });
+      }
+      
+      // Force reload da página para garantir estado limpo
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
+  };
 
   // Carregar perfil do usuário
   const loadUserProfile = async (authUser) => {
@@ -133,11 +165,33 @@ export const AuthProvider = ({ children }) => {
 
       if (error) {
         console.error('🚨 Erro no login:', error);
-        return { success: false, error: error.message };
+        let errorMessage = error.message;
+        
+        // Traduzir erros comuns para português
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Email ou senha incorretos';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Email não confirmado. Verifique sua caixa de entrada.';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Muitas tentativas. Tente novamente em alguns minutos.';
+        }
+        
+        return { success: false, error: errorMessage };
       }
 
       console.log('✅ Login realizado com sucesso!');
       setUser(data.user);
+      
+      // Limpar dados de aplicação antes de carregar novos dados
+      sessionStorage.removeItem('visitor_tasks_cache');
+      localStorage.removeItem('tasks_cache');
+      
+      // Limpar cache em desenvolvimento
+      if (import.meta.env.DEV) {
+        console.log('🧹 Limpando cache após login...');
+        forceClearCache();
+      }
+      
       await loadUserProfile(data.user);
 
       return { success: true, user: data.user };
@@ -192,6 +246,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       console.log('✅ Logout completo realizado!');
+      
+      // Limpar cache em desenvolvimento
+      forceClearCache();
       
       // Força reinicialização após um pequeno delay
       setTimeout(() => {

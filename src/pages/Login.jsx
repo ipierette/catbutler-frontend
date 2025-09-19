@@ -19,24 +19,24 @@ export default function Login() {
 
   // Processar confirmação de email quando usuário volta do link
   useEffect(() => {
-    const handleEmailConfirmation = async () => {
-      const confirmed = searchParams.get('confirmed');
-      const error = searchParams.get('error');
-      const errorDescription = searchParams.get('error_description');
+    const emailToken = searchParams.get('token');
+    const type = searchParams.get('type');
+    
+    if (type === 'signup') {
+      setSuccessMessage('Conta criada com sucesso! Faça login para continuar.');
+    }
 
-      if (error) {
-        setErrors({ form: `Erro na confirmação: ${errorDescription || error}` });
-      } else if (confirmed === 'true') {
-        setSuccessMessage('✅ Email confirmado com sucesso! Você pode fazer login agora.');
-        // Limpar URL params
-        window.history.replaceState({}, document.title, '/login');
-      }
-    };
+    if (emailToken && type === 'email') {
+      setSuccessMessage('Email confirmado com sucesso! Você já pode fazer login.');
+    }
 
-    handleEmailConfirmation();
+    // Limpar parâmetros da URL
+    if (searchParams.has('token') || searchParams.has('type')) {
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
   }, [searchParams]);
 
-  // Função para lidar com mudanças nos inputs
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const sanitizedValue = type === 'checkbox' ? checked : sanitizeInput(value);
@@ -53,115 +53,117 @@ export default function Login() {
         [name]: ''
       }));
     }
+    // Limpar mensagens quando usuário alterar qualquer campo
+    if (errors.submit) {
+      setErrors(prev => ({
+        ...prev,
+        submit: ''
+      }));
+    }
+    if (successMessage) {
+      setSuccessMessage('');
+    }
   };
 
-  // Função para validar formulário
-  const validateForm = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Reset mensagens
+    setErrors({});
+    setSuccessMessage('');
+    
+    // Validação
     const newErrors = {};
-
-    // Validar email
-    if (!formData.email.trim()) {
+    
+    if (!formData.email) {
       newErrors.email = 'Email é obrigatório';
     } else if (!validateEmail(formData.email)) {
       newErrors.email = 'Email inválido';
     }
-
-    // Validar senha
+    
     if (!formData.senha) {
       newErrors.senha = 'Senha é obrigatória';
-    } else if (formData.senha.length < 6) {
-      newErrors.senha = 'Senha deve ter pelo menos 6 caracteres';
     }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Função para login com provedores sociais
-  const handleSocialLogin = async (provider) => {
-    try {
-      setIsSubmitting(true);
-      console.log(`🔄 Iniciando login com ${provider}...`);
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
-        options: {
-          redirectTo: `${window.location.origin}`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
-        }
-      });
-
-      if (error) {
-        console.error(`🚨 Erro no login ${provider}:`, error);
-        setErrors({
-          submit: `Erro no login com ${provider}: ${error.message}`
-        });
-        return;
-      }
-
-      // O redirecionamento será automático
-      console.log(`✅ Login ${provider} iniciado com sucesso!`);
-      setSuccessMessage(`Redirecionando para ${provider}...`);
-
-    } catch (error) {
-      console.error(`🚨 Erro inesperado no login ${provider}:`, error);
-      setErrors({
-        submit: `Erro inesperado no login com ${provider}. Tente novamente.`
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-    // Função para submeter o formulário
-  const handleSubmit = async (e) => {
-    e.preventDefault();
     
-    if (!validateForm()) {
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
     setIsSubmitting(true);
-    setErrors({});
-
+    
     try {
-      // Autenticação via AuthContext
-      const result = await login(formData.email, formData.senha);
-      
+      const result = await login(formData.email, formData.senha, formData.lembrar);
       if (result.success) {
-        // Mostrar mensagem de sucesso profissional
-        setSuccessMessage('Login realizado com sucesso! Redirecionando...');
-        
-        // Redirecionar mais rapidamente para evitar tela preta
-        setTimeout(() => {
-          navigate('/', { replace: true });
-        }, 800);
-        
-        // Limpar formulário
-        setFormData({
-          email: '',
-          senha: '',
-          lembrar: false
-        });
+        navigate('/', { replace: true });
       } else {
-        // Erro na autenticação
-        setErrors({
-          submit: result.error || 'Erro desconhecido no login'
-        });
+        setErrors({ submit: result.error || 'Erro ao fazer login' });
       }
-      
     } catch (error) {
-      console.error('🚨 Erro no login:', error);
-      setErrors({
-        submit: 'Erro inesperado. Tente novamente em alguns momentos.'
-      });
+      console.error('Erro no login:', error);
+      setErrors({ submit: 'Erro inesperado. Tente novamente.' });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      
+      if (error) {
+        console.error('Erro no login com Google:', error);
+        setErrors({ submit: 'Erro ao fazer login com Google' });
+      }
+    } catch (error) {
+      console.error('Erro no login com Google:', error);
+      setErrors({ submit: 'Erro inesperado no login com Google' });
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!formData.email) {
+      setErrors({ email: 'Digite seu email primeiro' });
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setErrors({ email: 'Digite um email válido' });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      });
+
+      if (error) {
+        setErrors({ submit: 'Erro ao enviar email de recuperação' });
+      } else {
+        setSuccessMessage('Email de recuperação enviado! Verifique sua caixa de entrada.');
+        setErrors({});
+      }
+    } catch (error) {
+      console.error('Erro na recuperação de senha:', error);
+      setErrors({ submit: 'Erro inesperado. Tente novamente.' });
+    }
+  };
+
+  if (isSubmitting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <i className="fa-solid fa-spinner fa-spin text-3xl text-blue-500 mb-4"></i>
+          <p className="text-gray-600 dark:text-gray-400">Fazendo login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen p-2 sm:p-3 md:p-4 max-w-2xl mx-auto">
@@ -174,109 +176,105 @@ export default function Login() {
             className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
           />
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Fazer Login</h1>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Bem-vindo de volta!</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+              CatButler
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Seu assistente doméstico pessoal
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Formulário de Login */}
-      <section className="glass-effect rounded-xl shadow-lg p-4 sm:p-6 fade-in-up bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-800 dark:to-gray-700 border border-green-200 dark:border-gray-600 relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 w-16 h-16 bg-green-200 dark:bg-green-600 rounded-full -translate-y-8 translate-x-8 opacity-20"></div>
-        <div className="absolute bottom-0 left-0 w-12 h-12 bg-emerald-200 dark:bg-emerald-600 rounded-full translate-y-6 -translate-x-6 opacity-30"></div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
-          {/* Mensagem de Sucesso */}
-          {successMessage && (
-            <div className="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2">
-              <i className="fa-solid fa-check-circle"></i>
-              {successMessage}
-            </div>
-          )}
-          
+      {/* Login Form */}
+      <section className="glass-effect rounded-xl shadow-lg p-4 sm:p-6 fade-in-up bg-white/95 dark:bg-gray-700 border border-gray-200 dark:border-gray-500">
+        <div className="mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Entrar na sua conta
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            Acesse todas as funcionalidades do CatButler
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email *
             </label>
             <input
-              type="email"
               id="email"
               name="email"
+              type="email"
               value={formData.email}
               onChange={handleInputChange}
-              required
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-offset-2 ${
-                errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
               placeholder="seu@email.com"
-              maxLength={255}
-              autoComplete="email"
-              aria-describedby={errors.email ? 'email-error' : undefined}
-              aria-invalid={errors.email ? 'true' : 'false'}
-              data-testid="email-input"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors ${
+                errors.email
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 dark:border-gray-500 focus:border-blue-500'
+              }`}
+              required
             />
             {errors.email && (
-              <p id="email-error" className="text-red-500 text-xs mt-1" role="alert">{errors.email}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
             )}
           </div>
 
           {/* Senha */}
           <div>
-            <label htmlFor="senha" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="senha" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Senha *
             </label>
             <input
-              type="password"
               id="senha"
               name="senha"
+              type="password"
               value={formData.senha}
               onChange={handleInputChange}
-              required
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-offset-2 ${
-                errors.senha ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              placeholder="Sua senha"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors ${
+                errors.senha
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 dark:border-gray-500 focus:border-blue-500'
               }`}
-              placeholder="Digite sua senha"
-              maxLength={128}
-              autoComplete="current-password"
-              aria-describedby={errors.senha ? 'senha-error' : undefined}
-              aria-invalid={errors.senha ? 'true' : 'false'}
+              required
             />
             {errors.senha && (
-              <p id="senha-error" className="text-red-500 text-xs mt-1" role="alert">{errors.senha}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.senha}</p>
             )}
           </div>
 
-          {/* Lembrar de mim */}
+          {/* Checkbox Lembrar */}
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer" htmlFor="lembrar">
+            <label className="flex items-center">
               <input
-                type="checkbox"
-                id="lembrar"
                 name="lembrar"
+                type="checkbox"
                 checked={formData.lembrar}
                 onChange={handleInputChange}
-                className="text-green-600 focus:ring-green-500 rounded focus:ring-2 focus:ring-offset-2"
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
-              <span className="text-sm text-gray-900 dark:text-gray-300 font-semibold">
-                Lembrar de mim
+              <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                Manter logado
               </span>
             </label>
-            <Link 
-              to="/esqueci-senha" 
-              className="text-sm text-green-600 hover:text-green-800 dark:text-green-400"
+
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 transition-colors"
             >
               Esqueci minha senha
-            </Link>
+            </button>
           </div>
 
-          {/* Botão de Envio */}
+          {/* Botão Login */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-2 px-4 rounded-lg font-semibold text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+            className={`w-full py-2 px-4 rounded-lg font-semibold text-sm transition-colors ${
               isSubmitting
                 ? 'bg-gray-400 cursor-not-allowed text-gray-600'
                 : 'bg-green-500 hover:bg-green-600 text-white'
@@ -285,57 +283,60 @@ export default function Login() {
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
 
-          {/* Informações de Segurança - Dentro do formulário */}
-          <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/20 rounded-lg border border-green-300 dark:border-green-500/30">
-            <h3 className="text-sm font-semibold text-green-800 dark:text-green-100 mb-2">
-              <i className="fa-solid fa-lock mr-2"></i>Login Seguro
-            </h3>
-            <ul className="text-xs text-green-700 dark:text-green-200 space-y-1">
-              <li>• Sua senha é criptografada e protegida</li>
-              <li>• Sessão segura com HTTPS</li>
-              <li>• Dados validados e sanitizados</li>
-              <li>• Conformidade com LGPD</li>
-            </ul>
-          </div>
+          {/* Mensagens de erro */}
+          {errors.submit && (
+            <div className="p-3 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-500/30 rounded-lg">
+              <div className="flex items-center gap-2">
+                <i className="fa-solid fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                <p className="text-sm text-red-700 dark:text-red-300">{errors.submit}</p>
+              </div>
+            </div>
+          )}
 
-          {/* Link para Cadastro */}
-          <div className="text-center">
-            <p className="text-sm text-gray-700 dark:text-gray-400 font-medium">
-              Não tem uma conta?{' '}
-              <Link to="/criar-conta" className="text-green-600 hover:text-green-800 dark:text-green-400 font-semibold">
-                Criar conta
-              </Link>
-            </p>
-          </div>
+          {/* Mensagens de sucesso */}
+          {successMessage && (
+            <div className="p-3 bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-500/30 rounded-lg">
+              <div className="flex items-center gap-2">
+                <i className="fa-solid fa-check-circle text-green-600 dark:text-green-400"></i>
+                <p className="text-sm text-green-700 dark:text-green-300">{successMessage}</p>
+              </div>
+            </div>
+          )}
         </form>
-      </section>
 
-      {/* Login Social (Opcional) */}
-      <section className="mt-6 p-4 bg-gray-800 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600">
-        <h3 className="text-2l font-bold text-gray-200 mb-3 text-center">
-          Ou entre com
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          <button 
-            type="button"
-            onClick={() => handleSocialLogin('facebook')}
-            disabled={isSubmitting}
-            className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Entrar com Facebook"
-          >
-            <i className="fa-brands fa-facebook" aria-hidden="true"></i>
-            {isSubmitting ? 'Conectando...' : 'Facebook'}
-          </button>
-          <button 
-            type="button"
-            onClick={() => handleSocialLogin('google')}
-            disabled={isSubmitting}
-            className="flex items-center justify-center gap-2 py-2 px-4 bg-red-600 hover:bg-red-800 text-white rounded-lg transition-colors text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Entrar com Google"
-          >
-            <i className="fa-brands fa-google" aria-hidden="true"></i>
-            {isSubmitting ? 'Conectando...' : 'Google'}
-          </button>
+        {/* Divider */}
+        <div className="my-6 flex items-center">
+          <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+          <span className="px-4 text-sm text-gray-500 dark:text-gray-400">ou</span>
+          <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+
+        {/* Login com Google */}
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors flex items-center justify-center gap-2"
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Entrar com Google
+        </button>
+
+        {/* Link para Cadastro */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            Ainda não tem uma conta?{' '}
+            <Link
+              to="/signup"
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 font-medium transition-colors"
+            >
+              Cadastre-se aqui
+            </Link>
+          </p>
         </div>
       </section>
     </main>

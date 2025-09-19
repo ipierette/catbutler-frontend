@@ -140,15 +140,8 @@ export function preloadCriticalResources() {
   fontLink.crossOrigin = 'anonymous';
   document.head.appendChild(fontLink);
 
-  // Preload critical images
-  const criticalImages = ['/images/gato-optimized.gif', '/images/logo-catbutler.webp'];
-  criticalImages.forEach(src => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = src;
-    document.head.appendChild(link);
-  });
+  // Critical images are preloaded in index.html for better timing
+  // Removed duplicate preload to prevent warnings
 }
 
 // ============= WEB VITALS MONITORING =============

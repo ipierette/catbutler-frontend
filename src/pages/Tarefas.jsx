@@ -24,6 +24,25 @@ export default function Tarefas() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const tarefasPorPagina = 6;
 
+  // Estados do modal de Nova Tarefa
+  const [showModal, setShowModal] = useState(false);
+  const [novaTarefa, setNovaTarefa] = useState({
+    titulo: '',
+    descricao: '',
+    categoria: 'Outros',
+    prioridade: 'Média',
+    data_vencimento: ''
+  });
+  const [salvandoTarefa, setSalvandoTarefa] = useState(false);
+
+  // Estado do modal de arquivo
+  const [showModalArquivo, setShowModalArquivo] = useState(false);
+
+  // Estados do modal de edição
+  const [showModalEdicao, setShowModalEdicao] = useState(false);
+  const [tarefaEditando, setTarefaEditando] = useState(null);
+  const [editandoTarefa, setEditandoTarefa] = useState(false);
+
   const categorias = ["Todas", "Faxina", "Cozinha", "Compras", "Organização", "Saúde", "Estudos", "Trabalho", "Financeiro", "Lazer", "Outros"];
   const status = ["Todas", "Pendente", "Em Andamento", "Concluída"];
 
@@ -87,6 +106,102 @@ export default function Tarefas() {
     }
   };
 
+  // Funções do modal de Nova Tarefa
+  const abrirModal = () => {
+    setNovaTarefa({
+      titulo: '',
+      descricao: '',
+      categoria: 'Outros',
+      prioridade: 'Média',
+      data_vencimento: ''
+    });
+    setShowModal(true);
+  };
+
+  const fecharModal = () => {
+    setShowModal(false);
+    setNovaTarefa({
+      titulo: '',
+      descricao: '',
+      categoria: 'Outros',
+      prioridade: 'Média',
+      data_vencimento: ''
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setNovaTarefa(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmitTarefa = async (e) => {
+    e.preventDefault();
+    
+    if (!novaTarefa.titulo.trim()) {
+      alert('Por favor, insira um título para a tarefa');
+      return;
+    }
+
+    setSalvandoTarefa(true);
+    
+    try {
+      await addTask(novaTarefa);
+      fecharModal();
+    } catch (error) {
+      console.error('Erro ao criar tarefa:', error);
+      alert('Erro ao criar tarefa. Tente novamente.');
+    } finally {
+      setSalvandoTarefa(false);
+    }
+  };
+
+  // Funções do modal de edição
+  const abrirModalEdicao = (tarefa) => {
+    setTarefaEditando({
+      ...tarefa,
+      data_vencimento: tarefa.data_vencimento || ''
+    });
+    setShowModalEdicao(true);
+  };
+
+  const fecharModalEdicao = () => {
+    setShowModalEdicao(false);
+    setTarefaEditando(null);
+  };
+
+  const handleInputChangeEdicao = (field, value) => {
+    setTarefaEditando(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmitEdicao = async (e) => {
+    e.preventDefault();
+    
+    if (!tarefaEditando.titulo.trim()) {
+      alert('Por favor, insira um título para a tarefa');
+      return;
+    }
+
+    setEditandoTarefa(true);
+    
+    try {
+      await editTask(tarefaEditando.id, {
+        titulo: tarefaEditando.titulo,
+        descricao: tarefaEditando.descricao,
+        categoria: tarefaEditando.categoria,
+        prioridade: tarefaEditando.prioridade,
+        data_vencimento: tarefaEditando.data_vencimento || null
+      });
+      fecharModalEdicao();
+    } catch (error) {
+      console.error('Erro ao editar tarefa:', error);
+      alert('Erro ao editar tarefa. Tente novamente.');
+    } finally {
+      setEditandoTarefa(false);
+    }
+  };
+
   return (
     <VisitorModeWrapper pageName="as tarefas">
       <div className="h-full overflow-y-auto">
@@ -124,43 +239,57 @@ export default function Tarefas() {
                 <div className="text-xs text-yellow-600 dark:text-yellow-400 font-semibold mb-1">Em Andamento</div>
                 <div className="text-xl font-bold text-yellow-900 dark:text-yellow-100">{stats.in_progress_tasks || 0}</div>
               </div>
-              <div className="glass-effect rounded-lg p-3 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-700">
-                <div className="text-xs text-green-600 dark:text-green-400 font-semibold mb-1">Concluídas</div>
+              <div className="glass-effect rounded-lg p-3 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-700 relative">
+                <div className="text-xs text-green-600 dark:text-green-400 font-semibold mb-1 flex items-center justify-between">
+                  <span>Concluídas</span>
+                  <button
+                    onClick={() => setShowModalArquivo(true)}
+                    className="text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded transition-colors"
+                    title="Ver arquivo de tarefas concluídas"
+                  >
+                    📁 Arquivo
+                  </button>
+                </div>
                 <div className="text-xl font-bold text-green-900 dark:text-green-100">{stats.completed_tasks || 0}</div>
               </div>
             </div>
           )}
 
           {/* Filtros e Busca */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center justify-between">
-            {/* Filtros */}
-            <div className="flex flex-wrap gap-2">
-              <FilterButton
-                options={status.map(s => ({ label: s, value: s }))}
-                value={filtroStatus === "Todas" ? null : filtroStatus}
-                onChange={(value) => setFiltroStatus(value || "Todas")}
-                placeholder="Status"
-                icon="fa-solid fa-filter"
-              />
-              
-              <FilterButton
-                options={categorias.map(c => ({ label: c, value: c }))}
-                value={filtroCategoria === "Todas" ? null : filtroCategoria}
-                onChange={(value) => setFiltroCategoria(value || "Todas")}
-                placeholder="Categoria"
-                icon="fa-solid fa-tags"
-              />
-            </div>
+          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+            {/* Filtros e Nova Tarefa - mesma linha */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center justify-between w-full">
+              {/* Filtros */}
+              <div className="flex flex-wrap gap-2">
+                <FilterButton
+                  label="Status"
+                  options={status.map(s => ({ label: s, value: s }))}
+                  value={filtroStatus === "Todas" ? null : filtroStatus}
+                  onChange={(value) => setFiltroStatus(value || "Todas")}
+                  placeholder="Status"
+                  icon="fa-solid fa-filter"
+                />
+                
+                <FilterButton
+                  label="Categoria"
+                  options={categorias.map(c => ({ label: c, value: c }))}
+                  value={filtroCategoria === "Todas" ? null : filtroCategoria}
+                  onChange={(value) => setFiltroCategoria(value || "Todas")}
+                  placeholder="Categoria"
+                  icon="fa-solid fa-tags"
+                />
+              </div>
 
-            {/* Nova Tarefa Button */}
-            <button
-              onClick={() => alert('Modal de criação de tarefa em desenvolvimento')}
-              disabled={loading}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm sm:text-base font-medium disabled:opacity-50"
-            >
-              <i className="fa-solid fa-plus mr-2"></i>
-              Nova Tarefa
-            </button>
+              {/* Nova Tarefa Button */}
+              <button
+                onClick={abrirModal}
+                disabled={loading}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm sm:text-base font-medium disabled:opacity-50 whitespace-nowrap"
+              >
+                <i className="fa-solid fa-plus mr-2"></i>
+                Nova Tarefa
+              </button>
+            </div>
           </div>
 
           {/* Busca */}
@@ -279,7 +408,7 @@ export default function Tarefas() {
                       <button 
                         className="p-1 sm:p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-all duration-200"
                         title="Editar"
-                        onClick={() => alert('Modal de edição em desenvolvimento')}
+                        onClick={() => abrirModalEdicao(tarefa)}
                         disabled={loading}
                       >
                         <i className="fa-solid fa-edit text-xs sm:text-sm"></i>
@@ -373,6 +502,350 @@ export default function Tarefas() {
 
         </div>
       </div>
+
+      {/* Modal Nova Tarefa */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Nova Tarefa
+                </h3>
+                <button
+                  onClick={fecharModal}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <i className="fa-solid fa-times text-xl"></i>
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmitTarefa} className="space-y-4">
+                {/* Título */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Título *
+                  </label>
+                  <input
+                    type="text"
+                    value={novaTarefa.titulo}
+                    onChange={(e) => handleInputChange('titulo', e.target.value)}
+                    placeholder="Ex: Limpar a cozinha"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    required
+                  />
+                </div>
+
+                {/* Descrição */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Descrição
+                  </label>
+                  <textarea
+                    value={novaTarefa.descricao}
+                    onChange={(e) => handleInputChange('descricao', e.target.value)}
+                    placeholder="Detalhes da tarefa..."
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                  />
+                </div>
+
+                {/* Categoria e Prioridade */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Categoria
+                    </label>
+                    <select
+                      value={novaTarefa.categoria}
+                      onChange={(e) => handleInputChange('categoria', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      {categorias.filter(c => c !== 'Todas').map(categoria => (
+                        <option key={categoria} value={categoria}>{categoria}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Prioridade
+                    </label>
+                    <select
+                      value={novaTarefa.prioridade}
+                      onChange={(e) => handleInputChange('prioridade', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="Baixa">Baixa</option>
+                      <option value="Média">Média</option>
+                      <option value="Alta">Alta</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Data de Vencimento */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Data de Vencimento
+                  </label>
+                  <input
+                    type="date"
+                    value={novaTarefa.data_vencimento}
+                    onChange={(e) => handleInputChange('data_vencimento', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Botões */}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={fecharModal}
+                    className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors duration-200"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={salvandoTarefa || !novaTarefa.titulo.trim()}
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {salvandoTarefa ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                        Salvando...
+                      </>
+                    ) : (
+                      'Criar Tarefa'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Arquivo de Tarefas Concluídas */}
+      {showModalArquivo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <i className="fa-solid fa-archive text-green-600 dark:text-green-400"></i>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    📁 Arquivo de Tarefas
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowModalArquivo(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <i className="fa-solid fa-times text-xl"></i>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Informação sobre limpeza automática */}
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex-shrink-0">
+                      <i className="fa-solid fa-clock text-amber-600 dark:text-amber-400 text-sm"></i>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-amber-900 dark:text-amber-100 text-sm mb-1">
+                        ⏰ Política de Limpeza Automática
+                      </h4>
+                      <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                        Tarefas concluídas são mantidas por um período mínimo de <strong>12 a 24 horas</strong> 
+                        e depois removidas automaticamente para manter seu espaço organizado e otimizado.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lista das tarefas concluídas atuais */}
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                    Tarefas Concluídas Recentes
+                  </h4>
+                  
+                  {tarefasFiltradas.filter(t => t.status === 'Concluída').length > 0 ? (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {tarefasFiltradas.filter(t => t.status === 'Concluída').map((tarefa) => (
+                        <div 
+                          key={tarefa.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                        >
+                          <div className="p-1 bg-green-100 dark:bg-green-900/30 rounded">
+                            <i className="fa-solid fa-check text-green-600 dark:text-green-400 text-xs"></i>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                              {tarefa.titulo}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Concluída em: {tarefa.data_conclusao ? new Date(tarefa.data_conclusao).toLocaleDateString('pt-BR') : 'Hoje'}
+                            </p>
+                          </div>
+                          <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded">
+                            {tarefa.categoria}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <i className="fa-solid fa-inbox text-gray-400 text-2xl mb-2 block"></i>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Nenhuma tarefa concluída encontrada
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Botão fechar */}
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <button
+                    onClick={() => setShowModalArquivo(false)}
+                    className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 rounded-lg transition-colors duration-200"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edição de Tarefa */}
+      {showModalEdicao && tarefaEditando && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Editar Tarefa
+                </h3>
+                <button
+                  onClick={fecharModalEdicao}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <i className="fa-solid fa-times text-xl"></i>
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmitEdicao} className="space-y-4">
+                {/* Título */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Título *
+                  </label>
+                  <input
+                    type="text"
+                    value={tarefaEditando.titulo}
+                    onChange={(e) => handleInputChangeEdicao('titulo', e.target.value)}
+                    placeholder="Ex: Limpar a cozinha"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    required
+                  />
+                </div>
+
+                {/* Descrição */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Descrição
+                  </label>
+                  <textarea
+                    value={tarefaEditando.descricao || ''}
+                    onChange={(e) => handleInputChangeEdicao('descricao', e.target.value)}
+                    placeholder="Detalhes da tarefa..."
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                  />
+                </div>
+
+                {/* Categoria e Prioridade */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Categoria
+                    </label>
+                    <select
+                      value={tarefaEditando.categoria}
+                      onChange={(e) => handleInputChangeEdicao('categoria', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      {categorias.filter(c => c !== 'Todas').map(categoria => (
+                        <option key={categoria} value={categoria}>{categoria}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Prioridade
+                    </label>
+                    <select
+                      value={tarefaEditando.prioridade}
+                      onChange={(e) => handleInputChangeEdicao('prioridade', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="Baixa">Baixa</option>
+                      <option value="Média">Média</option>
+                      <option value="Alta">Alta</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Data de Vencimento */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Data de Vencimento
+                  </label>
+                  <input
+                    type="date"
+                    value={tarefaEditando.data_vencimento}
+                    onChange={(e) => handleInputChangeEdicao('data_vencimento', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Botões */}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={fecharModalEdicao}
+                    className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors duration-200"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={editandoTarefa || !tarefaEditando.titulo.trim()}
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {editandoTarefa ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                        Salvando...
+                      </>
+                    ) : (
+                      'Salvar Alterações'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </VisitorModeWrapper>
   );
 }

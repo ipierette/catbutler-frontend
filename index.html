@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Force no-cache in development -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <!-- Basic SEO -->
     <title>CatButler - Seu Assistente Doméstico IA</title>
     <meta name="description" content="Organize sua casa com IA — receitas, faxina e compras numa experiência fluida." />
@@ -27,6 +32,9 @@
     
     <!-- NEAT Gradient Library -->
     <script src="/js/vendor/index.umd.js"></script>
+    
+    <!-- Cache clearing for development -->
+    <script src="/clear-cache.js"></script>
   </head>
   <body>
     <noscript>
@@ -39,6 +47,27 @@
     </noscript>
     
     <div id="root"></div>
+    
+    <!-- Clear service worker in development -->
+    <script>
+      // Limpar service worker em desenvolvimento
+      if (import.meta.env && import.meta.env.DEV) {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+              registration.unregister().then(function(boolean) {
+                console.log('🧹 Service Worker removido:', boolean);
+              });
+            }
+          });
+        }
+      }
+      
+      // Force clear cache in development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('🚀 Modo desenvolvimento - cache desabilitado');
+      }
+    </script>
     
     <script type="module" src="/src/main.jsx"></script>
   </body>
