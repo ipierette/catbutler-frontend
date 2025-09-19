@@ -68,10 +68,8 @@ const SignUp = withLazyLoading(() => import("./pages/SignUp"), {
   description: "Preparando formulário de registro" 
 });
 
-const Login = withLazyLoading(() => import("./pages/Login"), { 
-  title: "Carregando Login...", 
-  description: "Preparando área de acesso" 
-});
+// Login com import direto para evitar problemas no Vercel
+const Login = lazy(() => import("./pages/Login"));
 
 const NotFound = withLazyLoading(() => import("./pages/NotFound"), { 
   title: "Carregando...", 
@@ -108,7 +106,11 @@ export default function AppRoutes() {
               <Route path="/cozinha-ia" element={<CozinhaIA />} />
               <Route path="/faxina-ia" element={<FaxinaIA />} />
               <Route path="/criar-conta" element={<SignUp />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/login" element={
+                <Suspense fallback={<Loading />}>
+                  <Login />
+                </Suspense>
+              } />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
