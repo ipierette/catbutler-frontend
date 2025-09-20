@@ -52,6 +52,8 @@ export default function CozinhaIA() {
   const [busca, setBusca] = useState('');
   const [ingredientePersonalizado, setIngredientePersonalizado] = useState('');
   const [abaSelecionada, setAbaSelecionada] = useState('buscar');
+  const [receitaSelecionada, setReceitaSelecionada] = useState(null);
+  const [modalContribuir, setModalContribuir] = useState(false);
   const [conversas, setConversas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
