@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Configurações das seções
 const SECOES_CONFIG = [
@@ -68,11 +69,11 @@ const NOTIFICACOES_CONFIG = [
 
 export default function Config() {
   const navigate = useNavigate();
-  const { user, profile, isAuthenticated, logout, updateProfile, availableAvatars, updateUserSettings } = useAuth();
+  const { user, profile, isAuthenticated, logout, updateProfile, availableAvatars } = useAuth();
+  const { autoTheme, toggleAutoTheme } = useTheme();
   
   // Estados
   const [secaoAtiva, setSecaoAtiva] = useState('geral');
-  const [autoTheme, setAutoTheme] = useState(false);
   const [configuracoes, setConfiguracoes] = useState({
     notificacoes: {
       tarefas: true,
@@ -90,10 +91,6 @@ export default function Config() {
   const [salvandoPerfil, setSalvandoPerfil] = useState(false);
 
   // Funções
-  const toggleAutoTheme = () => {
-    setAutoTheme(!autoTheme);
-  };
-
   const toggleNotificacao = (key) => {
     setConfiguracoes(prev => ({
       ...prev,

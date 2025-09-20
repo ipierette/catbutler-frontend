@@ -136,6 +136,7 @@ export default function CozinhaIA() {
   const [modalIngredientes, setModalIngredientes] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
+  const [abaSelecionada, setAbaSelecionada] = useState('buscar'); // CORREÇÃO: Adicionar estado da aba
   
   // Estados para TheMealDB
   const [receitasTheMealDB, setReceitasTheMealDB] = useState([]);
@@ -1133,7 +1134,7 @@ export default function CozinhaIA() {
                       key={ingrediente.name}
                       onClick={() => toggleIngrediente(ingrediente.name)}
                       className={`p-4 rounded-lg border-2 transition-all duration-200 text-center ${
-                        ingredientesSelecionados.includes(ingrediente.name)
+                        ingredientes.includes(ingrediente.name)
                           ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                           : 'border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                       }`}
@@ -1142,7 +1143,7 @@ export default function CozinhaIA() {
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {ingrediente.name}
                       </div>
-                      {ingredientesSelecionados.includes(ingrediente.name) && (
+                      {ingredientes.includes(ingrediente.name) && (
                         <div className="mt-2">
                           <i className="fa-solid fa-check-circle text-orange-500 text-sm"></i>
                         </div>
@@ -1161,7 +1162,7 @@ export default function CozinhaIA() {
                   >
                     Fechar
                   </button>
-                  {ingredientesSelecionados.length > 0 && (
+                  {ingredientes.length > 0 && (
                     <button
                       onClick={() => {
                         setModalIngredientes(false);

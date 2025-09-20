@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 const ThemeContext = createContext();
@@ -13,28 +13,38 @@ export const useTheme = () => {
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light');
+  const [autoTheme, setAutoTheme] = useState(false);
 
   useEffect(() => {
-    // Detectar tema inicial - sempre começar com light
+    // Detectar configurações iniciais
     const detectTheme = () => {
-      // Verificar se há tema salvo no localStorage
+      // Verificar configurações salvas
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
+      const savedAutoTheme = localStorage.getItem('autoTheme') === 'true';
+      
+      setAutoTheme(savedAutoTheme);
+      
+      if (savedAutoTheme) {
+        // Se tema automático está ativo, definir baseado na hora
+        const now = new Date();
+        const hour = now.getHours();
+        const isDayTime = hour >= 6 && hour < 18;
+        const newTheme = isDayTime ? 'light' : 'dark';
+        setTheme(newTheme);
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      } else if (savedTheme) {
+        // Usar tema salvo
         setTheme(savedTheme);
         applyTheme(savedTheme);
-        return;
+      } else {
+        // Se não há tema salvo, usar preferência do sistema
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const newTheme = isDark ? "dark" : "light";
+        setTheme(newTheme);
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
       }
-      
-      // Se não há tema salvo, usar preferência do sistema
-      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const newTheme = isDark ? "dark" : "light";
-      setTheme(newTheme);
-      
-      // Aplicar classe no HTML
-      applyTheme(newTheme);
-      
-      // Salvar no localStorage
-      localStorage.setItem('theme', newTheme);
     };
 
     // Função para aplicar tema ao documento
@@ -50,20 +60,52 @@ export function ThemeProvider({ children }) {
     
     detectTheme();
     
-    // Listener para mudanças de preferência do sistema
+    // Listener para mudanças de preferência do sistema (apenas se não estiver no modo automático por horário)
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = () => {
-      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const newTheme = isDark ? "dark" : "light";
-      setTheme(newTheme);
-      applyTheme(newTheme);
-      localStorage.setItem('theme', newTheme);
+      const savedAutoTheme = localStorage.getItem('autoTheme') === 'true';
+      if (!savedAutoTheme) {
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const newTheme = isDark ? "dark" : "light";
+        setTheme(newTheme);
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      }
     };
     
     mediaQuery.addEventListener("change", handleChange);
     
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+
+  // Intervalo para verificar tema automático baseado na hora
+  useEffect(() => {
+    let interval;
+    
+    if (autoTheme) {
+      const updateAutoTheme = () => {
+        const now = new Date();
+        const hour = now.getHours();
+        const isDayTime = hour >= 6 && hour < 18;
+        const newTheme = isDayTime ? 'light' : 'dark';
+        
+        if (theme !== newTheme) {
+          setTheme(newTheme);
+          localStorage.setItem('theme', newTheme);
+        }
+      };
+      
+      // Verificar a cada minuto se o tema deve mudar
+      interval = setInterval(updateAutoTheme, 60000);
+      
+      // Verificar imediatamente
+      updateAutoTheme();
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [autoTheme, theme]);
 
   useEffect(() => {
     // Aplicar classe no HTML quando o tema mudar
@@ -76,19 +118,43 @@ export function ThemeProvider({ children }) {
     }
   }, [theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
+    // Se tema automático estiver ativo, desativá-lo ao fazer toggle manual
+    if (autoTheme) {
+      setAutoTheme(false);
+      localStorage.setItem('autoTheme', 'false');
+    }
+    
     setTheme(prev => {
       const newTheme = prev === "light" ? "dark" : "light";
       localStorage.setItem('theme', newTheme);
       return newTheme;
     });
-  };
+  }, [autoTheme]);
+
+  const toggleAutoTheme = useCallback(() => {
+    const newAutoTheme = !autoTheme;
+    setAutoTheme(newAutoTheme);
+    localStorage.setItem('autoTheme', String(newAutoTheme));
+    
+    if (newAutoTheme) {
+      // Ativar tema automático baseado na hora atual
+      const now = new Date();
+      const hour = now.getHours();
+      const isDayTime = hour >= 6 && hour < 18;
+      const newTheme = isDayTime ? 'light' : 'dark';
+      setTheme(newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+  }, [autoTheme]);
 
   const value = useMemo(() => ({
     theme,
+    autoTheme,
     toggleTheme,
+    toggleAutoTheme,
     isDark: theme === 'dark'
-  }), [theme]);
+  }), [theme, autoTheme, toggleTheme, toggleAutoTheme]);
 
   return (
     <ThemeContext.Provider value={value}>
