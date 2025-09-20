@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
+import useCozinhaIA from '../hooks/useCozinhaIA';
 
 // Dados estáticos otimizados - versão compacta
 const INGREDIENTES_POPULARES = [
@@ -47,18 +48,18 @@ const RECEITAS_EXEMPLO = [
 export default function CozinhaIA() {
   const { isVisitorMode } = useAuth();
   
+  // Integração com o backend via hook personalizado
+  const cozinhaIA = useCozinhaIA(isVisitorMode);
+  
   // Referência para o card de receitas
   const receitasCardRef = useRef(null);
   
-  // Estados principais
-  const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
+  // Estados locais do componente (UI específico)
   const [busca, setBusca] = useState('');
   const [ingredientePersonalizado, setIngredientePersonalizado] = useState('');
-  const [abaSelecionada, setAbaSelecionada] = useState('buscar');
   const [receitaSelecionada, setReceitaSelecionada] = useState(null);
   const [modalContribuir, setModalContribuir] = useState(false);
   const [modalIngredientes, setModalIngredientes] = useState(false);
-  const [conversas, setConversas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
 
@@ -72,105 +73,95 @@ export default function CozinhaIA() {
     }
   }, []);
 
-  // Função para gerar sugestões de receitas (deve vir antes do useMemo)
-  const gerarSugestoesReceitas = useCallback(() => {
-    if (ingredientesSelecionados.length === 0) return [];
-    
-    // Combinações inteligentes baseadas nos ingredientes
-    const criarReceita = (nome, tempo, dificuldade, ingredientesExtras = []) => ({
-      id: `sugestao-${Math.random().toString(36).substr(2, 9)}`,
-      nome,
-      tempo,
-      dificuldade,
-      ingredientes: [...ingredientesSelecionados, ...ingredientesExtras],
-      rating: (4.2 + Math.random() * 0.6).toFixed(1),
-      tipo: 'Sugestão IA',
-      isAI: true
-    });
+  // Integração completa com o backend
+  const { 
+    ingredientesSelecionados: ingredientes, 
+    sugestoes, 
+    busca: buscaHook,
+    chat,
+    adicionarIngrediente, 
+    removerIngrediente
+  } = cozinhaIA;
 
-    const sugestoes = [];
-    
-    // Sugestão 1: Receita rápida e fácil
-    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('ovo'))) {
-      if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('queijo'))) {
-        sugestoes.push(criarReceita('Omelete de Queijo Especial', '15min', 'Fácil', ['sal', 'pimenta']));
-      } else {
-        sugestoes.push(criarReceita('Ovos Mexidos com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('ovo'))[0], '12min', 'Fácil', ['manteiga']));
-      }
-    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('frango'))) {
-      sugestoes.push(criarReceita('Frango Refogado com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('frango')).slice(0,2).join(' e '), '25min', 'Fácil', ['temperos', 'óleo']));
-    } else {
-      sugestoes.push(criarReceita(`Refogado de ${ingredientesSelecionados[0]}`, '20min', 'Fácil', ['temperos', 'azeite']));
-    }
-    
-    // Sugestão 2: Receita mais elaborada
-    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('arroz')) && 
-        ingredientesSelecionados.some(ing => ing.toLowerCase().includes('feijão'))) {
-      sugestoes.push(criarReceita('Arroz e Feijão Tropeiro', '35min', 'Médio', ['bacon', 'linguiça', 'farinha']));
-    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('batata'))) {
-      sugestoes.push(criarReceita('Batata Gratinada com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('batata'))[0], '40min', 'Médio', ['leite', 'queijo ralado']));
-    } else {
-      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} ao Molho Especial`, '30min', 'Médio', ['molho', 'ervas']));
-    }
-    
-    // Sugestão 3: Receita criativa/gourmet
-    if (ingredientesSelecionados.length >= 3) {
-      sugestoes.push(criarReceita(`Combinação Gourmet: ${ingredientesSelecionados.slice(0,3).join(', ')}`, '45min', 'Difícil', ['vinho branco', 'ervas finas']));
-    } else {
-      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} Gourmet`, '35min', 'Médio', ['molho especial', 'ervas']));
-    }
-    
-    return sugestoes.slice(0, 3);
-  }, [ingredientesSelecionados]);
+  // Funções específicas dos hooks
+  const obterSugestoes = sugestoes.buscarSugestoes;
+  const buscarReceitas = buscaHook.buscar;
+  const chatComChef = chat.enviarMensagem;
+  const resultadosBusca = buscaHook.resultados;
+  const conversas = chat.conversa;
 
-  // Receitas filtradas com sugestões da IA
-  const receitasFiltradas = useMemo(() => {
-    let receitas = [...RECEITAS_EXEMPLO];
-    
-    // Se há ingredientes selecionados, adicionar sugestões da IA
-    if (ingredientesSelecionados.length > 0) {
-      const sugestoes = gerarSugestoesReceitas();
-      receitas = [...sugestoes, ...receitas];
+  // Função para obter sugestões do backend quando ingredientes mudam
+  useEffect(() => {
+    if (ingredientes.length > 0) {
+      obterSugestoes();
+    }
+  }, [ingredientes, obterSugestoes]);
+
+  // Função para buscar receitas quando busca muda
+  useEffect(() => {
+    if (busca.trim()) {
+      const timeoutId = setTimeout(() => {
+        buscarReceitas(busca);
+      }, 500); // Debounce de 500ms
       
-      // Filtrar receitas que combinam com os ingredientes (incluindo sugestões IA)
-      receitas = receitas.filter(receita =>
-        receita.tipo === 'Sugestão IA' || 
-        ingredientesSelecionados.some(ing => 
-          receita.ingredientes.some(receitaIng => 
-            receitaIng.toLowerCase().includes(ing.toLowerCase()) || 
-            ing.toLowerCase().includes(receitaIng.toLowerCase())
-          )
-        )
-      );
+      return () => clearTimeout(timeoutId);
     }
+  }, [busca, buscarReceitas]);
+
+  // Receitas filtradas combinando backend e fallback estático
+  const receitasFiltradas = useMemo(() => {
+    let receitas = [];
     
-    if (busca) {
-      receitas = receitas.filter(receita =>
-        receita.nome.toLowerCase().includes(busca.toLowerCase())
-      );
+    // Priorizar dados do backend
+    if (busca && resultadosBusca.length > 0) {
+      receitas = [...resultadosBusca];
+    } else if (ingredientes.length > 0 && sugestoes.length > 0) {
+      receitas = [...sugestoes];
+    } else {
+      // Fallback para dados estáticos
+      receitas = [...RECEITAS_EXEMPLO];
+      
+      // Filtrar por ingredientes selecionados localmente
+      if (ingredientes.length > 0) {
+        receitas = receitas.filter(receita =>
+          ingredientes.some(ing => 
+            receita.ingredientes?.some(receitaIng => 
+              receitaIng.toLowerCase().includes(ing.toLowerCase()) || 
+              ing.toLowerCase().includes(receitaIng.toLowerCase())
+            )
+          )
+        );
+      }
+      
+      // Filtrar por busca localmente
+      if (busca) {
+        receitas = receitas.filter(receita =>
+          receita.nome.toLowerCase().includes(busca.toLowerCase())
+        );
+      }
     }
     
     return receitas;
-  }, [ingredientesSelecionados, busca, gerarSugestoesReceitas]);
+  }, [ingredientes, sugestoes, resultadosBusca, busca]);
 
-  // Handlers
+  // Handlers integrados com o backend
   const toggleIngrediente = useCallback((ingrediente) => {
-    setIngredientesSelecionados(prev => 
-      prev.includes(ingrediente)
-        ? prev.filter(i => i !== ingrediente)
-        : [...prev, ingrediente]
-    );
-  }, []);
+    if (ingredientes.includes(ingrediente)) {
+      removerIngrediente(ingrediente);
+    } else {
+      adicionarIngrediente(ingrediente);
+    }
+  }, [ingredientes, adicionarIngrediente, removerIngrediente]);
 
   const adicionarIngredientePersonalizado = useCallback(() => {
     const ingrediente = ingredientePersonalizado.trim();
-    if (ingrediente && !ingredientesSelecionados.includes(ingrediente)) {
-      setIngredientesSelecionados(prev => [...prev, ingrediente]);
+    if (ingrediente && !ingredientes.includes(ingrediente)) {
+      adicionarIngrediente(ingrediente);
       setIngredientePersonalizado("");
       // Fazer scroll automático para o card de receitas após adicionar ingrediente
       setTimeout(() => scrollToReceitas(), 300);
     }
-  }, [ingredientePersonalizado, ingredientesSelecionados, scrollToReceitas]);
+  }, [ingredientePersonalizado, ingredientes, adicionarIngrediente, scrollToReceitas]);
 
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
@@ -185,19 +176,20 @@ export default function CozinhaIA() {
     const novaMensagem = mensagem;
     setMensagem("");
     
-    setConversas(prev => [...prev, {
-      tipo: 'usuario',
-      texto: novaMensagem
-    }]);
-    
-    // Simular resposta IA
-    setTimeout(() => {
-      setConversas(prev => [...prev, {
-        tipo: 'ia',
-        texto: "Ótima pergunta! Deixe-me ajudar você com essa receita..."
-      }]);
-    }, 1000);
-  }, [mensagem, conversas, isVisitorMode]);
+    try {
+      // Usar o hook do backend para chat com o chef
+      await chatComChef(novaMensagem);
+    } catch (error) {
+      console.error('Erro no chat:', error);
+      // Fallback para resposta local em caso de erro
+      setTimeout(() => {
+        setConversas(prev => [...prev, {
+          tipo: 'ia',
+          texto: "Desculpe, estou com dificuldades no momento. Tente novamente em instantes!"
+        }]);
+      }, 500);
+    }
+  }, [mensagem, conversas, isVisitorMode, chatComChef]);
 
   return (
     <VisitorModeWrapper pageName="a cozinha IA">
@@ -270,8 +262,8 @@ export default function CozinhaIA() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          if (ingredientePersonalizado.trim() && !ingredientesSelecionados.includes(ingredientePersonalizado.trim())) {
-                            setIngredientesSelecionados(prev => [...prev, ingredientePersonalizado.trim()]);
+                          if (ingredientePersonalizado.trim() && !ingredientes.includes(ingredientePersonalizado.trim())) {
+                            adicionarIngrediente(ingredientePersonalizado.trim());
                             setIngredientePersonalizado('');
                           }
                         }
@@ -282,14 +274,14 @@ export default function CozinhaIA() {
                   </div>
                   <button
                     onClick={adicionarIngredientePersonalizado}
-                    disabled={!ingredientePersonalizado.trim() || ingredientesSelecionados.includes(ingredientePersonalizado.trim())}
+                    disabled={!ingredientePersonalizado.trim() || ingredientes.includes(ingredientePersonalizado.trim())}
                     className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
                   >
                     <i className="fa-solid fa-plus"></i>
                     Adicionar
                   </button>
                 </div>
-                {ingredientePersonalizado.trim() && ingredientesSelecionados.includes(ingredientePersonalizado.trim()) && (
+                {ingredientePersonalizado.trim() && ingredientes.includes(ingredientePersonalizado.trim()) && (
                   <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
                     <i className="fa-solid fa-info-circle"></i>
                     Este ingrediente já foi adicionado
@@ -298,21 +290,24 @@ export default function CozinhaIA() {
               </div>
 
               {/* Ingredientes Selecionados - Compacto */}
-              {ingredientesSelecionados.length > 0 && (
+              {ingredientes.length > 0 && (
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                      Ingredientes ({ingredientesSelecionados.length})
+                      Ingredientes ({ingredientes.length})
                     </h3>
                     <button
-                      onClick={() => setIngredientesSelecionados([])}
+                      onClick={() => {
+                        // Limpar todos os ingredientes usando o hook
+                        ingredientes.forEach(ing => removerIngrediente(ing));
+                      }}
                       className="text-xs text-red-600 dark:text-red-400 hover:underline"
                     >
                       Limpar
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {ingredientesSelecionados.map((ingrediente, index) => (
+                    {ingredientes.map((ingrediente, index) => (
                       <span 
                         key={`${ingrediente}-${index}`}
                         className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs"
@@ -389,7 +384,7 @@ export default function CozinhaIA() {
               <div ref={receitasCardRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
                   Receitas ({receitasFiltradas.length})
-                  {ingredientesSelecionados.length > 0 && (
+                  {ingredientes.length > 0 && (
                     <span className="ml-2 text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-full">
                       + {receitasFiltradas.filter(r => r.tipo === 'Sugestão IA').length} sugestões IA
                     </span>
@@ -844,10 +839,13 @@ export default function CozinhaIA() {
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {ingredientesSelecionados.length} ingredientes selecionados
+                    {ingredientes.length} ingredientes selecionados
                   </p>
                   <button
-                    onClick={() => setIngredientesSelecionados([])}
+                    onClick={() => {
+                      // Limpar todos os ingredientes usando o hook  
+                      ingredientes.forEach(ing => removerIngrediente(ing));
+                    }}
                     className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                   >
                     Limpar seleção
@@ -897,7 +895,7 @@ export default function CozinhaIA() {
                       }}
                       className="flex-1 py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium"
                     >
-                      Buscar Receitas ({ingredientesSelecionados.length})
+                      Buscar Receitas ({ingredientes.length})
                     </button>
                   )}
                 </div>
