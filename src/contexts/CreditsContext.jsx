@@ -98,8 +98,7 @@ export const CreditsProvider = ({ children }) => {
       detail: { amount, description, newCredits }
     }));
 
-    // Mostrar notificação de créditos ganhos
-    showCreditNotification(amount, description);
+    // Notificação será criada pelo useNotificationEvents via evento acima
   };
 
   const spendCredits = (amount, description, type = 'spent', icon = '💫') => {
@@ -132,25 +131,6 @@ export const CreditsProvider = ({ children }) => {
     }));
 
     return { success: true, newBalance: newCredits };
-  };
-
-  const showCreditNotification = (amount, description) => {
-    // Criar notificação flutuante
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-20 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-bounce';
-    notification.innerHTML = `
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-coins text-lg"></i>
-        <span class="font-medium">+${amount} créditos!</span>
-      </div>
-      <div class="text-sm opacity-90">${description}</div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
   };
 
   // Funções específicas para diferentes ações
