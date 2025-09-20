@@ -44,29 +44,31 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Debug extremo para Vercel - diagnosticar problema de deploy
-console.log('🚀 CatButler Main.jsx iniciando...', {
-  location: window.location.href,
-  userAgent: navigator.userAgent,
-  timestamp: new Date().toISOString()
-});
+// Debug extremo para Vercel - diagnosticar problema de deploy (apenas em desenvolvimento)
+if (import.meta.env.DEV) {
+  console.log('🚀 CatButler Main.jsx iniciando...', {
+    location: window.location.href,
+    userAgent: navigator.userAgent,
+    timestamp: new Date().toISOString()
+  });
 
-// Verificar variáveis de ambiente críticas
-console.group('📋 Environment Variables Check');
-console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL || 'UNDEFINED ⚠️');
-console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'DEFINED ✅' : 'UNDEFINED ⚠️');
-console.log('NODE_ENV:', import.meta.env.NODE_ENV || 'UNDEFINED');
-console.log('MODE:', import.meta.env.MODE || 'UNDEFINED');
-console.log('PROD:', import.meta.env.PROD);
-console.log('DEV:', import.meta.env.DEV);
-console.groupEnd();
+  // Verificar variáveis de ambiente críticas
+  console.group('📋 Environment Variables Check');
+  console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL || 'UNDEFINED ⚠️');
+  console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'DEFINED ✅' : 'UNDEFINED ⚠️');
+  console.log('NODE_ENV:', import.meta.env.NODE_ENV || 'UNDEFINED');
+  console.log('MODE:', import.meta.env.MODE || 'UNDEFINED');
+  console.log('PROD:', import.meta.env.PROD);
+  console.log('DEV:', import.meta.env.DEV);
+  console.groupEnd();
 
-// Verificar se todos os módulos estão disponíveis
-console.group('📦 Module Status');
-console.log('React imported:', typeof StrictMode === 'function' ? '✅' : '❌');
-console.log('ReactDOM imported:', typeof createRoot === 'function' ? '✅' : '❌');
-console.log('App imported:', typeof App === 'function' ? '✅' : '❌', App?.displayName || App?.name);
-console.groupEnd();
+  // Verificar se todos os módulos estão disponíveis
+  console.group('📦 Module Status');
+  console.log('React imported:', typeof StrictMode === 'function' ? '✅' : '❌');
+  console.log('ReactDOM imported:', typeof createRoot === 'function' ? '✅' : '❌');
+  console.log('App imported:', typeof App === 'function' ? '✅' : '❌', App?.displayName || App?.name);
+  console.groupEnd();
+}
 
 // Capturar erros não tratados
 window.addEventListener('error', (event) => {

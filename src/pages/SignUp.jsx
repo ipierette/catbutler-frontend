@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { sanitizeInput, validateEmail, validatePassword, validateName } from '../utils/security';
+import { authLimiter, securityMonitor, detectBot } from '../utils/advancedSecurity';
 import { TermsModal, PrivacyModal, useModal } from '../components/Modals';
 import { signUp } from '../utils/supabase';
 
@@ -96,6 +97,26 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // 🔒 Verificações de segurança
+    const userKey = 'signup_' + (formData.email || 'anonymous');
+    
+    if (!authLimiter.isAllowed(userKey)) {
+      setError('Muitas tentativas de cadastro. Tente novamente em alguns minutos.');
+      securityMonitor.logEvent('signup_rate_limited', { email: formData.email });
+      return;
+    }
+    
+    if (detectBot(navigator.userAgent)) {
+      setError('Acesso negado. Entre em contato com o suporte se for um erro.');
+      securityMonitor.logEvent('bot_detected', { userAgent: navigator.userAgent });
+      return;
+    }
+    
+    if (securityMonitor.isBlocked()) {
+      setError('Acesso temporariamente bloqueado por segurança.');
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
@@ -161,6 +182,13 @@ export default function SignUp() {
       
     } catch (error) {
       console.error('🚨 Erro no cadastro:', error);
+      
+      // Log de segurança
+      securityMonitor.logEvent('signup_failed', { 
+        email: formData.email,
+        error: error.message 
+      });
+      
       setErrors({
         submit: 'Erro inesperado. Verifique sua conexão e tente novamente.'
       });
@@ -260,7 +288,6 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={() => {
-                  console.log('Toggle senha:', !showPassword);
                   setShowPassword(!showPassword);
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-1 z-10"
@@ -296,7 +323,6 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={() => {
-                  console.log('Toggle confirmar senha:', !showConfirmPassword);
                   setShowConfirmPassword(!showConfirmPassword);
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-1 z-10"
