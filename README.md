@@ -3,10 +3,9 @@
 <div align="center">
   <img src="src/assets/images/logo-catbutler.webp" alt="CatButler Logo" width="200" height="150">
 
- [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+ [![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
   [![Vite](https://img.shields.io/badge/Vite-7.1.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   
   [![Deploy Status](https://img.shields.io/badge/Deploy-Vercel-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
   [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
@@ -108,10 +107,10 @@ Acesse a aplicação em: **[catbutler-frontend.vercel.app](https://catbutler-fro
 ## 🛠️ Tecnologias
 
 ### **Frontend**
-- **React 19.1.1** - Biblioteca principal
+- **React 18.2.0** - Biblioteca principal
 - **Vite 7.1.2** - Build tool e dev server
 - **Tailwind CSS 3.4.17** - Framework CSS utilitário
-- **React Router DOM 7.8.2** - Roteamento SPA
+- **React Router DOM 6.8.1** - Roteamento SPA
 - **React Icons 5.5.0** - Biblioteca de ícones
 
 ### **Funcionalidades Especiais**
@@ -193,7 +192,7 @@ catbutler-frontend/
 ├── src/
 │   ├── assets/            # Imagens e recursos
 │   │   └── images/
-│   ├── components/        # Componentes reutilizáveis
+│   ├── components/        # Componentes React reutilizáveis
 │   │   ├── layout/        # Layout components
 │   │   │   └── Sidebar.jsx
 │   │   ├── ui/            # UI components
@@ -201,20 +200,17 @@ catbutler-frontend/
 │   │   ├── Header.jsx
 │   │   ├── Footer.jsx
 │   │   ├── CustomBackground.jsx
-│   │   └── ...
+│   │   └── CozinhaIA.jsx      # Sistema CozinhaIA
+│   ├── hooks/             # Custom React hooks
+│   │   └── useCozinhaIA.js    # Lógica do sistema
 │   ├── contexts/          # React contexts
 │   │   └── ThemeContext.jsx
-│   ├── hooks/             # Custom hooks
-│   │   ├── useKeyboardShortcuts.js
-│   │   └── useValidation.js
 │   ├── pages/             # Páginas da aplicação
 │   │   ├── Home.jsx
 │   │   ├── Assistente.jsx
 │   │   ├── Agenda.jsx
 │   │   ├── Historico.jsx
-│   │   ├── Dicas.jsx
-│   │   ├── Sobre.jsx
-│   │   └── ...
+│   │   └── Dicas.jsx
 │   ├── styles/            # Estilos CSS
 │   ├── utils/             # Utilitários
 │   ├── App.jsx            # Componente principal
@@ -268,7 +264,7 @@ catbutler-frontend/
 - Links externos seguros
 - Proteção XSS
 - PropTypes validation
-- Modern Web APIs usage
+- Modern React patterns
 - Error boundary implementation
 - Keyboard navigation support
 
