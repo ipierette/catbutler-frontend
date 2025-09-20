@@ -150,7 +150,9 @@ export const ToastProvider = ({ children }) => {
     custom: addToast,
     remove: removeToast,
     clear: clearAllToasts,
-  }), [addToast, removeToast, clearAllToasts]);
+    // Remover callbacks das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), []);
 
   return (
     <ToastContext.Provider value={toast}>

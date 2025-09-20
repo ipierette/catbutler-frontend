@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from './AuthContext';
 
@@ -275,7 +275,7 @@ export const NotificationsProvider = ({ children }) => {
     return notifications.slice(0, limit);
   };
 
-  const value = {
+  const value = useMemo(() => ({
     notifications,
     unreadCount,
     addNotification,
@@ -293,7 +293,9 @@ export const NotificationsProvider = ({ children }) => {
     getNotificationsByCategory,
     getRecentNotifications,
     isAuthenticated
-  };
+    // Remover funções das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [notifications, unreadCount, isAuthenticated]);
 
   return (
     <NotificationsContext.Provider value={value}>

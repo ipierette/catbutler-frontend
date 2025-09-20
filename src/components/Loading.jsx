@@ -141,7 +141,9 @@ export const useLoading = (initialState = false) => {
     } finally {
       stopLoading();
     }
-  }, [startLoading, stopLoading]);
+    // Remover callbacks das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   return {
     loading,

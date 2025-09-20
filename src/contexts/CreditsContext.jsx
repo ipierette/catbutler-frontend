@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 
 const CreditsContext = createContext();
@@ -189,7 +189,7 @@ export const CreditsProvider = ({ children }) => {
       .reduce((sum, t) => sum + t.amount, 0));
   };
 
-  const value = {
+  const value = useMemo(() => ({
     credits,
     transactions,
     loading,
@@ -201,7 +201,9 @@ export const CreditsProvider = ({ children }) => {
     getTotalEarned,
     getTotalSpent,
     isAuthenticated
-  };
+    // Remover funções das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [credits, transactions, loading, isAuthenticated]);
 
   return (
     <CreditsContext.Provider value={value}>
