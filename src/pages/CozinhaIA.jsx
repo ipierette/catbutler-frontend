@@ -334,15 +334,10 @@ export default function CozinhaIA() {
                     ))}
                   </div>
                   
-                  {/* Botão Gerar IA - Compacto */}
+                  {/* Botão Chat IA - Simplificado */}
                   <button
                     onClick={gerarReceitaIA}
-                    disabled={loading}
-                    className={`w-full mt-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-                      loading
-                        ? 'bg-gray-300 cursor-not-allowed text-gray-600'
-                        : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
-                    }`}
+                    className="w-full mt-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
                   >
                     <i className="fa-solid fa-comments text-sm"></i>
                     {isVisitorMode ? 'Ver Chat IA' : 'Chat com IA'}
