@@ -13,7 +13,6 @@ import CreditRewardsManager from "./components/CreditRewardsManager";
 import { initializePerformanceOptimizations } from "./utils/performance";
 import { BUILD_INFO } from "./build-info.js";
 import { hasSupabaseConfig } from "./utils/supabase";
-import "./debug-env.js"; // Import debug das env vars
 
 function App() {
   useEffect(() => {
@@ -45,7 +44,12 @@ function App() {
               <ToastProvider>
                 <ConfirmationProvider>
                 <CustomBackground />
-                <BrowserRouter>
+                <BrowserRouter
+                  future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true
+                  }}
+                >
                   <AppRoutes />
                 </BrowserRouter>
               </ConfirmationProvider>

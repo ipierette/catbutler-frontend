@@ -9,6 +9,7 @@
     "dev:fresh": "rm -rf node_modules/.vite && rm -rf .vite && npm run dev",
     "build": "vite build",
     "lint": "eslint . --ext .js,.jsx --fix",
+    "audit:components": "node scripts/audit-components.js",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:unit:coverage": "vitest run --coverage",

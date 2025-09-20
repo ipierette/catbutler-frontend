@@ -28,14 +28,6 @@ export const withLazyLoading = (importFunction, fallbackProps = {}) => {
 
 // Componente funcional para lazy loading com intersection observer
 export function LazyWrapper({ children, fallback, height = '12.5rem' }) {
-LazyWrapper.propTypes = {
-  children: PropTypes.node.isRequired,
-  fallback: PropTypes.node,
-  height: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-};
   const elementRef = useRef();
   const [isVisible, setIsVisible] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -70,13 +62,19 @@ LazyWrapper.propTypes = {
 }
 
 LazyWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  fallback: PropTypes.node,
+  height: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
 };
 
 // Hook para lazy loading com intersection observer
 export const useLazyLoading = (options = {}) => {
-  const [isVisible, setIsVisible] = React.useState(false);
-  const [hasLoaded, setHasLoaded] = React.useState(false);
-  const elementRef = React.useRef();
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const elementRef = useRef();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -104,15 +102,9 @@ export const useLazyLoading = (options = {}) => {
 
 // Componente para lazy loading de imagens
 export const LazyImage = ({ src, alt, placeholder, className = '', ...props }) => {
-LazyImage.propTypes = {
-  src: PropTypes.string.isRequired,
-  alt: PropTypes.string.isRequired,
-  placeholder: PropTypes.node,
-  className: PropTypes.string,
-};
   const { elementRef, isVisible } = useLazyLoading();
-  const [imageLoaded, setImageLoaded] = React.useState(false);
-  const [imageError, setImageError] = React.useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handleLoad = () => {
     setImageLoaded(true);
@@ -161,16 +153,21 @@ LazyImage.propTypes = {
 };
 
 LazyImage.propTypes = {
+  src: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  placeholder: PropTypes.node,
+  className: PropTypes.string,
 };
 
 // Hook para memoização de componentes
 export const useMemoizedComponent = (Component, deps = []) => {
-  return React.useMemo(() => Component, deps);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => Component, [Component, ...deps]);
 };
 
 // Hook para debounce
 export const useDebounce = (value, delay) => {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -187,8 +184,8 @@ export const useDebounce = (value, delay) => {
 
 // Hook para throttle
 export const useThrottle = (value, delay) => {
-  const [throttledValue, setThrottledValue] = React.useState(value);
-  const lastExecuted = React.useRef(Date.now());
+  const [throttledValue, setThrottledValue] = useState(value);
+  const lastExecuted = useRef(Date.now());
 
   useEffect(() => {
     if (Date.now() >= lastExecuted.current + delay) {

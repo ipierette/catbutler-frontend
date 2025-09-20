@@ -47,58 +47,32 @@ export const AuthProvider = ({ children }) => {
   const isVisitorMode = !user || !profile;
   const isAuthenticated = !!user && !!profile;
 
-  // Função para limpeza seletiva de dados de autenticação
-  const clearAuthState = () => {
-    console.log('🧹 Limpando estado de autenticação...');
-
-    // Preservar configurações importantes
-    const preservedKeys = [
-      'theme',
-      'contribuicao_estado_padrao',
-      'contribuicao_cidade_padrao',
-      'mercado_estado_selecionado',
-      'mercado_cidade_selecionada',
-      'assistenteMonthlyMessages',
-      'mercadoMonthlyMessages'
-    ];
-
-    const preservedData = {};
-    preservedKeys.forEach(key => {
+  // 🧹 Função para limpeza forçada de cache
+  const forceClearCache = () => {
+    if (import.meta.env.DEV) {
+      console.log('🧹 Limpando cache após mudança de autenticação...');
+      
+      // Limpar storage
       try {
-        const value = localStorage.getItem(key);
-        if (value) preservedData[key] = value;
+        localStorage.clear();
+        sessionStorage.clear();
       } catch (e) {
-        // Ignorar erros
+        console.warn('Erro ao limpar storage:', e);
       }
-    });
-
-    // Limpar apenas dados relacionados à autenticação
-    const authKeys = ['force_logout', 'visitor_tasks_cache', 'tasks_cache'];
-    authKeys.forEach(key => {
-      try {
-        localStorage.removeItem(key);
-        sessionStorage.removeItem(key);
-      } catch (e) {
-        // Ignorar erros
+      
+      // Limpar caches do browser
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => caches.delete(name));
+        });
       }
-    });
-
-    // Limpar storage mas restaurar configurações importantes
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Restaurar dados preservados
-    Object.entries(preservedData).forEach(([key, value]) => {
-      try {
-        localStorage.setItem(key, value);
-      } catch (e) {
-        // Ignorar erros
-      }
-    });
-
-    console.log('✅ Estado de autenticação limpo seletivamente');
+      
+      // Force reload da página para garantir estado limpo
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
   };
-
 
   // Carregar perfil do usuário
   const loadUserProfile = async (authUser) => {
@@ -212,6 +186,11 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.removeItem('visitor_tasks_cache');
       localStorage.removeItem('tasks_cache');
       
+      // Limpar cache em desenvolvimento
+      if (import.meta.env.DEV) {
+        console.log('🧹 Limpando cache após login...');
+        forceClearCache();
+      }
       
       await loadUserProfile(data.user);
 
@@ -237,8 +216,11 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setProfile(null);
       
-      // Limpa estado de autenticação preservando configurações
-      clearAuthState();
+      // Limpa localStorage e sessionStorage (exceto a flag)
+      const forceLogoutFlag = sessionStorage.getItem('force_logout');
+      localStorage.clear();
+      sessionStorage.clear();
+      sessionStorage.setItem('force_logout', forceLogoutFlag);
       
       // Tenta fazer logout do Supabase
       const { error } = await supabase.auth.signOut({
@@ -264,7 +246,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       console.log('✅ Logout completo realizado!');
-
+      
+      // Limpar cache em desenvolvimento
+      forceClearCache();
       
       // Força reinicialização após um pequeno delay
       setTimeout(() => {
@@ -275,7 +259,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('🚨 Erro inesperado no logout:', error);
       // Mesmo com erro, força limpeza do estado local
-      clearAuthState();
+      sessionStorage.setItem('force_logout', 'true');
+      setUser(null);
+      setProfile(null);
+      localStorage.clear();
       
       // Força reload em caso de erro também
       setTimeout(() => {
@@ -323,55 +310,49 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Função para obter nome de exibição
-  const getDisplayName = useMemo(() => {
-    return () => {
-      if (isAuthenticated && (profile?.display_name || profile?.nome)) {
-        return profile.display_name || profile.nome;
-      }
-      return 'Visitante';
-    };
-  }, [isAuthenticated, profile?.display_name, profile?.nome]);
+  const getDisplayName = () => {
+    if (isAuthenticated && (profile?.display_name || profile?.nome)) {
+      return profile.display_name || profile.nome;
+    }
+    return 'Visitante';
+  };
 
   // Função para obter saudação personalizada
-  const getGreeting = useMemo(() => {
-    return () => {
-      const hour = new Date().getHours();
-      let greeting;
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    let greeting;
+    
+    if (hour < 12) {
+      greeting = 'Bom dia';
+    } else if (hour < 18) {
+      greeting = 'Boa tarde';  
+    } else {
+      greeting = 'Boa noite';
+    }
 
-      if (hour < 12) {
-        greeting = 'Bom dia';
-      } else if (hour < 18) {
-        greeting = 'Boa tarde';
-      } else {
-        greeting = 'Boa noite';
-      }
-
-      return `${greeting}, ${getDisplayName()}`;
-    };
-  }, [getDisplayName]);
+    return `${greeting}, ${getDisplayName()}`;
+  };
 
   // Avatares disponíveis (incluindo especiais)
   const availableAvatars = allAvatars;  // Função para obter avatar do usuário
-  const getUserAvatar = useMemo(() => {
-    return () => {
-      console.log('🔍 getUserAvatar Debug:', {
-        isVisitorMode,
-        profile,
-        profileAvatar: profile?.avatar,
-        profileAvatarUrl: profile?.avatar_url,
-        availableAvatars: availableAvatars.length
-      });
-
-      if (!isVisitorMode && (profile?.avatar || profile?.avatar_url)) {
-        // Suportar tanto avatar quanto avatar_url
-        const avatarId = profile?.avatar || profile?.avatar_url;
-        const avatar = availableAvatars.find(a => a.id === avatarId);
-        console.log('🖼️ Avatar encontrado:', avatar);
-        return avatar ? avatar.src : availableAvatars[0].src;
-      }
-      return null; // Visitante não tem avatar
-    };
-  }, [isVisitorMode, profile?.avatar, profile?.avatar_url, availableAvatars]);
+  const getUserAvatar = () => {
+    console.log('🔍 getUserAvatar Debug:', {
+      isVisitorMode,
+      profile,
+      profileAvatar: profile?.avatar,
+      profileAvatarUrl: profile?.avatar_url,
+      availableAvatars: availableAvatars.length
+    });
+    
+    if (!isVisitorMode && (profile?.avatar || profile?.avatar_url)) {
+      // Suportar tanto avatar quanto avatar_url
+      const avatarId = profile?.avatar || profile?.avatar_url;
+      const avatar = availableAvatars.find(a => a.id === avatarId);
+      console.log('🖼️ Avatar encontrado:', avatar);
+      return avatar ? avatar.src : availableAvatars[0].src;
+    }
+    return null; // Visitante não tem avatar
+  };
 
   // Função para atualizar configurações do usuário
   const updateUserSettings = async (settings) => {
@@ -456,8 +437,10 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setProfile(null);
         
-        // Limpa estado de autenticação
-        clearAuthState();
+        // Limpa storage novamente para garantir
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log('✅ Estado limpo no listener');
         setLoading(false);
         return;
       }
@@ -516,12 +499,12 @@ export const AuthProvider = ({ children }) => {
     profile,
     loading,
     isVisitorMode,
-
+    
     // Funções de autenticação
     login,
     logout,
     updateProfile,
-
+    
     // Funções de utilidade
     isAuthenticated,
     getDisplayName,
@@ -529,7 +512,9 @@ export const AuthProvider = ({ children }) => {
     getUserAvatar,
     updateUserSettings,
     availableAvatars,
-  }), [user, profile, loading, isVisitorMode, login, logout, updateProfile, isAuthenticated, getDisplayName, getGreeting, getUserAvatar, updateUserSettings]);
+  // Remover funções das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [user, profile, loading, isVisitorMode, login, logout, updateProfile, isAuthenticated, updateUserSettings]);
 
   return (
     <AuthContext.Provider value={value}>

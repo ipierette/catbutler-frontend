@@ -51,7 +51,17 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
       'jsx-a11y/anchor-is-valid': 'warn',
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      // Regras específicas para prevenir problemas estruturais
+      'react/function-component-definition': ['warn', {
+        namedComponents: 'function-declaration',
+        unnamedComponents: 'function-expression'
+      }],
+      // Garantir que PropTypes sejam definidos após a função
+      'react/sort-comp': 'warn',
+      // Garantir imports corretos do React
+      'react/jsx-uses-react': 'warn',
+      'react/jsx-uses-vars': 'warn'
     }
   }
 ]

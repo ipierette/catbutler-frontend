@@ -9,16 +9,46 @@ class ErrorBoundary extends React.Component {
       error: null,
       errorInfo: null,
       errorId: null,
-      retryCount: 0
+      retryCount: 0,
+      errorAnalysis: null
     };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
     const errorId = `catbutler-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Detectar se é um erro minificado do React
+    const isReactMinifiedError = error.message && error.message.includes('Minified React error');
+    const isHookError = error.message && (
+      error.message.includes('useEffect is not defined') ||
+      error.message.includes('useState is not defined') ||
+      error.message.includes('useRef is not defined') ||
+      error.stack?.includes('hook')
+    );
+
+    let errorAnalysis = {
+      type: 'generic',
+      likely_cause: 'Erro desconhecido',
+      suggestion: 'Tente recarregar a página'
+    };
+
+    if (isReactMinifiedError) {
+      errorAnalysis = {
+        type: 'react_minified',
+        likely_cause: 'Erro no uso de hooks ou componentes React',
+        suggestion: 'Erro de minificação detectado. Verifique se todos os hooks estão sendo importados corretamente.'
+      };
+    } else if (isHookError) {
+      errorAnalysis = {
+        type: 'hook_import',
+        likely_cause: 'Hook do React não foi importado ou está sendo usado incorretamente',
+        suggestion: 'Verificar se useEffect, useState, etc. estão sendo importados corretamente de "react"'
+      };
+    }
 
     console.error('🚨 ErrorBoundary capturou um erro:', {
       errorId,
@@ -27,21 +57,23 @@ class ErrorBoundary extends React.Component {
       componentStack: errorInfo.componentStack,
       url: window.location.href,
       userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      analysis: errorAnalysis
     });
 
     this.setState({
       error: error,
       errorInfo: errorInfo,
-      errorId
+      errorId,
+      errorAnalysis
     });
 
     // Reportar erro para monitoramento (se implementado)
-    this.reportError(errorId, error, errorInfo);
+    this.reportError(errorId, error, errorInfo, errorAnalysis);
   }
 
-  reportError = (errorId, error, errorInfo) => {
-    // Aqui você pode integrar com serviços como Sentry, LogRocket, etc.
+  reportError = (errorId, error, errorInfo, errorAnalysis) => {
+    // Aqui você pode integrar with serviços como Sentry, LogRocket, etc.
     try {
       // Por enquanto, apenas logar para debug
       if (import.meta.env.VITE_DEBUG === 'true') {
@@ -50,6 +82,7 @@ class ErrorBoundary extends React.Component {
         console.log('Message:', error.toString());
         console.log('Stack:', error.stack);
         console.log('Component Stack:', errorInfo.componentStack);
+        console.log('Analysis:', errorAnalysis);
         console.log('URL:', window.location.href);
         console.log('Timestamp:', new Date().toISOString());
         console.groupEnd();
@@ -62,50 +95,19 @@ class ErrorBoundary extends React.Component {
   handleRetry = () => {
     const { retryCount } = this.state;
 
-    // Se já tentou várias vezes, fazer limpeza mais profunda
+        // Se já tentou várias vezes, fazer limpeza mais profunda
     if (retryCount >= 2) {
       console.log('🧹 Tentativa de recuperação profunda após múltiplas falhas...');
 
-      // Limpar cache e dados problemáticos
-      try {
-        // Preservar configurações importantes
-        const preservedKeys = ['theme'];
-        const preservedData = {};
+      // Limpar dados de autenticação problemáticos
+      localStorage.removeItem('force_logout');
 
-        preservedKeys.forEach(key => {
-          try {
-            const value = localStorage.getItem(key);
-            if (value) preservedData[key] = value;
-          } catch (e) {
-            // Ignorar
-          }
-        });
+      // Forçar recarregamento após limpeza
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
 
-        // Limpar dados de autenticação problemáticos
-        localStorage.removeItem('force_logout');
-        localStorage.removeItem('visitor_tasks_cache');
-        localStorage.removeItem('tasks_cache');
-
-        // Limpar cache do browser
-        if ('caches' in window) {
-          caches.keys().then(names => {
-            names.forEach(name => {
-              if (name.includes('catbutler')) {
-                caches.delete(name);
-              }
-            });
-          });
-        }
-
-        // Forçar recarregamento após limpeza
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
-
-        return;
-      } catch (e) {
-        console.warn('Erro durante limpeza profunda:', e);
-      }
+      return;
     }
 
     this.setState(prevState => ({
@@ -149,7 +151,7 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      const { error, errorId, retryCount } = this.state;
+      const { error, errorId, retryCount, errorAnalysis } = this.state;
 
       return React.createElement(
         'div',
@@ -161,6 +163,15 @@ class ErrorBoundary extends React.Component {
           React.createElement('h2', { className: 'text-xl font-bold text-gray-900 dark:text-gray-100 mb-2' }, 'Oops! Algo deu errado'),
           React.createElement('p', { className: 'text-gray-600 dark:text-gray-300 mb-4' },
             'O CatButler encontrou um problema inesperado. Não se preocupe, nossos gatos estão trabalhando para resolver isso!'
+          ),
+
+          // Mostrar análise específica do erro
+          errorAnalysis && React.createElement('div', {
+            className: 'mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-left text-sm'
+          },
+            React.createElement('p', { className: 'font-semibold text-blue-800 dark:text-blue-200 mb-1' }, '🔍 Análise do Problema:'),
+            React.createElement('p', { className: 'text-blue-700 dark:text-blue-300 mb-2' }, errorAnalysis.likely_cause),
+            React.createElement('p', { className: 'text-blue-600 dark:text-blue-400 text-xs' }, errorAnalysis.suggestion)
           ),
 
           // Mostrar informações de debug em desenvolvimento

@@ -3,65 +3,24 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-// Cache busting para desenvolvimento
-if (import.meta.env.DEV) {
-  const timestamp = Date.now();
-  if (!window.location.search.includes('t=')) {
-    const separator = window.location.search ? '&' : '?';
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${separator}t=${timestamp}`);
-  }
-}
-
-// Debug extremo para Vercel - diagnosticar problema de deploy (apenas em desenvolvimento)
-if (import.meta.env.DEV) {
-  console.log('🚀 CatButler Main.jsx iniciando...', {
-    location: window.location.href,
-    userAgent: navigator.userAgent,
-    timestamp: new Date().toISOString()
+// Capturar erros não tratados apenas em produção
+if (import.meta.env.PROD) {
+  window.addEventListener('error', (event) => {
+    console.error('❌ Erro global capturado:', {
+      message: event.message,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+      error: event.error
+    });
   });
 
-  // Verificar variáveis de ambiente críticas
-  console.group('📋 Environment Variables Check');
-  console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL || 'UNDEFINED ⚠️');
-  console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'DEFINED ✅' : 'UNDEFINED ⚠️');
-  console.log('NODE_ENV:', import.meta.env.NODE_ENV || 'UNDEFINED');
-  console.log('MODE:', import.meta.env.MODE || 'UNDEFINED');
-  console.log('PROD:', import.meta.env.PROD);
-  console.log('DEV:', import.meta.env.DEV);
-  console.groupEnd();
-
-  // Verificar se todos os módulos estão disponíveis
-  console.group('📦 Module Status');
-  console.log('React imported:', typeof StrictMode === 'function' ? '✅' : '❌');
-  console.log('ReactDOM imported:', typeof createRoot === 'function' ? '✅' : '❌');
-  console.log('App imported:', typeof App === 'function' ? '✅' : '❌', App?.displayName || App?.name);
-  console.groupEnd();
-}
-
-// Capturar erros não tratados
-window.addEventListener('error', (event) => {
-  console.error('❌ Erro global capturado:', {
-    message: event.message,
-    filename: event.filename,
-    lineno: event.lineno,
-    colno: event.colno,
-    error: event.error
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('❌ Promise rejeitada não tratada:', event.reason);
   });
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('❌ Promise rejeitada não tratada:', event.reason);
-});
-
-// Verificar se App foi importado corretamente
-console.log('📦 App component:', {
-  type: typeof App,
-  name: App?.name || App?.displayName,
-  isFunction: typeof App === 'function'
-});
+}
 
 try {
-  console.log('🎯 Montando aplicação no DOM...');
   const rootElement = document.getElementById('root');
   
   if (!rootElement) {
@@ -76,7 +35,6 @@ try {
     </StrictMode>
   );
   
-  console.log('✅ Aplicação montada com sucesso!');
 } catch (error) {
   console.error('❌ Erro crítico ao montar aplicação:', error);
   
