@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Modal de Termos de Uso
 export function TermsModal({ open, onClose }) {

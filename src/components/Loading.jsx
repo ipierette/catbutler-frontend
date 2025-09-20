@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 
 // Componente de Loading Spinner
 export const LoadingSpinner = ({ size = 'md', color = 'blue', className = '' }) => {

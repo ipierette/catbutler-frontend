@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState, useRef, useCallback, useEffect } from 'react';
 
 /**
  * HOC para memorizar componentes React e evitar re-renderizações desnecessárias
