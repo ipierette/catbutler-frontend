@@ -11,7 +11,7 @@ export const useTheme = () => {
   return context;
 };
 
-export const ThemeProvider = ({ children }) => {
+export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export const ThemeProvider = ({ children }) => {
       {children}
     </ThemeContext.Provider>
   );
-};
+}
 
 ThemeProvider.propTypes = {
   children: PropTypes.node.isRequired

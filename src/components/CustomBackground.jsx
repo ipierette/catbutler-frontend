@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const CustomBackground = () => {
+function CustomBackground() {
   const { theme } = useTheme();
   const canvasRef = useRef(null);
   const neatRef = useRef(null);
@@ -184,6 +184,6 @@ const CustomBackground = () => {
       />
     </>
   );
-};
+}
 
 export default CustomBackground;

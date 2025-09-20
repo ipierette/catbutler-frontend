@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const DocumentationSection = () => {
+function DocumentationSection() {
   const [openTutorial, setOpenTutorial] = useState(null);
 
   const tutoriais = [
@@ -375,6 +375,6 @@ const DocumentationSection = () => {
       </div>
     </div>
   );
-};
+}
 
 export default DocumentationSection;

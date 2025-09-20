@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const OptimizedImage = ({ 
+function OptimizedImage({ 
   src, 
   alt, 
   className = '', 
@@ -10,7 +10,7 @@ const OptimizedImage = ({
   onLoad,
   onError,
   ...props 
-}) => {
+}) {
   const webpSrc = src.replace(/\.(png|jpg|jpeg)$/i, '.webp');
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
@@ -107,7 +107,7 @@ const OptimizedImage = ({
       )}
     </div>
   );
-};
+}
 
 OptimizedImage.propTypes = {
   src: PropTypes.string.isRequired,

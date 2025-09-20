@@ -1,26 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCredits } from '../contexts/CreditsContext';
 
-const CreditsIcon = () => {
+function CreditsIcon() {
   const { credits, getRecentTransactions, getTotalEarned, getTotalSpent, isAuthenticated } = useCredits();
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef(null);
   const iconRef = useRef(null);
-
-  // Não mostrar para usuários não autenticados
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  const recentTransactions = getRecentTransactions(5);
-
-  const handleMouseEnter = () => {
-    setShowTooltip(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowTooltip(false);
-  };
 
   // Fechar tooltip ao clicar fora
   useEffect(() => {
@@ -36,6 +21,33 @@ const CreditsIcon = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Não mostrar para usuários não autenticados
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const recentTransactions = getRecentTransactions(5);
+
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    // Não fechar imediatamente, dar tempo para mover mouse ao tooltip
+    setTimeout(() => {
+      if (!tooltipRef.current?.matches(':hover') && !iconRef.current?.matches(':hover')) {
+        setShowTooltip(false);
+      }
+    }, 100);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setShowTooltip(!showTooltip);
+    }
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -59,37 +71,44 @@ const CreditsIcon = () => {
   return (
     <div className="relative">
       {/* Ícone de Créditos */}
-      <div
+      <button
         ref={iconRef}
-        className="relative p-2.5 min-w-11 min-h-11 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="relative p-1.5 rounded-lg bg-amber-100 dark:bg-amber-900 hover:bg-amber-200 dark:hover:bg-amber-800 transition-all duration-300 border border-amber-200 dark:border-amber-700 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => setShowTooltip(!showTooltip)}
+        onKeyDown={handleKeyDown}
+        aria-label={`Créditos: ${credits}`}
       >
-        <i className="fa-solid fa-coins text-gray-700 dark:text-gray-300 text-lg" aria-hidden="true"></i>
+        <i className="fa-solid fa-coins text-amber-600 dark:text-amber-300 text-base" aria-hidden="true"></i>
         
         {/* Badge com número de créditos */}
         <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1">
           {credits > 999 ? '999+' : credits}
         </span>
-      </div>
+      </button>
 
       {/* Tooltip com Transações */}
       {showTooltip && (
         <div
           ref={tooltipRef}
           className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-fade-in"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+          role="tooltip"
+          aria-label="Detalhes dos créditos"
         >
           {/* Header do Tooltip */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <i className="fa-solid fa-coins text-amber-600 dark:text-amber-400"></i>
+                <i className="fa-solid fa-coins text-amber-600 dark:text-amber-400" aria-hidden="true"></i>{' '}
                 Meus Créditos
               </h3>
               <button 
                 onClick={() => setShowTooltip(false)}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                aria-label="Fechar tooltip"
               >
                 <i className="fa-solid fa-times"></i>
               </button>
@@ -127,7 +146,7 @@ const CreditsIcon = () => {
           {/* Lista de Transações Recentes */}
           <div className="p-4">
             <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-              <i className="fa-solid fa-history"></i>
+              <i className="fa-solid fa-history" aria-hidden="true"></i>{' '}
               Transações Recentes
             </h4>
             
@@ -176,6 +195,6 @@ const CreditsIcon = () => {
       )}
     </div>
   );
-};
+}
 
 export default CreditsIcon;

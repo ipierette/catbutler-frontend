@@ -116,7 +116,7 @@ const ToastItem = ({ toast, onRemove }) => {
 // PropTypes removed for compatibility
 
 // Provider do Toast
-export const ToastProvider = ({ children }) => {
+export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((toast) => {
@@ -162,7 +162,7 @@ export const ToastProvider = ({ children }) => {
       ))}
     </ToastContext.Provider>
   );
-};
+}
 
 ToastProvider.propTypes = {
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useCredits } from '../contexts/CreditsContext';
 import { useCreditRewards } from '../hooks/useCreditRewards';
 
-const CreditsDemo = () => {
+function CreditsDemo() {
   const { credits, spendActions, isAuthenticated } = useCredits();
   const { 
     rewardAIConsultation, 
@@ -224,6 +224,6 @@ const CreditsDemo = () => {
       )}
     </div>
   );
-};
+}
 
 export default CreditsDemo;

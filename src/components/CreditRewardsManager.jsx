@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useCreditRewards } from '../hooks/useCreditRewards';
 import { useNotificationEvents } from '../hooks/useNotificationEvents';
 
-const CreditRewardsManager = () => {
+function CreditRewardsManager() {
   const { 
     checkDailyLogin,
     checkAchievements,
@@ -93,6 +93,6 @@ const CreditRewardsManager = () => {
 
   // Este componente não renderiza nada visível
   return null;
-};
+}
 
 export default CreditRewardsManager;

@@ -11,7 +11,7 @@ export const useCredits = () => {
   return context;
 };
 
-export const CreditsProvider = ({ children }) => {
+export function CreditsProvider({ children }) {
   const { user, isAuthenticated } = useAuth();
   const [credits, setCredits] = useState(0);
   const [transactions, setTransactions] = useState([]);
@@ -190,4 +190,4 @@ export const CreditsProvider = ({ children }) => {
       {children}
     </CreditsContext.Provider>
   );
-};
+}

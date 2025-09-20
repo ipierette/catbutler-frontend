@@ -12,7 +12,7 @@ export const useNotifications = () => {
   return context;
 };
 
-export const NotificationsProvider = ({ children }) => {
+export function NotificationsProvider({ children }) {
   const { user, isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -236,7 +236,7 @@ export const NotificationsProvider = ({ children }) => {
       {children}
     </NotificationsContext.Provider>
   );
-};
+}
 
 NotificationsProvider.propTypes = {
   children: PropTypes.node.isRequired

@@ -3,7 +3,7 @@ import { useAvatarUnlock } from '../hooks/useAvatarUnlock';
 import { useCredits } from '../contexts/CreditsContext';
 import { allAvatars } from '../utils/avatars';
 
-const AvatarSelector = ({ selectedAvatar, onAvatarSelect, className = "" }) => {
+function AvatarSelector({ selectedAvatar, onAvatarSelect, className = "" }) {
   const { 
     isAvatarUnlocked, 
     unlockAvatar, 
@@ -153,6 +153,6 @@ const AvatarSelector = ({ selectedAvatar, onAvatarSelect, className = "" }) => {
       })}
     </div>
   );
-};
+}
 
 export default AvatarSelector;

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 
 // Componente de Loading Spinner
-export const LoadingSpinner = ({ size = 'md', color = 'blue', className = '' }) => {
+export function LoadingSpinner({ size = 'md', color = 'blue', className = '' }) {
   const getSizeClasses = () => {
     switch (size) {
       case 'sm':
@@ -57,35 +57,35 @@ export const LoadingSpinner = ({ size = 'md', color = 'blue', className = '' }) 
       </div>
     </div>
   );
-};
+}
 
 // PropTypes removed for compatibility
 
 // Componente de Loading com texto
-export const LoadingWithText = ({ 
+export function LoadingWithText({ 
   text = 'Carregando...', 
   size = 'md', 
   color = 'blue',
   className = '' 
-}) => {
+}) {
   return (
     <div className={`flex items-center justify-center gap-2 ${className}`}>
       <LoadingSpinner size={size} color={color} />
       <span className="text-sm text-gray-600 dark:text-gray-300">{text}</span>
     </div>
   );
-};
+}
 
 // PropTypes removed for compatibility
 
 // Componente de Loading para botões
-export const LoadingButton = ({ 
+export function LoadingButton({ 
   loading = false, 
   children, 
   loadingText = 'Carregando...',
   className = '',
   ...props 
-}) => {
+}) {
   return (
     <button
       className={`flex items-center justify-center gap-2 ${className}`}
@@ -96,16 +96,16 @@ export const LoadingButton = ({
       {loading ? loadingText : children}
     </button>
   );
-};
+}
 
 // PropTypes removed for compatibility
 
 // Componente de Loading para cards/seções
-export const LoadingCard = ({ 
+export function LoadingCard({ 
   title = 'Carregando...', 
   description = 'Aguarde um momento',
   className = '' 
-}) => {
+}) {
   return (
     <div className={`glass-effect rounded-xl shadow-lg p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 ${className}`}>
       <div className="flex flex-col items-center justify-center text-center space-y-4">
@@ -121,7 +121,7 @@ export const LoadingCard = ({
       </div>
     </div>
   );
-};
+}
 
 // PropTypes removed for compatibility
 

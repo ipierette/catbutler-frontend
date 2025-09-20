@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import PropTypes from 'prop-types';
 
-const VisitorModeWrapper = ({ children, pageName = 'esta página' }) => {
+function VisitorModeWrapper({ children, pageName = 'esta página' }) {
   const { isVisitorMode } = useAuth();
 
   if (!isVisitorMode) {
@@ -68,7 +68,7 @@ const VisitorModeWrapper = ({ children, pageName = 'esta página' }) => {
       </div>
     </div>
   );
-};
+}
 
 VisitorModeWrapper.propTypes = {
   children: PropTypes.node.isRequired,

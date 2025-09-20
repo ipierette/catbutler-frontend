@@ -37,7 +37,7 @@ export const useAuth = () => {
 };
 
 // Provider de autenticação
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -521,7 +521,7 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,

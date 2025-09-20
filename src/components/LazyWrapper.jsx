@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { LoadingCard } from './Loading';
 
 // Componente de fallback para lazy loading
-const LazyFallback = ({ title = 'Carregando...', description = 'Aguarde um momento' }) => (
-  <LoadingCard title={title} description={description} />
-);
+function LazyFallback({ title = 'Carregando...', description = 'Aguarde um momento' }) {
+  return <LoadingCard title={title} description={description} />
+}
 
 LazyFallback.propTypes = {
   title: PropTypes.string,
@@ -16,13 +16,13 @@ LazyFallback.propTypes = {
 export const withLazyLoading = (importFunction, fallbackProps = {}) => {
   const LazyComponent = lazy(importFunction);
   
-  return (props) => (
-    <Suspense
+  return function(props) {
+  return <Suspense
       fallback={<LazyFallback {...fallbackProps} />}
     >
       <LazyComponent {...props} />
     </Suspense>
-  );
+};
 };
 
 
@@ -101,7 +101,7 @@ export const useLazyLoading = (options = {}) => {
 };
 
 // Componente para lazy loading de imagens
-export const LazyImage = ({ src, alt, placeholder, className = '', ...props }) => {
+export function LazyImage({ src, alt, placeholder, className = '', ...props }) {
   const { elementRef, isVisible } = useLazyLoading();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -150,7 +150,7 @@ export const LazyImage = ({ src, alt, placeholder, className = '', ...props }) =
       )}
     </div>
   );
-};
+}
 
 LazyImage.propTypes = {
   src: PropTypes.string.isRequired,

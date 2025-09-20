@@ -52,7 +52,7 @@ const getNotificationIcon = (notification) => {
   return iconMap[notification.type] || '🔔';
 };
 
-const NotificationsIcon = () => {
+function NotificationsIcon() {
   const { 
     notifications, 
     unreadCount, 
@@ -94,7 +94,12 @@ const NotificationsIcon = () => {
   };
 
   const handleMouseLeave = () => {
-    setShowTooltip(false);
+    // Não fechar imediatamente, dar tempo para mover mouse ao tooltip
+    setTimeout(() => {
+      if (!tooltipRef.current?.matches(':hover') && !iconRef.current?.matches(':hover')) {
+        setShowTooltip(false);
+      }
+    }, 100);
   };
 
   const handleIconClick = () => {
@@ -138,7 +143,7 @@ const NotificationsIcon = () => {
         {/* Ícone de Notificações */}
         <button
           ref={iconRef}
-          className="relative p-2.5 min-w-11 min-h-11 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="relative p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 transition-all duration-300 border border-blue-200 dark:border-blue-700 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleIconClick}
@@ -146,7 +151,7 @@ const NotificationsIcon = () => {
           title="Notificações"
           aria-label="Abrir notificações"
         >
-          <i className="fa-solid fa-bell text-gray-700 dark:text-gray-300 text-lg" aria-hidden="true"></i>
+          <i className="fa-solid fa-bell text-blue-600 dark:text-blue-300 text-base" aria-hidden="true"></i>
           
           {/* Bolinha vermelha para notificações não lidas */}
           {unreadCount > 0 && (
@@ -161,6 +166,10 @@ const NotificationsIcon = () => {
           <div
             ref={tooltipRef}
             className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-fade-in"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            role="tooltip"
+            aria-label="Notificações recentes"
           >
             {/* Header do Tooltip */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -262,7 +271,7 @@ const NotificationsIcon = () => {
 };
 
 // Componente Modal
-const NotificationsModal = ({ onClose, notifications }) => {
+function NotificationsModal({ onClose, notifications }) {
   const { markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
   const handleNotificationClick = (notification) => {

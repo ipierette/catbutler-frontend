@@ -48,7 +48,7 @@ export const useConfirmation = () => {
 };
 
 // Componente de Diálogo de Confirmação
-const ConfirmationDialog = ({ isOpen, config, onConfirm, onCancel }) => {
+function ConfirmationDialog({ isOpen, config, onConfirm, onCancel }) {
   const [isVisible, setIsVisible] = useState(false);
   const dialogRef = useRef(null);
 
@@ -182,12 +182,12 @@ const ConfirmationDialog = ({ isOpen, config, onConfirm, onCancel }) => {
     </div>,
     document.body
   );
-};
+}
 
 // PropTypes removed for compatibility
 
 // Componente wrapper que combina hook e dialog
-export const ConfirmationProvider = ({ children }) => {
+export function ConfirmationProvider({ children }) {
   const confirmation = useConfirmation();
 
   return (
@@ -201,7 +201,7 @@ export const ConfirmationProvider = ({ children }) => {
       />
     </>
   );
-};
+}
 
 // Hook para usar confirmação em qualquer componente
 export const useConfirm = () => {
