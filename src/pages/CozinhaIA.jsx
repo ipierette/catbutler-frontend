@@ -59,6 +59,57 @@ export default function CozinhaIA() {
   const [modalContribuir, setModalContribuir] = useState(false);
   const [ingredientePersonalizado, setIngredientePersonalizado] = useState("");
 
+  // Função para gerar sugestões de receitas (deve vir antes do useMemo)
+  const gerarSugestoesReceitas = useCallback(() => {
+    if (ingredientesSelecionados.length === 0) return [];
+    
+    // Combinações inteligentes baseadas nos ingredientes
+    const criarReceita = (nome, tempo, dificuldade, ingredientesExtras = []) => ({
+      id: `sugestao-${Math.random().toString(36).substr(2, 9)}`,
+      nome,
+      tempo,
+      dificuldade,
+      ingredientes: [...ingredientesSelecionados, ...ingredientesExtras],
+      rating: (4.2 + Math.random() * 0.6).toFixed(1),
+      tipo: 'Sugestão IA',
+      isAI: true
+    });
+
+    const sugestoes = [];
+    
+    // Sugestão 1: Receita rápida e fácil
+    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('ovo'))) {
+      if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('queijo'))) {
+        sugestoes.push(criarReceita('Omelete de Queijo Especial', '15min', 'Fácil', ['sal', 'pimenta']));
+      } else {
+        sugestoes.push(criarReceita('Ovos Mexidos com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('ovo'))[0], '12min', 'Fácil', ['manteiga']));
+      }
+    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('frango'))) {
+      sugestoes.push(criarReceita('Frango Refogado com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('frango')).slice(0,2).join(' e '), '25min', 'Fácil', ['temperos', 'óleo']));
+    } else {
+      sugestoes.push(criarReceita(`Refogado de ${ingredientesSelecionados[0]}`, '20min', 'Fácil', ['temperos', 'azeite']));
+    }
+    
+    // Sugestão 2: Receita mais elaborada
+    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('arroz')) && 
+        ingredientesSelecionados.some(ing => ing.toLowerCase().includes('feijão'))) {
+      sugestoes.push(criarReceita('Arroz e Feijão Tropeiro', '35min', 'Médio', ['bacon', 'linguiça', 'farinha']));
+    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('batata'))) {
+      sugestoes.push(criarReceita('Batata Gratinada com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('batata'))[0], '40min', 'Médio', ['leite', 'queijo ralado']));
+    } else {
+      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} ao Molho Especial`, '30min', 'Médio', ['molho', 'ervas']));
+    }
+    
+    // Sugestão 3: Receita criativa/gourmet
+    if (ingredientesSelecionados.length >= 3) {
+      sugestoes.push(criarReceita(`Combinação Gourmet: ${ingredientesSelecionados.slice(0,3).join(', ')}`, '45min', 'Difícil', ['vinho branco', 'ervas finas']));
+    } else {
+      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} Gourmet`, '35min', 'Médio', ['molho especial', 'ervas']));
+    }
+    
+    return sugestoes.slice(0, 3);
+  }, [ingredientesSelecionados]);
+
   // Receitas filtradas com sugestões da IA
   const receitasFiltradas = useMemo(() => {
     let receitas = [...RECEITAS_EXEMPLO];
@@ -111,56 +162,6 @@ export default function CozinhaIA() {
       adicionarIngredientePersonalizado();
     }
   }, [adicionarIngredientePersonalizado]);
-
-  const gerarSugestoesReceitas = useCallback(() => {
-    if (ingredientesSelecionados.length === 0) return [];
-    
-    // Combinações inteligentes baseadas nos ingredientes
-    const criarReceita = (nome, tempo, dificuldade, ingredientesExtras = []) => ({
-      id: `sugestao-${Math.random().toString(36).substr(2, 9)}`,
-      nome,
-      tempo,
-      dificuldade,
-      ingredientes: [...ingredientesSelecionados, ...ingredientesExtras],
-      rating: (4.2 + Math.random() * 0.6).toFixed(1),
-      tipo: 'Sugestão IA',
-      isAI: true
-    });
-
-    const sugestoes = [];
-    
-    // Sugestão 1: Receita rápida e fácil
-    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('ovo'))) {
-      if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('queijo'))) {
-        sugestoes.push(criarReceita('Omelete de Queijo Especial', '15min', 'Fácil', ['sal', 'pimenta']));
-      } else {
-        sugestoes.push(criarReceita('Ovos Mexidos com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('ovo'))[0], '12min', 'Fácil', ['manteiga']));
-      }
-    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('frango'))) {
-      sugestoes.push(criarReceita('Frango Refogado com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('frango')).slice(0,2).join(' e '), '25min', 'Fácil', ['temperos', 'óleo']));
-    } else {
-      sugestoes.push(criarReceita(`Refogado de ${ingredientesSelecionados[0]}`, '20min', 'Fácil', ['temperos', 'azeite']));
-    }
-    
-    // Sugestão 2: Receita mais elaborada
-    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('arroz')) && 
-        ingredientesSelecionados.some(ing => ing.toLowerCase().includes('feijão'))) {
-      sugestoes.push(criarReceita('Arroz e Feijão Tropeiro', '35min', 'Médio', ['bacon', 'linguiça', 'farinha']));
-    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('batata'))) {
-      sugestoes.push(criarReceita('Batata Gratinada com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('batata'))[0], '40min', 'Médio', ['leite', 'queijo ralado']));
-    } else {
-      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} ao Molho Especial`, '30min', 'Médio', ['molho', 'ervas']));
-    }
-    
-    // Sugestão 3: Receita criativa/gourmet
-    if (ingredientesSelecionados.length >= 3) {
-      sugestoes.push(criarReceita(`Combinação Gourmet: ${ingredientesSelecionados.slice(0,3).join(', ')}`, '45min', 'Difícil', ['vinho branco', 'ervas finas']));
-    } else {
-      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} Gourmet`, '35min', 'Médio', ['molho especial', 'ervas']));
-    }
-    
-    return sugestoes.slice(0, 3);
-  }, [ingredientesSelecionados]);
 
   const gerarReceitaIA = useCallback(async () => {
     if (isVisitorMode) {
