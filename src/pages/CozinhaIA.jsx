@@ -48,6 +48,10 @@ export default function CozinhaIA() {
   const { isVisitorMode } = useAuth();
   
   // Estados principais
+  const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
+  const [busca, setBusca] = useState('');
+  const [ingredientePersonalizado, setIngredientePersonalizado] = useState('');
+  const [abaSelecionada, setAbaSelecionada] = useState('buscar');
   const [conversas, setConversas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
@@ -101,7 +105,7 @@ export default function CozinhaIA() {
     }
     
     return sugestoes.slice(0, 3);
-  }, []);
+  }, [ingredientesSelecionados]);
 
   // Receitas filtradas com sugestões da IA
   const receitasFiltradas = useMemo(() => {
@@ -131,7 +135,7 @@ export default function CozinhaIA() {
     }
     
     return receitas;
-  }, [gerarSugestoesReceitas]);
+  }, [ingredientesSelecionados, busca, gerarSugestoesReceitas]);
 
   // Handlers
   const toggleIngrediente = useCallback((ingrediente) => {
@@ -148,7 +152,7 @@ export default function CozinhaIA() {
       setIngredientesSelecionados(prev => [...prev, ingrediente]);
       setIngredientePersonalizado("");
     }
-  }, []);
+  }, [ingredientePersonalizado, ingredientesSelecionados]);
 
   const handleKeyPressIngrediente = useCallback((e) => {
     if (e.key === 'Enter') {
