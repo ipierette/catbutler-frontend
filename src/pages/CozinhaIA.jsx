@@ -48,16 +48,9 @@ export default function CozinhaIA() {
   const { isVisitorMode } = useAuth();
   
   // Estados principais
-  const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
-  const [busca, setBusca] = useState("");
-  const [abaSelecionada, setAbaSelecionada] = useState("buscar");
-  const [receitaSelecionada, setReceitaSelecionada] = useState(null);
-  const [chatAberto, setChatAberto] = useState(false);
-  const [mensagem, setMensagem] = useState("");
   const [conversas, setConversas] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [modalContribuir, setModalContribuir] = useState(false);
-  const [ingredientePersonalizado, setIngredientePersonalizado] = useState("");
+  const [mensagem, setMensagem] = useState('');
+  const [chatAberto, setChatAberto] = useState(false);
 
   // Função para gerar sugestões de receitas (deve vir antes do useMemo)
   const gerarSugestoesReceitas = useCallback(() => {
@@ -108,7 +101,7 @@ export default function CozinhaIA() {
     }
     
     return sugestoes.slice(0, 3);
-  }, [ingredientesSelecionados]);
+  }, []);
 
   // Receitas filtradas com sugestões da IA
   const receitasFiltradas = useMemo(() => {
@@ -138,7 +131,7 @@ export default function CozinhaIA() {
     }
     
     return receitas;
-  }, [ingredientesSelecionados, busca, gerarSugestoesReceitas]);
+  }, [gerarSugestoesReceitas]);
 
   // Handlers
   const toggleIngrediente = useCallback((ingrediente) => {
@@ -155,7 +148,7 @@ export default function CozinhaIA() {
       setIngredientesSelecionados(prev => [...prev, ingrediente]);
       setIngredientePersonalizado("");
     }
-  }, [ingredientePersonalizado, ingredientesSelecionados]);
+  }, []);
 
   const handleKeyPressIngrediente = useCallback((e) => {
     if (e.key === 'Enter') {
@@ -165,25 +158,13 @@ export default function CozinhaIA() {
 
   const gerarReceitaIA = useCallback(async () => {
     if (isVisitorMode) {
-      alert('Crie uma conta para gerar receitas com IA!');
+      alert('Crie uma conta para conversar com o Chef IA!');
       return;
     }
     
-    setLoading(true);
-    // Simular chamada API
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setConversas(prev => [...prev, {
-      tipo: 'usuario',
-      texto: `Gerar receita com: ${ingredientesSelecionados.join(', ')}`
-    }, {
-      tipo: 'ia',
-      texto: `Aqui está uma receita personalizada usando ${ingredientesSelecionados.join(', ')}!`
-    }]);
-    
-    setLoading(false);
+    // Apenas abrir o chat para conversar com o Chef IA
     setChatAberto(true);
-  }, [ingredientesSelecionados, isVisitorMode]);
+  }, [isVisitorMode]);
 
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
@@ -357,17 +338,8 @@ export default function CozinhaIA() {
                         : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
                     }`}
                   >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        Gerando...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fa-solid fa-magic-wand-sparkles text-sm"></i>
-                        {isVisitorMode ? 'Ver Função IA' : 'Gerar com IA'}
-                      </>
-                    )}
+                    <i className="fa-solid fa-comments text-sm"></i>
+                    {isVisitorMode ? 'Ver Chat IA' : 'Chat com IA'}
                   </button>
                 </div>
               )}
@@ -523,9 +495,9 @@ export default function CozinhaIA() {
                     onClick={() => {
                       if (isVisitorMode) {
                         alert('Crie uma conta para usar funções de IA!');
-                        return;
+                      } else {
+                        // Lógica para cardápio semanal
                       }
-                      // Lógica para cardápio semanal
                     }}
                     className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200"
                   >
@@ -546,9 +518,9 @@ export default function CozinhaIA() {
                     onClick={() => {
                       if (isVisitorMode) {
                         alert('Crie uma conta para usar funções de IA!');
-                        return;
+                      } else {
+                        // Lógica para sugestões personalizadas
                       }
-                      // Lógica para sugestões personalizadas
                     }}
                     className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200"
                   >
@@ -637,20 +609,20 @@ export default function CozinhaIA() {
           )}
         </div>
 
-        {/* Chat Modal - Mobile Otimizado */}
+        {/* Chat Modal - Padrão Desktop */}
         {chatAberto && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end">
-            <div className="bg-white dark:bg-gray-800 w-full h-[85vh] rounded-t-3xl flex flex-col">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl h-[31.25rem] flex flex-col">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-chef-hat text-white text-sm"></i>
+                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-chef-hat text-white"></i>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Chef IA</h3>
-                    <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Chef IA</h3>
+                    <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                       Online
                     </p>
                   </div>
@@ -664,29 +636,53 @@ export default function CozinhaIA() {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-4">
+              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                {/* Banner de aviso para visitantes */}
+                {isVisitorMode && conversas.length === 0 && (
+                  <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-600 rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i className="fa-solid fa-info text-white text-sm"></i>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-orange-800 dark:text-orange-200 mb-1">
+                          Modo Visitante - {4 - conversas.filter(c => c.tipo === 'usuario').length} mensagens mensais restantes
+                        </p>
+                        <p className="text-xs text-orange-700 dark:text-orange-300">
+                          <button
+                            onClick={() => window.location.href = '/criar-conta'}
+                            className="underline hover:no-underline font-medium"
+                          >
+                            Criar conta para conversas ilimitadas sobre culinária!
+                          </button>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 {conversas.length === 0 ? (
                   <div className="text-center py-8">
-                    <i className="fa-solid fa-chef-hat text-3xl text-gray-400 mb-2"></i>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <i className="fa-solid fa-chef-hat text-4xl text-gray-400 mb-4"></i>
+                    <p className="text-gray-600 dark:text-gray-400">
                       Como posso ajudar na cozinha hoje?
                     </p>
                   </div>
                 ) : (
                   conversas.map((conversa, index) => (
                     <div
-                      key={index}
-                      className={`flex items-end gap-2 ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
+                      key={`conversa-${index}-${conversa.tipo}-${conversa.timestamp || Date.now()}`}
+                      className={`flex items-end gap-3 mb-4 ${conversa.tipo === 'usuario' ? 'justify-end' : 'justify-start'}`}
                     >
                       {conversa.tipo === 'ia' && (
-                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fa-solid fa-chef-hat text-white text-xs"></i>
+                        <div className="w-8 h-8 bg-orange-500 rounded-full grid place-items-center flex-shrink-0">
+                          <i className="fa-solid fa-chef-hat text-white text-sm" />
                         </div>
                       )}
 
-                      <div className="max-w-xs">
+                      <div className="max-w-xs lg:max-w-md">
                         <div
-                          className={`px-3 py-2 rounded-lg text-sm ${
+                          className={`px-4 py-2 rounded-lg ${
                             conversa.tipo === 'usuario'
                               ? 'bg-blue-500 text-white rounded-br-sm'
                               : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-sm'
@@ -697,10 +693,8 @@ export default function CozinhaIA() {
                       </div>
 
                       {conversa.tipo === 'usuario' && (
-                        <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 border border-blue-200 dark:border-blue-600">
-                          <div className="w-full h-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                            <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-xs"></i>
-                          </div>
+                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full grid place-items-center flex-shrink-0">
+                          <i className="fa-solid fa-user text-blue-600 dark:text-blue-400 text-sm" />
                         </div>
                       )}
                     </div>
@@ -709,7 +703,7 @@ export default function CozinhaIA() {
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="p-6 border-t border-gray-200 dark:border-gray-600">
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -717,13 +711,20 @@ export default function CozinhaIA() {
                     onChange={(e) => setMensagem(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && enviarMensagem()}
                     placeholder="Digite sua pergunta..."
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                   <button
-                    onClick={enviarMensagem}
-                    className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
+                    onClick={() => {
+                      if (isVisitorMode && conversas.filter(c => c.tipo === 'usuario').length >= 4) {
+                        alert('Crie uma conta para conversar com o Chef IA!');
+                        window.location.href = '/criar-conta';
+                      } else {
+                        enviarMensagem();
+                      }
+                    }}
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
                   >
-                    <i className="fa-solid fa-paper-plane text-sm"></i>
+                    <i className="fa-solid fa-paper-plane"></i>
                   </button>
                 </div>
               </div>
