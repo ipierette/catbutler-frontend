@@ -48,27 +48,6 @@
     
     <div id="root"></div>
     
-    <!-- Clear service worker in development -->
-    <script>
-      // Limpar service worker em desenvolvimento
-      if (import.meta.env && import.meta.env.DEV) {
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
-              registration.unregister().then(function(boolean) {
-                console.log('🧹 Service Worker removido:', boolean);
-              });
-            }
-          });
-        }
-      }
-      
-      // Force clear cache in development
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('🚀 Modo desenvolvimento - cache desabilitado');
-      }
-    </script>
-    
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
