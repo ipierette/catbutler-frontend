@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
 
@@ -47,6 +47,9 @@ const RECEITAS_EXEMPLO = [
 export default function CozinhaIA() {
   const { isVisitorMode } = useAuth();
   
+  // Referência para o card de receitas
+  const receitasCardRef = useRef(null);
+  
   // Estados principais
   const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
   const [busca, setBusca] = useState('');
@@ -58,6 +61,16 @@ export default function CozinhaIA() {
   const [conversas, setConversas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
+
+  // Função para scroll automático ao card de receitas
+  const scrollToReceitas = useCallback(() => {
+    if (receitasCardRef.current) {
+      receitasCardRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }, []);
 
   // Função para gerar sugestões de receitas (deve vir antes do useMemo)
   const gerarSugestoesReceitas = useCallback(() => {
@@ -154,14 +167,10 @@ export default function CozinhaIA() {
     if (ingrediente && !ingredientesSelecionados.includes(ingrediente)) {
       setIngredientesSelecionados(prev => [...prev, ingrediente]);
       setIngredientePersonalizado("");
+      // Fazer scroll automático para o card de receitas após adicionar ingrediente
+      setTimeout(() => scrollToReceitas(), 300);
     }
-  }, [ingredientePersonalizado, ingredientesSelecionados]);
-
-  const handleKeyPressIngrediente = useCallback((e) => {
-    if (e.key === 'Enter') {
-      adicionarIngredientePersonalizado();
-    }
-  }, [adicionarIngredientePersonalizado]);
+  }, [ingredientePersonalizado, ingredientesSelecionados, scrollToReceitas]);
 
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
@@ -267,7 +276,7 @@ export default function CozinhaIA() {
                           }
                         }
                       }}
-                      placeholder="Digite um ingrediente (ex: alho, pimenta, manjericão...)"
+                      placeholder="Digite um ingrediente (ex: alho, pimenta, manjericão...) a nossa IA selecionará receitas automaticamente."
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:text-white text-sm"
                     />
                   </div>
@@ -377,7 +386,7 @@ export default function CozinhaIA() {
               </div>
 
               {/* Receitas - Cards Compactos */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+              <div ref={receitasCardRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
                   Receitas ({receitasFiltradas.length})
                   {ingredientesSelecionados.length > 0 && (
@@ -819,7 +828,7 @@ export default function CozinhaIA() {
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">Ingredientes Populares</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Selecione os ingredientes que você tem
+                      Selecione os ingredientes que você tem, a nossa IA selecionará receitas automaticamente.
                     </p>
                   </div>
                 </div>
@@ -883,11 +892,8 @@ export default function CozinhaIA() {
                     <button
                       onClick={() => {
                         setModalIngredientes(false);
-                        // Focar no campo de busca
-                        setTimeout(() => {
-                          const searchInput = document.querySelector('input[placeholder*="receitas"]');
-                          if (searchInput) searchInput.focus();
-                        }, 100);
+                        // Fazer scroll automático para o card de receitas
+                        setTimeout(() => scrollToReceitas(), 300);
                       }}
                       className="flex-1 py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium"
                     >
