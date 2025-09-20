@@ -106,6 +106,7 @@ export default function AppRoutes() {
               <Route path="/cozinha-ia" element={<CozinhaIA />} />
               <Route path="/faxina-ia" element={<FaxinaIA />} />
               <Route path="/criar-conta" element={<SignUp />} />
+              <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={
                 <Suspense fallback={<Loading />}>
                   <Login />

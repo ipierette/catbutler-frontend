@@ -16,6 +16,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Processar confirmação de email quando usuário volta do link
   useEffect(() => {
@@ -227,20 +228,30 @@ export default function Login() {
             <label htmlFor="senha" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Senha *
             </label>
-            <input
-              id="senha"
-              name="senha"
-              type="password"
-              value={formData.senha}
-              onChange={handleInputChange}
-              placeholder="Sua senha"
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors ${
-                errors.senha
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 dark:border-gray-500 focus:border-blue-500'
-              }`}
-              required
-            />
+            <div className="relative">
+              <input
+                id="senha"
+                name="senha"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.senha}
+                onChange={handleInputChange}
+                placeholder="Sua senha"
+                className={`w-full px-3 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors ${
+                  errors.senha
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 dark:border-gray-500 focus:border-blue-500'
+                }`}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                aria-label={showPassword ? 'Esconder senha' : 'Mostrar senha'}
+              >
+                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+              </button>
+            </div>
             {errors.senha && (
               <p className="text-red-500 text-xs mt-1">{errors.senha}</p>
             )}

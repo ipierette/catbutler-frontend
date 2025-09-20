@@ -15,6 +15,8 @@ export default function SignUp() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   // Modais
   const termsModal = useModal();
@@ -24,11 +26,20 @@ export default function SignUp() {
   // Função para lidar com mudanças nos inputs
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const sanitizedValue = type === 'checkbox' ? checked : sanitizeInput(value);
+    
+    let finalValue;
+    if (type === 'checkbox') {
+      finalValue = checked;
+    } else if (name === 'nome') {
+      // Para nome, permitir espaços mas limitar apenas espaços duplos
+      finalValue = value.replace(/\s{2,}/g, ' '); // Substituir múltiplos espaços por um só
+    } else {
+      finalValue = sanitizeInput(value);
+    }
     
     setFormData(prev => ({
       ...prev,
-      [name]: sanitizedValue
+      [name]: finalValue
     }));
 
     // Limpar erro do campo quando usuário começar a digitar
@@ -198,6 +209,8 @@ export default function SignUp() {
               }`}
               placeholder="Digite seu nome completo"
               maxLength={100}
+              autoComplete="name"
+              spellCheck="false"
             />
             {errors.nome && (
               <p className="text-red-500 text-xs mt-1">{errors.nome}</p>
@@ -231,18 +244,32 @@ export default function SignUp() {
             <label htmlFor="senha" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
               Senha <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              value={formData.senha}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors ${
-                errors.senha ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Mínimo 8 caracteres, 1 maiúscula e 1 número"
-              maxLength={128}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="senha"
+                name="senha"
+                value={formData.senha}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2.5 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors ${
+                  errors.senha ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Mínimo 8 caracteres, 1 maiúscula e 1 número"
+                maxLength={128}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  console.log('Toggle senha:', !showPassword);
+                  setShowPassword(!showPassword);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-1 z-10"
+                style={{ background: 'rgba(0,0,0,0.1)' }}
+                aria-label={showPassword ? 'Esconder senha' : 'Mostrar senha'}
+              >
+                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-sm`}></i>
+              </button>
+            </div>
             {errors.senha && (
               <p className="text-red-500 text-xs mt-1">{errors.senha}</p>
             )}
@@ -253,18 +280,32 @@ export default function SignUp() {
             <label htmlFor="confirmarSenha" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
               Confirmar Senha <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              id="confirmarSenha"
-              name="confirmarSenha"
-              value={formData.confirmarSenha}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors ${
-                errors.confirmarSenha ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Digite a senha novamente"
-              maxLength={128}
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmarSenha"
+                name="confirmarSenha"
+                value={formData.confirmarSenha}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2.5 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors ${
+                  errors.confirmarSenha ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Digite a senha novamente"
+                maxLength={128}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  console.log('Toggle confirmar senha:', !showConfirmPassword);
+                  setShowConfirmPassword(!showConfirmPassword);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-1 z-10"
+                style={{ background: 'rgba(0,0,0,0.1)' }}
+                aria-label={showConfirmPassword ? 'Esconder senha' : 'Mostrar senha'}
+              >
+                <i className={`fa-solid ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'} text-sm`}></i>
+              </button>
+            </div>
             {errors.confirmarSenha && (
               <p className="text-red-500 text-xs mt-1">{errors.confirmarSenha}</p>
             )}

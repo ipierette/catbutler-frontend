@@ -825,7 +825,7 @@ export default function Config() {
                             Versão
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">
-                            v2.1.0
+                            v4.0.0
                           </div>
                         </div>
                       </div>
