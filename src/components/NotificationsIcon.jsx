@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNotifications } from '../contexts/NotificationsContext';
+import ModalPortal from './ModalPortal';
 
 // Funções utilitárias para evitar duplicação
 const formatTimeAgo = (timestamp) => {
@@ -67,7 +68,7 @@ function NotificationsIcon() {
   const tooltipRef = useRef(null);
   const iconRef = useRef(null);
 
-  // Fechar tooltip ao clicar fora - useEffect sempre é chamado
+  // Fechar tooltip ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target) && 
@@ -94,7 +95,6 @@ function NotificationsIcon() {
   };
 
   const handleMouseLeave = () => {
-    // Não fechar imediatamente, dar tempo para mover mouse ao tooltip
     setTimeout(() => {
       if (!tooltipRef.current?.matches(':hover') && !iconRef.current?.matches(':hover')) {
         setShowTooltip(false);
@@ -176,7 +176,7 @@ function NotificationsIcon() {
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
                   <i className="fa-solid fa-bell text-blue-600 dark:text-blue-400" aria-hidden="true"></i>
-                  {' '}Notificações
+                  Notificações
                 </h3>
                 <button 
                   onClick={() => setShowTooltip(false)}
@@ -268,25 +268,29 @@ function NotificationsIcon() {
       )}
     </>
   );
-};
+}
 
-// Componente Modal
+// Componente Modal com Portal
 function NotificationsModal({ onClose, notifications }) {
   const { markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
-  // Fechar modal com tecla Escape
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
+    const handleEscape = (e) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', handleEscape);
+
+    // trava scroll da página
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
+
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = overflow || '';
     };
   }, [onClose]);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) onClose();
+  };
 
   const handleNotificationClick = (notification) => {
     if (!notification.read) {
@@ -294,116 +298,130 @@ function NotificationsModal({ onClose, notifications }) {
     }
   };
 
-  const handleBackdropClick = (e) => {
-    // Fechar apenas se clicou no backdrop (não no conteúdo do modal)
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-4 pb-4 px-4 overflow-y-auto"
-      onClick={handleBackdropClick}
-    >
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg sm:max-w-xl lg:max-w-2xl min-h-0 max-h-full my-auto">
-        {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-              <i className="fa-solid fa-bell text-blue-600 dark:text-blue-400" aria-hidden="true"></i>
-              <span className="hidden sm:inline">Todas as </span>Notificações
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 flex items-center justify-center w-8 h-8"
-              aria-label="Fechar modal"
-              title="Fechar (Esc)"
-            >
-              <i className="fa-solid fa-times text-base" aria-hidden="true"></i>
-            </button>
+    <ModalPortal>
+      {/* overlay ocupa o viewport inteiro, fora de qualquer container */}
+      <button
+        type="button"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overscroll-contain cursor-default"
+        onClick={handleBackdropClick}
+        aria-label="Fechar modal"
+      >
+        <div
+          className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-lg max-h-[min(90vh,calc(100dvh-2rem))] overflow-hidden flex flex-col pt-[env(safe-area-inset-top,0)] cursor-auto"
+        >
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-bell text-blue-600 dark:text-blue-400 text-sm" aria-hidden="true"></i>
+                </div>
+                Notificações
+              </h2>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Fechar"
+              >
+                <i className="fa-solid fa-times text-sm" aria-hidden="true"></i>
+              </button>
+            </div>
           </div>
-          
+
+          {/* Actions */}
           {notifications.length > 0 && (
-            <div className="flex items-center gap-4 mt-4">
+            <div className="px-6 py-3 bg-blue-50 dark:bg-blue-900/10 border-b border-blue-100 dark:border-blue-800/30 flex-shrink-0">
               <button
                 onClick={markAllAsRead}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-2 transition-colors duration-200"
               >
                 <i className="fa-solid fa-check-double" aria-hidden="true"></i>
-                {' '}Marcar todas como lidas
+                Marcar todas como lidas
               </button>
             </div>
           )}
-        </div>
 
-        {/* Conteúdo */}
-        <div className="max-h-[60vh] sm:max-h-[70vh] lg:max-h-96 overflow-y-auto">
-          {notifications.length === 0 ? (
-            <div className="p-4 sm:p-6 lg:p-8 text-center text-gray-500 dark:text-gray-400">
-              <i className="fa-solid fa-bell-slash text-3xl sm:text-4xl mb-3 sm:mb-4" aria-hidden="true"></i>
-              <h3 className="text-base sm:text-lg font-medium mb-2">Nenhuma notificação</h3>
-              <p className="text-sm">Quando você receber notificações, elas aparecerão aqui.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
-              {notifications.map((notification) => (
-                <button
-                  key={notification.id}
-                  onClick={() => handleNotificationClick(notification)}
-                  className={`w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    !notification.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <span className="text-2xl flex-shrink-0">
-                      {getNotificationIcon(notification)}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <p className={`text-base font-medium mb-1 ${
-                            !notification.read 
-                              ? 'text-gray-900 dark:text-white' 
-                              : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            {notification.title}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-500">
-                            {formatTimeAgoDetailed(notification.timestamp)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          {!notification.read && (
-                            <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteNotification(notification.id);
-                            }}
-                            className="text-gray-400 hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 rounded p-1"
-                            title="Excluir notificação"
-                            aria-label="Excluir notificação"
-                          >
-                            <i className="fa-solid fa-trash text-sm" aria-hidden="true"></i>
-                          </button>
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                  <i className="fa-solid fa-bell-slash text-3xl text-gray-400 dark:text-gray-500" aria-hidden="true"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Nenhuma notificação
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-xs">
+                  Quando você receber notificações, elas aparecerão aqui para você acompanhar.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`p-4 transition-colors duration-150 ${
+                      !notification.read 
+                        ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-l-blue-500' 
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/30'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
+                        <span className="text-white text-lg">
+                          {getNotificationIcon(notification)}
+                        </span>
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <h4 className={`font-semibold text-sm leading-tight ${
+                              !notification.read 
+                                ? 'text-gray-900 dark:text-white' 
+                                : 'text-gray-700 dark:text-gray-300'
+                            }`}>
+                              {notification.title}
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                              {formatTimeAgoDetailed(notification.timestamp)}
+                            </p>
+                          </div>
+                          
+                          <div className="flex items-center gap-1">
+                            {!notification.read && (
+                              <button
+                                onClick={() => handleNotificationClick(notification)}
+                                className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-full transition-colors duration-200 shadow-sm"
+                              >
+                                Marcar como lida
+                              </button>
+                            )}
+                            <button
+                              onClick={() => deleteNotification(notification.id)}
+                              className="w-7 h-7 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200"
+                              title="Excluir"
+                            >
+                              <i className="fa-solid fa-trash text-xs" aria-hidden="true"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </button>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </button>
+    </ModalPortal>
   );
-};
+}
 
 NotificationsModal.propTypes = {
   onClose: PropTypes.func.isRequired,

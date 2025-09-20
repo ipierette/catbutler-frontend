@@ -52,6 +52,11 @@ const Historico = withLazyLoading(() => import("./pages/Historico"), {
   description: "Recuperando seu histórico" 
 });
 
+const Docs = withLazyLoading(() => import("./pages/Docs"), { 
+  title: "Carregando Documentação...", 
+  description: "Preparando guias e tutoriais" 
+});
+
 const FaxinaIA = lazy(() => import('./pages/FaxinaIA'));
 const CozinhaIA = lazy(() => import('./pages/CozinhaIA'));
 const MercadoIA = lazy(() => import('./pages/MercadoIA'));
@@ -102,6 +107,7 @@ export default function AppRoutes() {
               <Route path="/debug" element={<Debug />} />
               <Route path="/dicas" element={<Dicas />} />
               <Route path="/historico" element={<Historico />} />
+              <Route path="/docs" element={<Docs />} />
               <Route path="/mercado-ia" element={<MercadoIA />} />
               <Route path="/cozinha-ia" element={<CozinhaIA />} />
               <Route path="/faxina-ia" element={<FaxinaIA />} />
