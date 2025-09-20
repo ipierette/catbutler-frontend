@@ -124,7 +124,7 @@ export default function Tarefas() {
   const tarefasPaginadas = tarefasFiltradas.slice(indiceInicial, indiceFinal);
 
   // Reset da página quando filtros mudam
-  React.useEffect(() => {
+  useEffect(() => {
     setPaginaAtual(1);
   }, [filtroStatus, filtroCategoria, busca]);
 

@@ -59,7 +59,7 @@ export const VirtualizedList = memo(function VirtualizedList({
   windowHeight,
   overscan = 3
 }) {
-  const [scrollTop, setScrollTop] = React.useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
   
   const totalHeight = items.length * itemHeight;
   const visibleItemsCount = Math.ceil(windowHeight / itemHeight);
@@ -80,7 +80,7 @@ export const VirtualizedList = memo(function VirtualizedList({
     });
   }, [items, startIndex, endIndex, itemHeight]);
   
-  const handleScroll = React.useCallback((e) => {
+  const handleScroll = useCallback((e) => {
     setScrollTop(e.target.scrollTop);
   }, []);
   
@@ -120,8 +120,8 @@ export const LazyImage = memo(function LazyImage({
   className,
   ...rest
 }) {
-  const [loaded, setLoaded] = React.useState(false);
-  const imgRef = React.useRef(null);
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef(null);
   
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {

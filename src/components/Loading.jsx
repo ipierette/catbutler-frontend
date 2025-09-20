@@ -127,13 +127,13 @@ export const LoadingCard = ({
 
 // Hook para gerenciar estados de loading
 export const useLoading = (initialState = false) => {
-  const [loading, setLoading] = React.useState(initialState);
+  const [loading, setLoading] = useState(initialState);
   
-  const startLoading = React.useCallback(() => setLoading(true), []);
-  const stopLoading = React.useCallback(() => setLoading(false), []);
-  const toggleLoading = React.useCallback(() => setLoading(prev => !prev), []);
+  const startLoading = useCallback(() => setLoading(true), []);
+  const stopLoading = useCallback(() => setLoading(false), []);
+  const toggleLoading = useCallback(() => setLoading(prev => !prev), []);
   
-  const withLoading = React.useCallback(async (asyncFunction) => {
+  const withLoading = useCallback(async (asyncFunction) => {
     try {
       startLoading();
       const result = await asyncFunction();

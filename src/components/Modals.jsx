@@ -215,7 +215,7 @@ export function PrivacyModal({ open, onClose }) {
 
 // Hook para gerenciar modais
 export function useModal() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
