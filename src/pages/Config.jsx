@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import VisitorModeWrapper from '../components/VisitorModeWrapper';
-import DocumentationSection from '../components/DocumentationSection';
-import AvatarSelector from '../components/AvatarSelector';
 
 // Configurações das seções
 const SECOES_CONFIG = [
@@ -20,13 +17,6 @@ const SECOES_CONFIG = [
     icon: 'fa-bell', 
     color: 'from-green-500 to-emerald-600',
     description: 'Alertas e lembretes' 
-  },
-  { 
-    id: 'documentos', 
-    title: 'Documentos', 
-    icon: 'fa-book', 
-    color: 'from-orange-500 to-amber-600',
-    description: 'Tutoriais e guias de uso' 
   },
   { 
     id: 'privacidade', 
@@ -78,11 +68,11 @@ const NOTIFICACOES_CONFIG = [
 
 export default function Config() {
   const navigate = useNavigate();
-  const { user, profile, isAuthenticated, logout, updateProfile, availableAvatars } = useAuth();
+  const { user, profile, isAuthenticated, logout, updateProfile, availableAvatars, updateUserSettings } = useAuth();
   
   // Estados
   const [secaoAtiva, setSecaoAtiva] = useState('geral');
-  const [autoTheme, setAutoTheme] = useState(profile?.auto_theme_change || false);
+  const [autoTheme, setAutoTheme] = useState(false);
   const [configuracoes, setConfiguracoes] = useState({
     notificacoes: {
       tarefas: true,
@@ -98,40 +88,10 @@ export default function Config() {
     avatarSelecionado: 'axel'
   });
   const [salvandoPerfil, setSalvandoPerfil] = useState(false);
-  
-  // Estados da conta familiar
-  const MAX_FAMILY_MEMBERS = 4;
-  const [familyMembers, setFamilyMembers] = useState([
-    { 
-      id: 1, 
-      name: profile?.nome || user?.email || 'Usuário', 
-      email: user?.email || '', 
-      role: 'Administrador', 
-      isOwner: true,
-      avatar: profile?.avatar || 'axel'
-    }
-  ]);
-  const [newMemberEmail, setNewMemberEmail] = useState('');
 
   // Funções
-  const toggleAutoTheme = async () => {
-    const novoEstado = !autoTheme;
-    setAutoTheme(novoEstado);
-    
-    // Salvar no perfil
-    if (isAuthenticated) {
-      try {
-        await updateProfile({
-          display_name: profile?.display_name,
-          endereco: profile?.endereco,
-          avatar_url: profile?.avatar_url,
-          auto_theme_change: novoEstado
-        });
-        console.log('✅ Tema automático atualizado:', novoEstado);
-      } catch (error) {
-        console.error('❌ Erro ao atualizar tema automático:', error);
-      }
-    }
+  const toggleAutoTheme = () => {
+    setAutoTheme(!autoTheme);
   };
 
   const toggleNotificacao = (key) => {
@@ -149,52 +109,6 @@ export default function Config() {
     console.log('Exportando dados...');
   };
 
-  // Funções da conta familiar
-  const canAddMember = familyMembers.length < MAX_FAMILY_MEMBERS;
-  
-  const addFamilyMember = () => {
-    if (!newMemberEmail.trim()) {
-      alert('Por favor, insira um email válido.');
-      return;
-    }
-    
-    if (!canAddMember) {
-      alert(`Limite máximo de ${MAX_FAMILY_MEMBERS} membros atingido.`);
-      return;
-    }
-    
-    // Verificar se email já existe
-    if (familyMembers.some(member => member.email.toLowerCase() === newMemberEmail.toLowerCase())) {
-      alert('Este email já está na conta familiar.');
-      return;
-    }
-    
-    // Simular adição de membro (futuramente será API call)
-    const newMember = {
-      id: Date.now(),
-      name: newMemberEmail.split('@')[0],
-      email: newMemberEmail.toLowerCase().trim(),
-      role: 'Membro',
-      isOwner: false,
-      avatar: 'default'
-    };
-    
-    setFamilyMembers(prev => [...prev, newMember]);
-    setNewMemberEmail('');
-    alert('Convite enviado com sucesso! O membro receberá um email para aceitar o convite.');
-  };
-  
-  const removeFamilyMember = (memberId) => {
-    if (familyMembers.find(m => m.id === memberId)?.isOwner) {
-      alert('Não é possível remover o administrador da conta.');
-      return;
-    }
-    
-    if (confirm('Tem certeza que deseja remover este membro da conta familiar?')) {
-      setFamilyMembers(prev => prev.filter(member => member.id !== memberId));
-    }
-  };
-
   const limparDados = () => {
     // Implementar limpeza de dados
     if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
@@ -207,20 +121,13 @@ export default function Config() {
     
     setSalvandoPerfil(true);
     try {
-      const result = await updateProfile({
-        display_name: perfilEditando.nome,
+      await updateProfile({
+        nome: perfilEditando.nome,
         endereco: perfilEditando.endereco,
-        avatar_url: perfilEditando.avatarSelecionado,
-        auto_theme_change: autoTheme
+        avatar: perfilEditando.avatarSelecionado
       });
-      
-      if (result.success) {
-        setModalAberto('perfil-salvo');
-        setTimeout(() => setModalAberto(null), 2000);
-      } else {
-        console.error('Erro ao salvar perfil:', result.error);
-        // Aqui você poderia mostrar uma mensagem de erro para o usuário
-      }
+      setModalAberto('perfil-salvo');
+      setTimeout(() => setModalAberto(null), 2000);
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);
     }
@@ -244,15 +151,11 @@ export default function Config() {
         endereco: profile.endereco || '',
         avatarSelecionado: profile.avatar || 'axel'
       });
-      
-      // Atualizar estado do tema automático
-      setAutoTheme(profile.auto_theme_change || false);
     }
   }, [isAuthenticated, profile]);
 
   return (
-    <VisitorModeWrapper pageName="as configurações">
-      <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto">
       <div className="p-4 lg:p-6 space-y-6">
         
         {/* Header Moderno */}
@@ -463,13 +366,42 @@ export default function Config() {
                         <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                           Escolha seu Avatar
                         </div>
-                        <AvatarSelector
-                          selectedAvatar={perfilEditando.avatarSelecionado}
-                          onAvatarSelect={(avatarId) => setPerfilEditando(prev => ({ 
-                            ...prev, 
-                            avatarSelecionado: avatarId 
-                          }))}
-                        />
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                          {availableAvatars.map((avatar) => (
+                            <button
+                              key={avatar.id}
+                              onClick={() => setPerfilEditando(prev => ({ ...prev, avatarSelecionado: avatar.id }))}
+                              className={`relative p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 group ${
+                                perfilEditando.avatarSelecionado === avatar.id
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 transform scale-105'
+                                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-600 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500">
+                                  <img
+                                    src={avatar.src}
+                                    alt={avatar.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* Tooltip com nome do avatar */}
+                              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-10">
+                                {avatar.name}
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                              </div>
+                              
+                              {/* Indicador de seleção */}
+                              {perfilEditando.avatarSelecionado === avatar.id && (
+                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                  <i className="fa-solid fa-check text-white text-xs"></i>
+                                </div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
                       {/* Endereço Padrão */}
@@ -735,30 +667,43 @@ export default function Config() {
               </div>
             </div>
           )}
+          
           {/* Seção Suporte */}
           {secaoAtiva === 'suporte' && (
             <div className="space-y-6">
-              
-              {/* Seção de Documentação */}
-              <DocumentationSection />
-              
-              {/* Seção de Contato */}
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  🆘 Suporte e Contato
+                  Suporte e Ajuda
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Precisa de ajuda? Entre em contato conosco
+                  Encontre ajuda e entre em contato conosco
                 </p>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    💬 Central de Ajuda
+                    Central de Ajuda
                   </h3>
                   
                   <div className="space-y-3">
+                    <a
+                      href="/docs"
+                      className="block p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <i className="fa-solid fa-book text-blue-600 dark:text-blue-400"></i>
+                        <div>
+                          <div className="font-medium text-blue-900 dark:text-blue-100">
+                            Documentação
+                          </div>
+                          <div className="text-sm text-blue-700 dark:text-blue-300">
+                            Guias completos e tutoriais
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    
                     <a
                       href="mailto:suporte@catbutler.com"
                       className="block p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
@@ -775,26 +720,12 @@ export default function Config() {
                         </div>
                       </div>
                     </a>
-                    
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
-                      <div className="flex items-center gap-3">
-                        <i className="fa-solid fa-clock text-blue-600 dark:text-blue-400"></i>
-                        <div>
-                          <div className="font-medium text-blue-900 dark:text-blue-100">
-                            Tempo de Resposta
-                          </div>
-                          <div className="text-sm text-blue-700 dark:text-blue-300">
-                            Até 24 horas úteis
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    📱 Sobre o CatButler
+                    Sobre o CatButler
                   </h3>
                   
                   <div className="space-y-3">
@@ -806,7 +737,7 @@ export default function Config() {
                             Versão
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">
-                            v4.0.2
+                            v2.1.0
                           </div>
                         </div>
                       </div>
@@ -888,99 +819,46 @@ export default function Config() {
                 <div className="flex items-start gap-3">
                   <i className="fa-solid fa-info-circle text-blue-600 dark:text-blue-400 mt-0.5"></i>
                   <div className="text-sm text-blue-800 dark:text-blue-200">
-                    <p className="font-medium mb-1">Conta Familiar - Máximo 4 Membros</p>
-                    <p>Adicione até 4 membros da família para compartilhar listas de tarefas, agenda e compras. Cada membro terá acesso personalizado e suas configurações serão sincronizadas quando o backend estiver totalmente integrado.</p>
+                    <p className="font-medium mb-1">Conta Familiar</p>
+                    <p>Adicione membros da família para compartilhar listas de tarefas, agenda e compras. Cada membro terá acesso personalizado.</p>
                   </div>
                 </div>
               </div>
               
               <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Membros da Família</h4>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {familyMembers.length}/{MAX_FAMILY_MEMBERS} slots ocupados
-                  </div>
-                </div>
-                
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Membros Atuais</h4>
                 <div className="space-y-3">
-                  {familyMembers.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
-                          <i className={`fa-solid ${member.isOwner ? 'fa-crown' : 'fa-user'} text-blue-600 dark:text-blue-400 text-sm`}></i>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                        <i className="fa-solid fa-crown text-blue-600 dark:text-blue-400 text-sm"></i>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {profile?.nome || user?.email} (Você)
                         </div>
-                        <div>
-                          <div className="font-medium text-gray-900 dark:text-white">
-                            {member.name} {member.isOwner ? '(Você)' : ''}
-                          </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            {member.role} • {member.email}
-                          </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Administrador
                         </div>
                       </div>
-                      {!member.isOwner && (
-                        <button
-                          onClick={() => removeFamilyMember(member.id)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Remover membro"
-                        >
-                          <i className="fa-solid fa-trash text-sm"></i>
-                        </button>
-                      )}
                     </div>
-                  ))}
-                  
-                  {/* Slots vazios */}
-                  {Array.from({ length: MAX_FAMILY_MEMBERS - familyMembers.length }).map((_, index) => (
-                    <div key={`empty-slot-${MAX_FAMILY_MEMBERS - index}`} className="flex items-center justify-center p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-                      <div className="text-gray-400 dark:text-gray-500 text-sm">
-                        <i className="fa-solid fa-plus mr-2" aria-hidden="true"></i>
-                        Slot disponível
-                      </div>
-                    </div>
-                  ))}
+                  </div>
                 </div>
               </div>
               
               <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Adicionar Membro</h4>
-                {canAddMember ? (
-                  <div className="space-y-3">
-                    <div className="flex gap-3">
-                      <input
-                        type="email"
-                        value={newMemberEmail}
-                        onChange={(e) => setNewMemberEmail(e.target.value)}
-                        placeholder="Email do membro da família"
-                        className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        onKeyDown={(e) => e.key === 'Enter' && addFamilyMember()}
-                      />
-                      <button 
-                        onClick={addFamilyMember}
-                        disabled={!newMemberEmail.trim()}
-                        className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
-                      >
-                        <i className="fa-solid fa-plus mr-2" aria-hidden="true"></i>
-                        Convidar
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      O membro receberá um convite por email para aceitar o acesso à conta familiar.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <i className="fa-solid fa-users-slash text-amber-600 dark:text-amber-400"></i>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      Limite máximo de {MAX_FAMILY_MEMBERS} membros atingido
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      Remova um membro para adicionar outro
-                    </p>
-                  </div>
-                )}
+                <div className="flex gap-3">
+                  <input
+                    type="email"
+                    placeholder="Email do membro da família"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                    <i className="fa-solid fa-plus mr-2" />
+                    Convidar
+                  </button>
+                </div>
               </div>
             </div>
             
@@ -1098,7 +976,6 @@ export default function Config() {
           </div>
         </div>
       )}
-      </div>
-    </VisitorModeWrapper>
+    </div>
   );
 }

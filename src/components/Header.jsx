@@ -1,36 +1,22 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
-import CreditsIcon from "./CreditsIcon";
-import NotificationsIcon from "./NotificationsIcon";
+import logoCatButler from "../assets/images/logo-catbutler.webp";
 
 function Header() {
   const { theme, toggleTheme } = useTheme();
-  const navigate = useNavigate();
   const { isVisitorMode, logout } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
-      console.log('🔄 Header: Iniciando logout...');
-      const result = await logout();
-      
-      if (result.success) {
-        console.log('✅ Header: Logout bem-sucedido, redirecionando...');
-        setMobileMenuOpen(false);
-        navigate('/', { replace: true });
-      } else {
-        console.error('❌ Header: Erro no logout:', result.error);
-        setMobileMenuOpen(false);
-        navigate('/', { replace: true });
-      }
-    } catch (error) {
-      console.error('🚨 Header: Erro inesperado no logout:', error);
+      await logout();
       setMobileMenuOpen(false);
-      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
     }
   };
 
@@ -40,9 +26,9 @@ function Header() {
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <div className="flex items-center justify-center">
             <img
-              src="/logo-catbutler.webp"
-              alt="CatButler"
-              className="w-8 h-8 object-contain"
+              src={logoCatButler}
+              alt="CatButler Logo"
+              className="w-8 h-8 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
             />
           </div>
           <span className="font-bold text-base lg:text-lg tracking-wide text-gray-900 dark:text-gray-100">CatButler</span>
@@ -81,10 +67,6 @@ function Header() {
           </svg>
         </button>
         <div className="flex items-center gap-1 sm:gap-2">
-          {/* Ícone de Notificações */}
-          <NotificationsIcon />
-          {/* Ícone de Créditos */}
-          <CreditsIcon />
           {/* Botão de compartilhamento */}
           <ShareTooltip theme={theme} />
           {/* Toggle de tema com reserva de espaço para reduzir CLS */}
@@ -212,13 +194,13 @@ export default Header;
 
 // ShareTooltip Component
 function ShareTooltip({ theme }) {
-  const [open, setOpen] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
-  const tooltipRef = React.useRef(null);
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const tooltipRef = useRef(null);
   const shareText = `Conheça o CatButler! Organize sua casa com IA: receitas, faxina, mercado e mais. Acesse: https://catbutler.app`;
 
   // Fecha tooltip ao clicar fora
-  React.useEffect(() => {
+  useEffect(() => {
     function handleClick(e) {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
         setOpen(false);
