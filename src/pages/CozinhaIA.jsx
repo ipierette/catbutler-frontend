@@ -57,14 +57,26 @@ export default function CozinhaIA() {
   const [conversas, setConversas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalContribuir, setModalContribuir] = useState(false);
+  const [ingredientePersonalizado, setIngredientePersonalizado] = useState("");
 
-  // Receitas filtradas
+  // Receitas filtradas com sugestões da IA
   const receitasFiltradas = useMemo(() => {
-    let receitas = RECEITAS_EXEMPLO;
+    let receitas = [...RECEITAS_EXEMPLO];
     
+    // Se há ingredientes selecionados, adicionar sugestões da IA
     if (ingredientesSelecionados.length > 0) {
+      const sugestoes = gerarSugestoesReceitas();
+      receitas = [...sugestoes, ...receitas];
+      
+      // Filtrar receitas que combinam com os ingredientes (incluindo sugestões IA)
       receitas = receitas.filter(receita =>
-        ingredientesSelecionados.some(ing => receita.ingredientes.includes(ing))
+        receita.tipo === 'Sugestão IA' || 
+        ingredientesSelecionados.some(ing => 
+          receita.ingredientes.some(receitaIng => 
+            receitaIng.toLowerCase().includes(ing.toLowerCase()) || 
+            ing.toLowerCase().includes(receitaIng.toLowerCase())
+          )
+        )
       );
     }
     
@@ -75,7 +87,7 @@ export default function CozinhaIA() {
     }
     
     return receitas;
-  }, [ingredientesSelecionados, busca]);
+  }, [ingredientesSelecionados, busca, gerarSugestoesReceitas]);
 
   // Handlers
   const toggleIngrediente = useCallback((ingrediente) => {
@@ -85,6 +97,70 @@ export default function CozinhaIA() {
         : [...prev, ingrediente]
     );
   }, []);
+
+  const adicionarIngredientePersonalizado = useCallback(() => {
+    const ingrediente = ingredientePersonalizado.trim();
+    if (ingrediente && !ingredientesSelecionados.includes(ingrediente)) {
+      setIngredientesSelecionados(prev => [...prev, ingrediente]);
+      setIngredientePersonalizado("");
+    }
+  }, [ingredientePersonalizado, ingredientesSelecionados]);
+
+  const handleKeyPressIngrediente = useCallback((e) => {
+    if (e.key === 'Enter') {
+      adicionarIngredientePersonalizado();
+    }
+  }, [adicionarIngredientePersonalizado]);
+
+  const gerarSugestoesReceitas = useCallback(() => {
+    if (ingredientesSelecionados.length === 0) return [];
+    
+    // Combinações inteligentes baseadas nos ingredientes
+    const criarReceita = (nome, tempo, dificuldade, ingredientesExtras = []) => ({
+      id: `sugestao-${Math.random().toString(36).substr(2, 9)}`,
+      nome,
+      tempo,
+      dificuldade,
+      ingredientes: [...ingredientesSelecionados, ...ingredientesExtras],
+      rating: (4.2 + Math.random() * 0.6).toFixed(1),
+      tipo: 'Sugestão IA',
+      isAI: true
+    });
+
+    const sugestoes = [];
+    
+    // Sugestão 1: Receita rápida e fácil
+    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('ovo'))) {
+      if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('queijo'))) {
+        sugestoes.push(criarReceita('Omelete de Queijo Especial', '15min', 'Fácil', ['sal', 'pimenta']));
+      } else {
+        sugestoes.push(criarReceita('Ovos Mexidos com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('ovo'))[0], '12min', 'Fácil', ['manteiga']));
+      }
+    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('frango'))) {
+      sugestoes.push(criarReceita('Frango Refogado com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('frango')).slice(0,2).join(' e '), '25min', 'Fácil', ['temperos', 'óleo']));
+    } else {
+      sugestoes.push(criarReceita(`Refogado de ${ingredientesSelecionados[0]}`, '20min', 'Fácil', ['temperos', 'azeite']));
+    }
+    
+    // Sugestão 2: Receita mais elaborada
+    if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('arroz')) && 
+        ingredientesSelecionados.some(ing => ing.toLowerCase().includes('feijão'))) {
+      sugestoes.push(criarReceita('Arroz e Feijão Tropeiro', '35min', 'Médio', ['bacon', 'linguiça', 'farinha']));
+    } else if (ingredientesSelecionados.some(ing => ing.toLowerCase().includes('batata'))) {
+      sugestoes.push(criarReceita('Batata Gratinada com ' + ingredientesSelecionados.filter(i => !i.toLowerCase().includes('batata'))[0], '40min', 'Médio', ['leite', 'queijo ralado']));
+    } else {
+      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} ao Molho Especial`, '30min', 'Médio', ['molho', 'ervas']));
+    }
+    
+    // Sugestão 3: Receita criativa/gourmet
+    if (ingredientesSelecionados.length >= 3) {
+      sugestoes.push(criarReceita(`Combinação Gourmet: ${ingredientesSelecionados.slice(0,3).join(', ')}`, '45min', 'Difícil', ['vinho branco', 'ervas finas']));
+    } else {
+      sugestoes.push(criarReceita(`${ingredientesSelecionados[0]} Gourmet`, '35min', 'Médio', ['molho especial', 'ervas']));
+    }
+    
+    return sugestoes.slice(0, 3);
+  }, [ingredientesSelecionados]);
 
   const gerarReceitaIA = useCallback(async () => {
     if (isVisitorMode) {
@@ -205,6 +281,40 @@ export default function CozinhaIA() {
                 </div>
               </div>
 
+              {/* Adicionar Ingrediente Personalizado */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
+                  Adicionar Ingrediente Personalizado
+                </h3>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <i className="fa-solid fa-plus absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input
+                      type="text"
+                      value={ingredientePersonalizado}
+                      onChange={(e) => setIngredientePersonalizado(e.target.value)}
+                      onKeyDown={handleKeyPressIngrediente}
+                      placeholder="Digite um ingrediente (ex: alho, pimenta, manjericão...)"
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:text-white text-sm"
+                    />
+                  </div>
+                  <button
+                    onClick={adicionarIngredientePersonalizado}
+                    disabled={!ingredientePersonalizado.trim() || ingredientesSelecionados.includes(ingredientePersonalizado.trim())}
+                    className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    {" "}Adicionar
+                  </button>
+                </div>
+                {ingredientePersonalizado.trim() && ingredientesSelecionados.includes(ingredientePersonalizado.trim()) && (
+                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <i className="fa-solid fa-info-circle"></i>
+                    {" "}Este ingrediente já foi adicionado
+                  </p>
+                )}
+              </div>
+
               {/* Ingredientes Selecionados - Compacto */}
               {ingredientesSelecionados.length > 0 && (
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
@@ -290,23 +400,49 @@ export default function CozinhaIA() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
                   Receitas ({receitasFiltradas.length})
+                  {ingredientesSelecionados.length > 0 && (
+                    <span className="ml-2 text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-full">
+                      + {receitasFiltradas.filter(r => r.tipo === 'Sugestão IA').length} sugestões IA
+                    </span>
+                  )}
                 </h3>
                 {receitasFiltradas.length > 0 ? (
                   <div className="space-y-3">
+                    {/* Separar sugestões IA das receitas normais */}
+                    {receitasFiltradas.filter(r => r.tipo === 'Sugestão IA').length > 0 && (
+                      <div className="border-l-4 border-purple-500 pl-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-r-lg py-2">
+                        <h4 className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-1">
+                          <i className="fa-solid fa-magic-wand-sparkles"></i>
+                          {" "}Sugestões Personalizadas da IA
+                        </h4>
+                      </div>
+                    )}
+                    
                     {receitasFiltradas.map(receita => (
-                      <div
+                      <button
                         key={receita.id}
                         onClick={() => setReceitaSelecionada(receita)}
-                        className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200"
+                        className="w-full flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left"
                       >
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i className="fa-solid fa-utensils text-orange-600 dark:text-orange-400"></i>
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          receita.tipo === 'Sugestão IA' 
+                            ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30'
+                            : 'bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30'
+                        }`}>
+                          <i className={`fa-solid ${receita.tipo === 'Sugestão IA' ? 'fa-magic-wand-sparkles text-purple-600 dark:text-purple-400' : 'fa-utensils text-orange-600 dark:text-orange-400'}`}></i>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                            {receita.nome}
-                          </h4>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                              {receita.nome}
+                            </h4>
+                            {receita.tipo === 'Sugestão IA' && (
+                              <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                                IA
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                             <span className="flex items-center gap-1">
                               <i className="fa-solid fa-clock"></i>
                               {receita.tempo}
@@ -321,7 +457,7 @@ export default function CozinhaIA() {
                           <i className="fa-solid fa-star text-xs"></i>
                           <span className="text-xs font-medium">{receita.rating}</span>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 ) : (
