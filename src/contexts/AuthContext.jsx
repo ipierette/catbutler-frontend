@@ -3,7 +3,7 @@
  * Context para gerenciar estado de usuário e perfil em toda aplicação
  */
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 // Fast Refresh signature para desenvolvimento
@@ -477,6 +477,7 @@ export const AuthProvider = ({ children }) => {
       console.log('🧹 Limpando listeners de autenticação...');
       subscription?.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Debug info (apenas em desenvolvimento)
@@ -511,7 +512,9 @@ export const AuthProvider = ({ children }) => {
     getUserAvatar,
     updateUserSettings,
     availableAvatars,
-  }), [user, profile, loading, isVisitorMode, login, logout, updateProfile, isAuthenticated, getDisplayName, getGreeting, getUserAvatar, updateUserSettings]);
+  // Remover funções das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [user, profile, loading, isVisitorMode, login, logout, updateProfile, isAuthenticated, updateUserSettings]);
 
   return (
     <AuthContext.Provider value={value}>

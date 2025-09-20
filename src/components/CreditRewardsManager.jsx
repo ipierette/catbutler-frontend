@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useCreditRewards } from '../hooks/useCreditRewards';
 import { useNotificationEvents } from '../hooks/useNotificationEvents';
 
@@ -85,7 +85,9 @@ const CreditRewardsManager = () => {
       window.removeEventListener('userLoggedIn', handleUserLogin);
       window.removeEventListener('creditReward', handleRewardEvent);
     };
-  }, [checkDailyLogin, checkAchievements, isAuthenticated]);
+    // Remover funções das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   // Função para mostrar notificação de achievement
   const showAchievementNotification = (message) => {
