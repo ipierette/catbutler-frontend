@@ -61,14 +61,16 @@ const CreditsIcon = () => {
       {/* Ícone de Créditos */}
       <div
         ref={iconRef}
-        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-full cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105"
+        className="relative p-2.5 min-w-11 min-h-11 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 border border-gray-200 dark:border-gray-600 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => setShowTooltip(!showTooltip)}
       >
-        <i className="fa-solid fa-coins text-amber-600 dark:text-amber-400 text-lg animate-pulse"></i>
-        <span className="font-bold text-amber-700 dark:text-amber-300 text-sm">
-          {credits.toLocaleString()}
+        <i className="fa-solid fa-coins text-gray-700 dark:text-gray-300 text-lg" aria-hidden="true"></i>
+        
+        {/* Badge com número de créditos */}
+        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1">
+          {credits > 999 ? '999+' : credits}
         </span>
       </div>
 
