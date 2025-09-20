@@ -212,16 +212,6 @@ function DocumentationSection() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-          <i className="fa-solid fa-book text-blue-600 dark:text-blue-400"></i>
-          Documentação e Tutoriais
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Aprenda a usar todas as funcionalidades do CatButler
-        </p>
-      </div>
-
       <div className="space-y-4">
         {tutoriais.map((tutorial) => (
           <div
@@ -238,8 +228,7 @@ function DocumentationSection() {
                     <i className={`${tutorial.icon} text-lg ${getIconColorClass(tutorial.color)}`}></i>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <i className={`${tutorial.icon} ${getIconColorClass(tutorial.color)}`}></i>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {tutorial.titulo}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -264,7 +253,7 @@ function DocumentationSection() {
                       <ul className="space-y-2">
                         {(tutorial.conteudo.funcionalidades || tutorial.conteudo.comoGanhar || []).map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
-                            <i className="fa-solid fa-check text-green-500 mt-1 text-sm"></i>
+                            <i className="fa-solid fa-check text-green-500 dark:text-green-400 mt-1 text-sm"></i>
                             <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
                           </li>
                         ))}
@@ -316,7 +305,7 @@ function DocumentationSection() {
                       <ul className="space-y-2">
                         {(tutorial.conteudo.opcoes || tutorial.conteudo.beneficios || []).map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
-                            <i className={`fa-solid ${tutorial.conteudo.opcoes ? 'fa-cog' : 'fa-star'} text-${tutorial.color}-500 mt-1 text-sm`}></i>
+                            <i className={`fa-solid ${tutorial.conteudo.opcoes ? 'fa-cog' : 'fa-star'} ${tutorial.conteudo.opcoes ? 'text-blue-500 dark:text-blue-400' : 'text-yellow-500 dark:text-yellow-400'} mt-1 text-sm`}></i>
                             <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
                           </li>
                         ))}
@@ -333,7 +322,7 @@ function DocumentationSection() {
                       <ul className="space-y-2">
                         {(tutorial.conteudo.dicas || tutorial.conteudo.futuros || []).map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
-                            <i className={`fa-solid ${tutorial.conteudo.dicas ? 'fa-lightbulb' : 'fa-rocket'} text-yellow-500 mt-1 text-sm`}></i>
+                            <i className={`fa-solid ${tutorial.conteudo.dicas ? 'fa-lightbulb' : 'fa-rocket'} ${tutorial.conteudo.dicas ? 'text-yellow-500 dark:text-yellow-400' : 'text-blue-500 dark:text-blue-400'} mt-1 text-sm`}></i>
                             <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
                           </li>
                         ))}
