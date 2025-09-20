@@ -303,16 +303,16 @@ function NotificationsModal({ onClose, notifications }) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-4 pb-4 px-4 overflow-y-auto"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden my-4">
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg sm:max-w-xl lg:max-w-2xl min-h-0 max-h-full my-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
               <i className="fa-solid fa-bell text-blue-600 dark:text-blue-400" aria-hidden="true"></i>
-              {' '}Todas as Notificações
+              <span className="hidden sm:inline">Todas as </span>Notificações
             </h2>
             <button
               onClick={onClose}
@@ -338,11 +338,11 @@ function NotificationsModal({ onClose, notifications }) {
         </div>
 
         {/* Conteúdo */}
-        <div className="max-h-96 overflow-y-auto">
+        <div className="max-h-[60vh] sm:max-h-[70vh] lg:max-h-96 overflow-y-auto">
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-              <i className="fa-solid fa-bell-slash text-4xl mb-4" aria-hidden="true"></i>
-              <h3 className="text-lg font-medium mb-2">Nenhuma notificação</h3>
+            <div className="p-4 sm:p-6 lg:p-8 text-center text-gray-500 dark:text-gray-400">
+              <i className="fa-solid fa-bell-slash text-3xl sm:text-4xl mb-3 sm:mb-4" aria-hidden="true"></i>
+              <h3 className="text-base sm:text-lg font-medium mb-2">Nenhuma notificação</h3>
               <p className="text-sm">Quando você receber notificações, elas aparecerão aqui.</p>
             </div>
           ) : (
