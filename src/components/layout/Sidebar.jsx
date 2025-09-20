@@ -1,4 +1,4 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -87,8 +87,9 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { getDisplayName, getUserAvatar, isVisitorMode, logout } = useAuth();
   
-  const userAvatar = getUserAvatar();
-  const displayName = getDisplayName();
+  // Memoizar chamadas das funções para evitar re-renders infinitos
+  const userAvatar = useMemo(() => getUserAvatar(), [getUserAvatar]);
+  const displayName = useMemo(() => getDisplayName(), [getDisplayName]);
 
   console.log('🔍 Sidebar Debug:', {
     isVisitorMode,

@@ -26,6 +26,8 @@ export const CreditsProvider = ({ children }) => {
       setCredits(0);
       setTransactions([]);
     }
+    // Remover função das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user]);
 
   const initializeUserCredits = async () => {

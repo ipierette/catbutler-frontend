@@ -52,6 +52,10 @@ export default function Home() {
   const navigate = useNavigate();
   const { getDisplayName, getUserAvatar, isVisitorMode } = useAuth();
 
+  // Memoizar chamadas das funções para evitar re-renders
+  const userAvatar = useMemo(() => getUserAvatar(), [getUserAvatar]);
+  const displayName = useMemo(() => getDisplayName(), [getDisplayName]);
+
   // Atualizar relógio a cada minuto
   useEffect(() => {
     const timer = setInterval(() => {
@@ -139,11 +143,11 @@ export default function Home() {
               {/* Greeting */}
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
-                  {getUserAvatar() && (
+                  {userAvatar && (
                     <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-primary-200 dark:border-primary-600 shadow-lg">
                       <img
-                        src={getUserAvatar()}
-                        alt={getDisplayName()}
+                        src={userAvatar}
+                        alt={displayName}
                         className="w-full h-full object-cover"
                       />
                     </div>

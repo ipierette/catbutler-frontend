@@ -14,6 +14,8 @@ export const useAvatarUnlock = () => {
     } else {
       setUnlockedAvatars([]);
     }
+    // Remover função das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user]);
 
   const loadUnlockedAvatars = () => {

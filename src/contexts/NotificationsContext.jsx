@@ -26,6 +26,8 @@ export const NotificationsProvider = ({ children }) => {
       setNotifications([]);
       setUnreadCount(0);
     }
+    // Remover função das dependências para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user]);
 
   const loadUserNotifications = () => {

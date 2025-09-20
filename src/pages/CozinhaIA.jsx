@@ -64,6 +64,10 @@ export default function CozinhaIA() {
   // Auth context
   const { getUserAvatar, getDisplayName, isVisitorMode } = useAuth();
 
+  // Memoizar chamadas das funções para evitar re-renders
+  const userAvatar = useMemo(() => getUserAvatar(), [getUserAvatar]);
+  const displayName = useMemo(() => getDisplayName(), [getDisplayName]);
+
   // Estados essenciais
   const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
   const [novoIngrediente, setNovoIngrediente] = useState("");
@@ -825,10 +829,10 @@ export default function CozinhaIA() {
 
                     {conversa.tipo === 'usuario' && (
                       <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-200 dark:border-blue-600">
-                        {getUserAvatar() ? (
+                        {userAvatar ? (
                           <img
-                            src={getUserAvatar()}
-                            alt={getDisplayName()}
+                            src={userAvatar}
+                            alt={displayName}
                             className="w-full h-full object-cover"
                           />
                         ) : (
