@@ -54,6 +54,7 @@ export default function CozinhaIA() {
   const [abaSelecionada, setAbaSelecionada] = useState('buscar');
   const [receitaSelecionada, setReceitaSelecionada] = useState(null);
   const [modalContribuir, setModalContribuir] = useState(false);
+  const [modalIngredientes, setModalIngredientes] = useState(false);
   const [conversas, setConversas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
@@ -162,16 +163,6 @@ export default function CozinhaIA() {
     }
   }, [adicionarIngredientePersonalizado]);
 
-  const gerarReceitaIA = useCallback(async () => {
-    if (isVisitorMode) {
-      alert('Crie uma conta para conversar com o Chef IA!');
-      return;
-    }
-    
-    // Apenas abrir o chat para conversar com o Chef IA
-    setChatAberto(true);
-  }, [isVisitorMode]);
-
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
     
@@ -250,13 +241,129 @@ export default function CozinhaIA() {
           </div>
         </div>
 
-        {/* Conteúdo Principal */}
+{/* Conteúdo Principal */}
         <div className="p-4 pb-20">
           {/* Aba Buscar */}
           {abaSelecionada === 'buscar' && (
-            <div className="space-y-4">
+            <div className="space-y-4">{/* Os cards foram movidos para aqui */}
+              {/* Adicionar Ingrediente Personalizado */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
+                  Adicionar Ingrediente Personalizado
+                </h3>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <i className="fa-solid fa-plus absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input
+                      type="text"
+                      value={ingredientePersonalizado}
+                      onChange={(e) => setIngredientePersonalizado(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (ingredientePersonalizado.trim() && !ingredientesSelecionados.includes(ingredientePersonalizado.trim())) {
+                            setIngredientesSelecionados(prev => [...prev, ingredientePersonalizado.trim()]);
+                            setIngredientePersonalizado('');
+                          }
+                        }
+                      }}
+                      placeholder="Digite um ingrediente (ex: alho, pimenta, manjericão...)"
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:text-white text-sm"
+                    />
+                  </div>
+                  <button
+                    onClick={adicionarIngredientePersonalizado}
+                    disabled={!ingredientePersonalizado.trim() || ingredientesSelecionados.includes(ingredientePersonalizado.trim())}
+                    className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    Adicionar
+                  </button>
+                </div>
+                {ingredientePersonalizado.trim() && ingredientesSelecionados.includes(ingredientePersonalizado.trim()) && (
+                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <i className="fa-solid fa-info-circle"></i>
+                    Este ingrediente já foi adicionado
+                  </p>
+                )}
+              </div>
+
+              {/* Ingredientes Selecionados - Compacto */}
+              {ingredientesSelecionados.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+                      Ingredientes ({ingredientesSelecionados.length})
+                    </h3>
+                    <button
+                      onClick={() => setIngredientesSelecionados([])}
+                      className="text-xs text-red-600 dark:text-red-400 hover:underline"
+                    >
+                      Limpar
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {ingredientesSelecionados.map((ingrediente, index) => (
+                      <span 
+                        key={`${ingrediente}-${index}`}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs"
+                      >
+                        {ingrediente}
+                        <button
+                          onClick={() => removerIngrediente(ingrediente)}
+                          className="ml-1 hover:bg-orange-200 dark:hover:bg-orange-800 rounded-full w-4 h-4 flex items-center justify-center transition-colors"
+                        >
+                          <i className="fa-solid fa-times text-xs"></i>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  
+                  {/* Botão Chat IA - Simplificado */}
+                  <button
+                    onClick={() => setChatAberto(true)}
+                    className="w-full mt-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                  >
+                    <i className="fa-solid fa-comments text-sm"></i>
+                    {isVisitorMode ? 'Ver Chat IA' : 'Chat com IA'}
+                  </button>
+                </div>
+              )}
+
+              {/* Ingredientes Populares - Botão para Modal */}
+              <button
+                onClick={() => setModalIngredientes(true)}
+                className="w-full bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700 hover:shadow-md transition-all duration-200 text-left group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
+                      Ingredientes Populares
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Clique para ver ingredientes disponíveis
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-1">
+                      {INGREDIENTES_POPULARES.slice(0, 3).map((ingrediente) => (
+                        <div 
+                          key={ingrediente.name}
+                          className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800"
+                        >
+                          <span className="text-sm">{ingrediente.icon}</span>
+                        </div>
+                      ))}
+                      <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800">
+                        <span className="text-xs font-bold text-orange-600 dark:text-orange-400">+{INGREDIENTES_POPULARES.length - 3}</span>
+                      </div>
+                    </div>
+                    <i className="fa-solid fa-chevron-right text-gray-400 group-hover:text-orange-500 transition-colors"></i>
+                  </div>
+                </div>
+              </button>
               {/* Busca Rápida */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="relative">
                   <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                   <input
@@ -269,110 +376,9 @@ export default function CozinhaIA() {
                 </div>
               </div>
 
-              {/* Adicionar Ingrediente Personalizado */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
-                  Adicionar Ingrediente Personalizado
-                </h3>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <i className="fa-solid fa-plus absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input
-                      type="text"
-                      value={ingredientePersonalizado}
-                      onChange={(e) => setIngredientePersonalizado(e.target.value)}
-                      onKeyDown={handleKeyPressIngrediente}
-                      placeholder="Digite um ingrediente (ex: alho, pimenta, manjericão...)"
-                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:text-white text-sm"
-                    />
-                  </div>
-                  <button
-                    onClick={adicionarIngredientePersonalizado}
-                    disabled={!ingredientePersonalizado.trim() || ingredientesSelecionados.includes(ingredientePersonalizado.trim())}
-                    className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
-                  >
-                    <i className="fa-solid fa-plus"></i>
-                    {" "}Adicionar
-                  </button>
-                </div>
-                {ingredientePersonalizado.trim() && ingredientesSelecionados.includes(ingredientePersonalizado.trim()) && (
-                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                    <i className="fa-solid fa-info-circle"></i>
-                    {" "}Este ingrediente já foi adicionado
-                  </p>
-                )}
-              </div>
-
-              {/* Ingredientes Selecionados - Compacto */}
-              {ingredientesSelecionados.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                      Ingredientes ({ingredientesSelecionados.length})
-                    </h3>
-                    <button
-                      onClick={() => setIngredientesSelecionados([])}
-                      className="text-xs text-red-600 dark:text-red-400 hover:underline"
-                    >
-                      Limpar
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {ingredientesSelecionados.map(ing => (
-                      <span
-                        key={ing}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded-full text-xs"
-                      >
-                        {ing}
-                        <button
-                          onClick={() => toggleIngrediente(ing)}
-                          className="hover:bg-orange-200 dark:hover:bg-orange-800 rounded-full p-0.5"
-                        >
-                          <i className="fa-solid fa-times text-xs"></i>
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  
-                  {/* Botão Chat IA - Simplificado */}
-                  <button
-                    onClick={gerarReceitaIA}
-                    className="w-full mt-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                  >
-                    <i className="fa-solid fa-comments text-sm"></i>
-                    {isVisitorMode ? 'Ver Chat IA' : 'Chat com IA'}
-                  </button>
-                </div>
-              )}
-
-              {/* Ingredientes Populares - Grid Compacto */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
-                  Ingredientes Populares
-                </h3>
-                <div className="grid grid-cols-4 gap-2">
-                  {INGREDIENTES_POPULARES.map(ingrediente => (
-                    <button
-                      key={ingrediente.name}
-                      onClick={() => toggleIngrediente(ingrediente.name)}
-                      className={`p-3 rounded-lg border-2 transition-all duration-200 text-center ${
-                        ingredientesSelecionados.includes(ingrediente.name)
-                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700'
-                      }`}
-                    >
-                      <div className="text-lg mb-1">{ingrediente.icon}</div>
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                        {ingrediente.name}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Receitas - Cards Compactos */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
                   Receitas ({receitasFiltradas.length})
                   {ingredientesSelecionados.length > 0 && (
                     <span className="ml-2 text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-full">
@@ -794,6 +800,100 @@ export default function CozinhaIA() {
                     <i className="fa-solid fa-comments mr-2"></i>
                     Perguntar ao Chef IA
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Ingredientes Populares */}
+        {modalIngredientes && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-carrot text-white"></i>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Ingredientes Populares</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Selecione os ingredientes que você tem
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setModalIngredientes(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <i className="fa-solid fa-times text-gray-500 dark:text-gray-400"></i>
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {ingredientesSelecionados.length} ingredientes selecionados
+                  </p>
+                  <button
+                    onClick={() => setIngredientesSelecionados([])}
+                    className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                  >
+                    Limpar seleção
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {INGREDIENTES_POPULARES.map(ingrediente => (
+                    <button
+                      key={ingrediente.name}
+                      onClick={() => toggleIngrediente(ingrediente.name)}
+                      className={`p-4 rounded-lg border-2 transition-all duration-200 text-center ${
+                        ingredientesSelecionados.includes(ingrediente.name)
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">{ingrediente.icon}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {ingrediente.name}
+                      </div>
+                      {ingredientesSelecionados.includes(ingrediente.name) && (
+                        <div className="mt-2">
+                          <i className="fa-solid fa-check-circle text-orange-500 text-sm"></i>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="border-t border-gray-200 dark:border-gray-600 p-6">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setModalIngredientes(false)}
+                    className="flex-1 py-3 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                  >
+                    Fechar
+                  </button>
+                  {ingredientesSelecionados.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setModalIngredientes(false);
+                        // Focar no campo de busca
+                        setTimeout(() => {
+                          const searchInput = document.querySelector('input[placeholder*="receitas"]');
+                          if (searchInput) searchInput.focus();
+                        }, 100);
+                      }}
+                      className="flex-1 py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium"
+                    >
+                      Buscar Receitas ({ingredientesSelecionados.length})
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
