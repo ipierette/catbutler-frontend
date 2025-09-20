@@ -22,6 +22,16 @@ export default function Tarefas() {
   const [filtroCategoria, setFiltroCategoria] = useState("Todas");
   const [busca, setBusca] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [modalNovaTarefa, setModalNovaTarefa] = useState(false);
+  const [modalEditarTarefa, setModalEditarTarefa] = useState(false);
+  const [tarefaEditando, setTarefaEditando] = useState(null);
+  const [formData, setFormData] = useState({
+    titulo: '',
+    descricao: '',
+    categoria: 'Outros',
+    prioridade: 'Média',
+    data_limite: ''
+  });
   const tarefasPorPagina = 6;
 
   const categorias = ["Todas", "Faxina", "Cozinha", "Compras", "Organização", "Saúde", "Estudos", "Trabalho", "Financeiro", "Lazer", "Outros"];
@@ -59,6 +69,82 @@ export default function Tarefas() {
   React.useEffect(() => {
     setPaginaAtual(1);
   }, [filtroStatus, filtroCategoria, busca]);
+
+  // Handlers para tarefas
+  const handleCriarTarefa = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.titulo.trim()) {
+      alert('Título é obrigatório');
+      return;
+    }
+
+    const result = await addTask({
+      titulo: formData.titulo.trim(),
+      descricao: formData.descricao.trim(),
+      categoria: formData.categoria,
+      prioridade: formData.prioridade,
+      data_limite: formData.data_limite || null
+    });
+
+    if (result.success) {
+      setModalNovaTarefa(false);
+      setFormData({
+        titulo: '',
+        descricao: '',
+        categoria: 'Outros',
+        prioridade: 'Média',
+        data_limite: ''
+      });
+      alert('Tarefa criada com sucesso!');
+    } else {
+      alert(`Erro ao criar tarefa: ${result.error}`);
+    }
+  };
+
+  const handleEditarTarefa = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.titulo.trim()) {
+      alert('Título é obrigatório');
+      return;
+    }
+
+    const result = await editTask(tarefaEditando.id, {
+      titulo: formData.titulo.trim(),
+      descricao: formData.descricao.trim(),
+      categoria: formData.categoria,
+      prioridade: formData.prioridade,
+      data_limite: formData.data_limite || null
+    });
+
+    if (result.success) {
+      setModalEditarTarefa(false);
+      setTarefaEditando(null);
+      setFormData({
+        titulo: '',
+        descricao: '',
+        categoria: 'Outros',
+        prioridade: 'Média',
+        data_limite: ''
+      });
+      alert('Tarefa atualizada com sucesso!');
+    } else {
+      alert(`Erro ao atualizar tarefa: ${result.error}`);
+    }
+  };
+
+  const abrirModalEdicao = (tarefa) => {
+    setTarefaEditando(tarefa);
+    setFormData({
+      titulo: tarefa.titulo,
+      descricao: tarefa.descricao || '',
+      categoria: tarefa.categoria,
+      prioridade: tarefa.prioridade,
+      data_limite: tarefa.data_limite ? tarefa.data_limite.split('T')[0] : ''
+    });
+    setModalEditarTarefa(true);
+  };
 
   const getPrioridadeColor = (prioridade) => {
     switch (prioridade) {
@@ -154,7 +240,7 @@ export default function Tarefas() {
 
             {/* Nova Tarefa Button */}
             <button
-              onClick={() => alert('Modal de criação de tarefa em desenvolvimento')}
+              onClick={() => setModalNovaTarefa(true)}
               disabled={loading}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm sm:text-base font-medium disabled:opacity-50"
             >
@@ -236,7 +322,7 @@ export default function Tarefas() {
                     }
                   </p>
                   <button
-                    onClick={() => alert('Modal de criação de tarefa em desenvolvimento')}
+                    onClick={() => setModalNovaTarefa(true)}
                     disabled={loading}
                     className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 relative z-10 disabled:opacity-50"
                   >
@@ -279,7 +365,7 @@ export default function Tarefas() {
                       <button 
                         className="p-1 sm:p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-all duration-200"
                         title="Editar"
-                        onClick={() => alert('Modal de edição em desenvolvimento')}
+                        onClick={() => abrirModalEdicao(tarefa)}
                         disabled={loading}
                       >
                         <i className="fa-solid fa-edit text-xs sm:text-sm"></i>
@@ -372,6 +458,216 @@ export default function Tarefas() {
           )}
 
         </div>
+
+        {/* Modal Nova Tarefa */}
+        {modalNovaTarefa && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Nova Tarefa</h3>
+                <button 
+                  onClick={() => setModalNovaTarefa(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <i className="fa-solid fa-times text-xl"></i>
+                </button>
+              </div>
+              
+              <form onSubmit={handleCriarTarefa} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Título *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.titulo}
+                    onChange={(e) => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Descrição
+                  </label>
+                  <textarea
+                    value={formData.descricao}
+                    onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Categoria
+                    </label>
+                    <select
+                      value={formData.categoria}
+                      onChange={(e) => setFormData(prev => ({ ...prev, categoria: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      {categorias.filter(c => c !== 'Todas').map(categoria => (
+                        <option key={categoria} value={categoria}>{categoria}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Prioridade
+                    </label>
+                    <select
+                      value={formData.prioridade}
+                      onChange={(e) => setFormData(prev => ({ ...prev, prioridade: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="Baixa">Baixa</option>
+                      <option value="Média">Média</option>
+                      <option value="Alta">Alta</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Data Limite
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.data_limite}
+                    onChange={(e) => setFormData(prev => ({ ...prev, data_limite: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setModalNovaTarefa(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {loading ? 'Criando...' : 'Criar Tarefa'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Editar Tarefa */}
+        {modalEditarTarefa && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Editar Tarefa</h3>
+                <button 
+                  onClick={() => setModalEditarTarefa(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <i className="fa-solid fa-times text-xl"></i>
+                </button>
+              </div>
+              
+              <form onSubmit={handleEditarTarefa} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Título *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.titulo}
+                    onChange={(e) => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Descrição
+                  </label>
+                  <textarea
+                    value={formData.descricao}
+                    onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Categoria
+                    </label>
+                    <select
+                      value={formData.categoria}
+                      onChange={(e) => setFormData(prev => ({ ...prev, categoria: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      {categorias.filter(c => c !== 'Todas').map(categoria => (
+                        <option key={categoria} value={categoria}>{categoria}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Prioridade
+                    </label>
+                    <select
+                      value={formData.prioridade}
+                      onChange={(e) => setFormData(prev => ({ ...prev, prioridade: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="Baixa">Baixa</option>
+                      <option value="Média">Média</option>
+                      <option value="Alta">Alta</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Data Limite
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.data_limite}
+                    onChange={(e) => setFormData(prev => ({ ...prev, data_limite: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setModalEditarTarefa(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {loading ? 'Salvando...' : 'Salvar Alterações'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </VisitorModeWrapper>
   );
