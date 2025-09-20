@@ -6,7 +6,7 @@ function DocumentationSection() {
   const tutoriais = [
     {
       id: 'sistema-creditos',
-      titulo: '🪙 Sistema de Créditos',
+      titulo: 'Sistema de Créditos',
       icon: 'fa-coins',
       color: 'amber',
       conteudo: {
@@ -36,7 +36,7 @@ function DocumentationSection() {
     },
     {
       id: 'assistente-ia',
-      titulo: '🤖 Assistente IA',
+      titulo: 'Assistente IA',
       icon: 'fa-robot',
       color: 'blue',
       conteudo: {
@@ -65,7 +65,7 @@ function DocumentationSection() {
     },
     {
       id: 'cozinha-ia',
-      titulo: '👨‍🍳 CozinhaIA',
+      titulo: 'CozinhaIA',
       icon: 'fa-utensils',
       color: 'orange',
       conteudo: {
@@ -94,7 +94,7 @@ function DocumentationSection() {
     },
     {
       id: 'faxina-ia',
-      titulo: '🧽 FaxinaIA',
+      titulo: 'FaxinaIA',
       icon: 'fa-broom',
       color: 'green',
       conteudo: {
@@ -123,7 +123,7 @@ function DocumentationSection() {
     },
     {
       id: 'mercado-ia',
-      titulo: '🛒 MercadoIA',
+      titulo: 'MercadoIA',
       icon: 'fa-shopping-cart',
       color: 'purple',
       conteudo: {
@@ -152,7 +152,7 @@ function DocumentationSection() {
     },
     {
       id: 'personalizacao',
-      titulo: '🎨 Personalização',
+      titulo: 'Personalização',
       icon: 'fa-palette',
       color: 'pink',
       conteudo: {
@@ -213,8 +213,9 @@ function DocumentationSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          📚 Documentação e Tutoriais
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          <i className="fa-solid fa-book text-blue-600 dark:text-blue-400"></i>
+          Documentação e Tutoriais
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           Aprenda a usar todas as funcionalidades do CatButler
@@ -237,7 +238,8 @@ function DocumentationSection() {
                     <i className={`${tutorial.icon} text-lg ${getIconColorClass(tutorial.color)}`}></i>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      <i className={`${tutorial.icon} ${getIconColorClass(tutorial.color)}`}></i>
                       {tutorial.titulo}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -257,7 +259,7 @@ function DocumentationSection() {
                   {(tutorial.conteudo.funcionalidades || tutorial.conteudo.comoGanhar) && (
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                        {tutorial.conteudo.comoGanhar ? '💰 Como Ganhar Créditos' : '⚡ Funcionalidades'}
+                        {tutorial.conteudo.comoGanhar ? 'Como Ganhar Créditos' : 'Funcionalidades'}
                       </h4>
                       <ul className="space-y-2">
                         {(tutorial.conteudo.funcionalidades || tutorial.conteudo.comoGanhar || []).map((item, index) => (
@@ -274,7 +276,7 @@ function DocumentationSection() {
                   {tutorial.conteudo.comoUsar && (
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                        {tutorial.conteudo.comoUsar ? '📖 Como Usar' : '🎯 Como Usar'}
+                        Como Usar
                       </h4>
                       <ol className="space-y-2">
                         {tutorial.conteudo.comoUsar.map((passo, index) => (
@@ -293,7 +295,7 @@ function DocumentationSection() {
                   {tutorial.conteudo.exemplos && (
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                        💡 Exemplos de Uso
+                        Exemplos de Uso
                       </h4>
                       <div className="space-y-2">
                         {tutorial.conteudo.exemplos.map((exemplo, index) => (
@@ -309,7 +311,7 @@ function DocumentationSection() {
                   {(tutorial.conteudo.opcoes || tutorial.conteudo.beneficios) && (
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                        {tutorial.conteudo.opcoes ? '🎛️ Opções Disponíveis' : '🎯 Benefícios'}
+                        {tutorial.conteudo.opcoes ? 'Opções Disponíveis' : 'Benefícios'}
                       </h4>
                       <ul className="space-y-2">
                         {(tutorial.conteudo.opcoes || tutorial.conteudo.beneficios || []).map((item, index) => (
@@ -326,7 +328,7 @@ function DocumentationSection() {
                   {(tutorial.conteudo.dicas || tutorial.conteudo.futuros) && (
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                        {tutorial.conteudo.dicas ? '💡 Dicas Importantes' : '🚀 Funcionalidades Futuras'}
+                        {tutorial.conteudo.dicas ? 'Dicas Importantes' : 'Funcionalidades Futuras'}
                       </h4>
                       <ul className="space-y-2">
                         {(tutorial.conteudo.dicas || tutorial.conteudo.futuros || []).map((item, index) => (

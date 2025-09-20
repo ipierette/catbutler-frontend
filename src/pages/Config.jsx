@@ -367,40 +367,95 @@ export default function Config() {
                           Escolha seu Avatar
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          {availableAvatars.map((avatar) => (
-                            <button
-                              key={avatar.id}
-                              onClick={() => setPerfilEditando(prev => ({ ...prev, avatarSelecionado: avatar.id }))}
-                              className={`relative p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 group ${
-                                perfilEditando.avatarSelecionado === avatar.id
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 transform scale-105'
-                                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                              }`}
-                            >
-                              <div className="flex flex-col items-center gap-2">
-                                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-600 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500">
-                                  <img
-                                    src={avatar.src}
-                                    alt={avatar.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
+                          {availableAvatars.map((avatar) => {
+                            const isLocked = !avatar.unlocked;
+                            const isSelected = perfilEditando.avatarSelecionado === avatar.id;
+                            const canSelect = avatar.unlocked || isSelected;
+                            
+                            return (
+                              <div key={avatar.id} className="relative">
+                                <button
+                                  onClick={() => {
+                                    if (canSelect) {
+                                      setPerfilEditando(prev => ({ ...prev, avatarSelecionado: avatar.id }));
+                                    } else {
+                                      // Aqui poderia abrir modal de compra
+                                      alert(`Avatar "${avatar.name}" custa ${avatar.cost} tokens!`);
+                                    }
+                                  }}
+                                  className={`relative p-3 rounded-xl border-2 transition-all duration-300 group w-full ${
+                                    isSelected
+                                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 transform scale-105'
+                                      : canSelect
+                                      ? 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:scale-105'
+                                      : 'border-gray-200 dark:border-gray-600 opacity-75 hover:opacity-90'
+                                  } ${!canSelect ? 'cursor-pointer' : ''}`}
+                                >
+                                  <div className="flex flex-col items-center gap-2">
+                                    <div className={`relative w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                                      isSelected 
+                                        ? 'border-blue-500' 
+                                        : 'border-gray-200 dark:border-gray-600 group-hover:border-gray-300 dark:group-hover:border-gray-500'
+                                    }`}>
+                                      <img
+                                        src={avatar.src}
+                                        alt={avatar.name}
+                                        className={`w-full h-full object-cover transition-all duration-300 ${
+                                          isLocked && !isSelected ? 'grayscale blur-[1px]' : ''
+                                        }`}
+                                      />
+                                      
+                                      {/* Cadeado para avatares premium */}
+                                      {isLocked && !isSelected && (
+                                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                          <i className="fa-solid fa-lock text-white text-xl drop-shadow-lg"></i>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Tooltip com nome do avatar e preço */}
+                                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-10 min-w-max">
+                                    <div className="text-center">
+                                      <div className="font-medium">{avatar.name}</div>
+                                      {isLocked && (
+                                        <div className="text-yellow-300 flex items-center justify-center gap-1 mt-1">
+                                          <i className="fa-solid fa-coins text-xs"></i>
+                                          <span>{avatar.cost} tokens</span>
+                                        </div>
+                                      )}
+                                      {avatar.rarity && (
+                                        <div className="text-purple-300 text-xs mt-1 capitalize">
+                                          {avatar.rarity}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                  </div>
+                                  
+                                  {/* Indicador de seleção */}
+                                  {isSelected && (
+                                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                      <i className="fa-solid fa-check text-white text-xs"></i>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Badge de raridade para avatares especiais */}
+                                  {avatar.rarity && (
+                                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                        avatar.rarity === 'epic' 
+                                          ? 'bg-purple-500 text-white'
+                                          : 'bg-gray-500 text-white'
+                                      }`}>
+                                        {avatar.rarity.toUpperCase()}
+                                      </div>
+                                    </div>
+                                  )}
+                                </button>
                               </div>
-                              
-                              {/* Tooltip com nome do avatar */}
-                              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-10">
-                                {avatar.name}
-                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                              </div>
-                              
-                              {/* Indicador de seleção */}
-                              {perfilEditando.avatarSelecionado === avatar.id && (
-                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                  <i className="fa-solid fa-check text-white text-xs"></i>
-                                </div>
-                              )}
-                            </button>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
 
