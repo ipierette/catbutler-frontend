@@ -274,6 +274,20 @@ function NotificationsIcon() {
 function NotificationsModal({ onClose, notifications }) {
   const { markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
+  // Fechar modal com tecla Escape
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
   const handleNotificationClick = (notification) => {
     if (!notification.read) {
       markAsRead(notification.id);
@@ -289,10 +303,10 @@ function NotificationsModal({ onClose, notifications }) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden my-4">
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
@@ -302,10 +316,11 @@ function NotificationsModal({ onClose, notifications }) {
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 flex items-center justify-center w-8 h-8"
               aria-label="Fechar modal"
+              title="Fechar (Esc)"
             >
-              <i className="fa-solid fa-times text-xl" aria-hidden="true"></i>
+              <i className="fa-solid fa-times text-base" aria-hidden="true"></i>
             </button>
           </div>
           
