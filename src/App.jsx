@@ -4,9 +4,12 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CreditsProvider } from "./contexts/CreditsContext";
+import { NotificationsProvider } from "./contexts/NotificationsContext";
 import { ToastProvider } from "./components/Toast";
 import { ConfirmationProvider } from "./components/ConfirmationDialog";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CreditRewardsManager from "./components/CreditRewardsManager";
 import { initializePerformanceOptimizations } from "./utils/performance";
 import { BUILD_INFO } from "./build-info.js";
 import { hasSupabaseConfig } from "./utils/supabase";
@@ -35,16 +38,21 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <ThemeProvider>
-          <ToastProvider>
-            <ConfirmationProvider>
-            <CustomBackground />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
-          </ConfirmationProvider>
-        </ToastProvider>
-      </ThemeProvider>
+        <CreditsProvider>
+          <NotificationsProvider>
+            <CreditRewardsManager />
+            <ThemeProvider>
+              <ToastProvider>
+                <ConfirmationProvider>
+                <CustomBackground />
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </ConfirmationProvider>
+            </ToastProvider>
+          </ThemeProvider>
+          </NotificationsProvider>
+        </CreditsProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

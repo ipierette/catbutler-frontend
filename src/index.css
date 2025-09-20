@@ -47,6 +47,35 @@
     min-height: 2rem;
   }
 
+  /* Animações para créditos */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  @keyframes coin-pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-coin-pulse {
+    animation: coin-pulse 2s ease-in-out infinite;
+  }
+
   /* Transições suaves para mudança de tema - otimizadas para performance */
   * {
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -177,7 +206,7 @@
   }
 
   .filter-dropdown {
-    @apply absolute top-full mt-1 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[12rem] z-50;
+    @apply absolute top-full mt-1 left-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 min-w-[12rem] z-[60];
   }
 
   /* Mobile menu */

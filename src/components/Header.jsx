@@ -4,6 +4,8 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
+import CreditsIcon from "./CreditsIcon";
+import NotificationsIcon from "./NotificationsIcon";
 
 function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -79,6 +81,10 @@ function Header() {
           </svg>
         </button>
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Ícone de Notificações */}
+          <NotificationsIcon />
+          {/* Ícone de Créditos */}
+          <CreditsIcon />
           {/* Botão de compartilhamento */}
           <ShareTooltip theme={theme} />
           {/* Toggle de tema com reserva de espaço para reduzir CLS */}

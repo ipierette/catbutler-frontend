@@ -260,7 +260,7 @@ export default function Tarefas() {
             {/* Filtros e Nova Tarefa - mesma linha */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center justify-between w-full">
               {/* Filtros */}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 min-w-0 flex-shrink-0">
                 <FilterButton
                   label="Status"
                   options={status.map(s => ({ label: s, value: s }))}
@@ -284,7 +284,7 @@ export default function Tarefas() {
               <button
                 onClick={abrirModal}
                 disabled={loading}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm sm:text-base font-medium disabled:opacity-50 whitespace-nowrap"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm sm:text-base font-medium disabled:opacity-50 whitespace-nowrap flex-shrink-0"
               >
                 <i className="fa-solid fa-plus mr-2"></i>
                 Nova Tarefa

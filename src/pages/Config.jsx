@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import VisitorModeWrapper from '../components/VisitorModeWrapper.jsx';
+import { useAuth } from '../contexts/AuthContext';
+import VisitorModeWrapper from '../components/VisitorModeWrapper';
+import DocumentationSection from '../components/DocumentationSection';
+import AvatarSelector from '../components/AvatarSelector';
 
 // Configurações das seções
 const SECOES_CONFIG = [
@@ -18,6 +20,13 @@ const SECOES_CONFIG = [
     icon: 'fa-bell', 
     color: 'from-green-500 to-emerald-600',
     description: 'Alertas e lembretes' 
+  },
+  { 
+    id: 'documentos', 
+    title: 'Documentos', 
+    icon: 'fa-book', 
+    color: 'from-orange-500 to-amber-600',
+    description: 'Tutoriais e guias de uso' 
   },
   { 
     id: 'privacidade', 
@@ -454,42 +463,13 @@ export default function Config() {
                         <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                           Escolha seu Avatar
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          {availableAvatars.map((avatar) => (
-                            <button
-                              key={avatar.id}
-                              onClick={() => setPerfilEditando(prev => ({ ...prev, avatarSelecionado: avatar.id }))}
-                              className={`relative p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 group ${
-                                perfilEditando.avatarSelecionado === avatar.id
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 transform scale-105'
-                                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                              }`}
-                            >
-                              <div className="flex flex-col items-center gap-2">
-                                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-600 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-500">
-                                  <img
-                                    src={avatar.src}
-                                    alt={avatar.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                              </div>
-                              
-                              {/* Tooltip com nome do avatar */}
-                              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-10">
-                                {avatar.name}
-                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                              </div>
-                              
-                              {/* Indicador de seleção */}
-                              {perfilEditando.avatarSelecionado === avatar.id && (
-                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                  <i className="fa-solid fa-check text-white text-xs"></i>
-                                </div>
-                              )}
-                            </button>
-                          ))}
-                        </div>
+                        <AvatarSelector
+                          selectedAvatar={perfilEditando.avatarSelecionado}
+                          onAvatarSelect={(avatarId) => setPerfilEditando(prev => ({ 
+                            ...prev, 
+                            avatarSelecionado: avatarId 
+                          }))}
+                        />
                       </div>
 
                       {/* Endereço Padrão */}
@@ -755,43 +735,30 @@ export default function Config() {
               </div>
             </div>
           )}
-          
           {/* Seção Suporte */}
           {secaoAtiva === 'suporte' && (
             <div className="space-y-6">
+              
+              {/* Seção de Documentação */}
+              <DocumentationSection />
+              
+              {/* Seção de Contato */}
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  Suporte e Ajuda
+                  🆘 Suporte e Contato
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Encontre ajuda e entre em contato conosco
+                  Precisa de ajuda? Entre em contato conosco
                 </p>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Central de Ajuda
+                    💬 Central de Ajuda
                   </h3>
                   
                   <div className="space-y-3">
-                    <a
-                      href="/docs"
-                      className="block p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <i className="fa-solid fa-book text-blue-600 dark:text-blue-400"></i>
-                        <div>
-                          <div className="font-medium text-blue-900 dark:text-blue-100">
-                            Documentação
-                          </div>
-                          <div className="text-sm text-blue-700 dark:text-blue-300">
-                            Guias completos e tutoriais
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                    
                     <a
                       href="mailto:suporte@catbutler.com"
                       className="block p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
@@ -808,12 +775,26 @@ export default function Config() {
                         </div>
                       </div>
                     </a>
+                    
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                      <div className="flex items-center gap-3">
+                        <i className="fa-solid fa-clock text-blue-600 dark:text-blue-400"></i>
+                        <div>
+                          <div className="font-medium text-blue-900 dark:text-blue-100">
+                            Tempo de Resposta
+                          </div>
+                          <div className="text-sm text-blue-700 dark:text-blue-300">
+                            Até 24 horas úteis
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Sobre o CatButler
+                    📱 Sobre o CatButler
                   </h3>
                   
                   <div className="space-y-3">
@@ -825,7 +806,7 @@ export default function Config() {
                             Versão
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">
-                            v4.0.0
+                            v4.0.2
                           </div>
                         </div>
                       </div>

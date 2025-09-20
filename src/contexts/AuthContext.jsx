@@ -15,7 +15,7 @@ console.log('🔐 AuthContext: Iniciando...');
 
 // Imports com debugging
 import { supabase, getUserProfile, onAuthStateChange, updateUserProfile } from '../utils/supabase';
-import { avatarList } from '../utils/avatars';
+import { avatarList, allAvatars } from '../utils/avatars';
 
 console.log('✅ AuthContext: Imports realizados com sucesso', {
   supabase: !!supabase,
@@ -333,10 +333,8 @@ export const AuthProvider = ({ children }) => {
     return `${greeting}, ${getDisplayName()}`;
   };
 
-  // Lista de avatares disponíveis
-  const availableAvatars = avatarList;
-
-  // Função para obter avatar do usuário
+  // Avatares disponíveis (incluindo especiais)
+  const availableAvatars = allAvatars;  // Função para obter avatar do usuário
   const getUserAvatar = () => {
     console.log('🔍 getUserAvatar Debug:', {
       isVisitorMode,
@@ -451,6 +449,14 @@ export const AuthProvider = ({ children }) => {
         console.log('🔑 Processando login...');
         setUser(session.user);
         await loadUserProfile(session.user);
+        
+        // Aplicar recompensas de login após definir usuário
+        setTimeout(() => {
+          // Disparar evento customizado para verificar recompensas diárias
+          window.dispatchEvent(new CustomEvent('userLoggedIn', { 
+            detail: { user: session.user }
+          }));
+        }, 1000);
         
         // Para login social, redirecionar automaticamente
         if (session.user.app_metadata?.provider && session.user.app_metadata.provider !== 'email') {
