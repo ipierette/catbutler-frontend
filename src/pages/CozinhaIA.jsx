@@ -3,6 +3,80 @@ import { useAuth } from '../contexts/AuthContext';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
 import useCozinhaIA from '../hooks/useCozinhaIA';
 
+// ============================================
+// 🍳 THEMEALDB API INTEGRATION
+// ============================================
+
+class TheMealDBAPI {
+  static BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
+
+  static async buscarPorIngrediente(ingrediente) {
+    try {
+      const response = await fetch(`${this.BASE_URL}/filter.php?i=${ingrediente}`);
+      const data = await response.json();
+      return data.meals || [];
+    } catch (error) {
+      console.error('❌ Erro ao buscar receitas TheMealDB:', error);
+      return [];
+    }
+  }
+
+  static async obterDetalhesReceita(idReceita) {
+    try {
+      const response = await fetch(`${this.BASE_URL}/lookup.php?i=${idReceita}`);
+      const data = await response.json();
+      return data.meals ? data.meals[0] : null;
+    } catch (error) {
+      console.error('❌ Erro ao buscar detalhes da receita:', error);
+      return null;
+    }
+  }
+
+  static async buscarPorNome(nome) {
+    try {
+      const response = await fetch(`${this.BASE_URL}/search.php?s=${nome}`);
+      const data = await response.json();
+      return data.meals || [];
+    } catch (error) {
+      console.error('❌ Erro ao buscar por nome:', error);
+      return [];
+    }
+  }
+
+  // Converter formato TheMealDB para formato CatButler
+  static formatarReceita(meal) {
+    if (!meal) return null;
+
+    // Extrair ingredientes e medidas
+    const ingredientes = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingrediente = meal[`strIngredient${i}`];
+      const medida = meal[`strMeasure${i}`];
+      if (ingrediente && ingrediente.trim()) {
+        ingredientes.push(medida ? `${medida} ${ingrediente}`.trim() : ingrediente.trim());
+      }
+    }
+
+    return {
+      id: meal.idMeal,
+      nome: meal.strMeal,
+      descricao: meal.strInstructions?.substring(0, 150) + '...',
+      imagem: meal.strMealThumb,
+      tempo: "30min", // TheMealDB não tem tempo, usar padrão
+      dificuldade: "Médio",
+      tipo: meal.strCategory || "Prato principal",
+      ingredientes: ingredientes,
+      rating: 4.5, // Rating padrão
+      instrucoes: meal.strInstructions,
+      fonte: "TheMealDB",
+      apresentadoPor: "Chef Internacional",
+      video: meal.strYoutube,
+      tags: meal.strTags?.split(',') || [],
+      origem: meal.strArea
+    };
+  }
+}
+
 // Dados estáticos otimizados - versão compacta
 const INGREDIENTES_POPULARES = [
   { name: "Frango", icon: "🍗", category: "proteina" },
@@ -62,6 +136,9 @@ export default function CozinhaIA() {
   const [modalIngredientes, setModalIngredientes] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
+  
+  // Estados para TheMealDB
+  const [receitasTheMealDB, setReceitasTheMealDB] = useState([]);
 
   // Função para scroll automático ao card de receitas
   const scrollToReceitas = useCallback(() => {
@@ -80,7 +157,8 @@ export default function CozinhaIA() {
     busca: buscaHook,
     chat,
     adicionarIngrediente, 
-    removerIngrediente
+    removerIngrediente,
+    limparIngredientes
   } = cozinhaIA;
 
   // Funções específicas dos hooks
@@ -108,17 +186,55 @@ export default function CozinhaIA() {
     }
   }, [busca, buscarReceitas]);
 
+  // Buscar receitas TheMealDB quando ingredientes mudam
+  useEffect(() => {
+    const buscarReceitasTheMealDB = async () => {
+      if (ingredientes.length > 0) {
+        try {
+          // Buscar receitas para o primeiro ingrediente (TheMealDB aceita apenas 1 por vez)
+          const ingredientePrincipal = ingredientes[0];
+          const mealsData = await TheMealDBAPI.buscarPorIngrediente(ingredientePrincipal);
+          
+          // Limitar a 6 receitas e formatar
+          const receitasFormatadas = await Promise.all(
+            mealsData.slice(0, 6).map(async (meal) => {
+              const detalhes = await TheMealDBAPI.obterDetalhesReceita(meal.idMeal);
+              return TheMealDBAPI.formatarReceita(detalhes);
+            })
+          );
+          
+          setReceitasTheMealDB(receitasFormatadas.filter(Boolean));
+          console.log('🍳 Receitas TheMealDB carregadas:', receitasFormatadas.length);
+        } catch (error) {
+          console.error('❌ Erro ao buscar receitas TheMealDB:', error);
+          setReceitasTheMealDB([]);
+        }
+      } else {
+        setReceitasTheMealDB([]);
+      }
+    };
+
+    buscarReceitasTheMealDB();
+  }, [ingredientes]);
+
   // Receitas filtradas combinando backend e fallback estático
   const receitasFiltradas = useMemo(() => {
     let receitas = [];
     
-    // Priorizar dados do backend
+    // 1. Priorizar dados do backend (busca específica)
     if (busca && resultadosBusca.length > 0) {
       receitas = [...resultadosBusca];
-    } else if (ingredientes.length > 0 && sugestoes.length > 0) {
+    } 
+    // 2. Sugestões do backend baseadas em ingredientes
+    else if (ingredientes.length > 0 && sugestoes.length > 0) {
       receitas = [...sugestoes];
-    } else {
-      // Fallback para dados estáticos
+    } 
+    // 3. Receitas do TheMealDB baseadas em ingredientes
+    else if (ingredientes.length > 0 && receitasTheMealDB.length > 0) {
+      receitas = [...receitasTheMealDB];
+    } 
+    // 4. Fallback para dados estáticos
+    else {
       receitas = [...RECEITAS_EXEMPLO];
       
       // Filtrar por ingredientes selecionados localmente
@@ -142,7 +258,7 @@ export default function CozinhaIA() {
     }
     
     return receitas;
-  }, [ingredientes, sugestoes, resultadosBusca, busca]);
+  }, [ingredientes, sugestoes, resultadosBusca, busca, receitasTheMealDB]);
 
   // Handlers integrados com o backend
   const toggleIngrediente = useCallback((ingrediente) => {
@@ -150,8 +266,10 @@ export default function CozinhaIA() {
       removerIngrediente(ingrediente);
     } else {
       adicionarIngrediente(ingrediente);
+      // Fazer scroll automático para o card de receitas após adicionar ingrediente
+      setTimeout(() => scrollToReceitas(), 300);
     }
-  }, [ingredientes, adicionarIngrediente, removerIngrediente]);
+  }, [ingredientes, adicionarIngrediente, removerIngrediente, scrollToReceitas]);
 
   const adicionarIngredientePersonalizado = useCallback(() => {
     const ingrediente = ingredientePersonalizado.trim();
@@ -277,7 +395,7 @@ export default function CozinhaIA() {
                     disabled={!ingredientePersonalizado.trim() || ingredientes.includes(ingredientePersonalizado.trim())}
                     className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
                   >
-                    <i className="fa-solid fa-plus"></i>
+                    <i className="fa-solid fa-plus"></i>{" "}
                     Adicionar
                   </button>
                 </div>
@@ -405,41 +523,91 @@ export default function CozinhaIA() {
                     {receitasFiltradas.map(receita => (
                       <button
                         key={receita.id}
-                        onClick={() => setReceitaSelecionada(receita)}
-                        className="w-full flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left"
+                        onClick={() => {
+                          setReceitaSelecionada(receita);
+                          // Auto-limpar ingredientes quando usuário interagir com receita
+                          if (ingredientes.length > 0) {
+                            limparIngredientes();
+                          }
+                        }}
+                        className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left"
                       >
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          receita.tipo === 'Sugestão IA' 
-                            ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30'
-                            : 'bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30'
-                        }`}>
-                          <i className={`fa-solid ${receita.tipo === 'Sugestão IA' ? 'fa-magic-wand-sparkles text-purple-600 dark:text-purple-400' : 'fa-utensils text-orange-600 dark:text-orange-400'}`}></i>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                              {receita.nome}
-                            </h4>
-                            {receita.tipo === 'Sugestão IA' && (
-                              <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                                IA
-                              </span>
+                        <div className="flex gap-3">
+                          {/* Imagem da receita */}
+                          <div className="flex-shrink-0">
+                            {receita.imagem ? (
+                              <img 
+                                src={receita.imagem}
+                                alt={receita.nome}
+                                className="w-16 h-16 rounded-lg object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <div className={`w-16 h-16 rounded-lg flex items-center justify-center ${
+                              !receita.imagem ? 'bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30' : 'hidden'
+                            } ${receita.tipo === 'Sugestão IA' ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30' : ''}`}>
+                              <i className={`fa-solid ${receita.tipo === 'Sugestão IA' ? 'fa-magic-wand-sparkles text-purple-600 dark:text-purple-400' : 'fa-utensils text-orange-600 dark:text-orange-400'}`}></i>
+                            </div>
+                          </div>
+                          
+                          {/* Conteúdo da receita */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                                {receita.nome}
+                              </h4>
+                              <div className="flex items-center gap-1 text-yellow-500 flex-shrink-0">
+                                <i className="fa-solid fa-star text-xs"></i>
+                                <span className="text-xs font-medium">{receita.rating}</span>
+                              </div>
+                            </div>
+                            
+                            {/* Apresentador/Fonte */}
+                            {(receita.apresentadoPor || receita.fonte) && (
+                              <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">
+                                {receita.apresentadoPor && (
+                                  <span>👨‍🍳 {receita.apresentadoPor}</span>
+                                )}
+                                {receita.fonte && !receita.apresentadoPor && (
+                                  <span>📖 {receita.fonte}</span>
+                                )}
+                              </div>
                             )}
+                            
+                            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                              <span className="flex items-center gap-1">
+                                <i className="fa-solid fa-clock"></i>
+                                {receita.tempo}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <i className="fa-solid fa-signal"></i>
+                                {receita.dificuldade}
+                              </span>
+                              {receita.origem && (
+                                <span className="flex items-center gap-1">
+                                  <i className="fa-solid fa-globe"></i>
+                                  {receita.origem}
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Badges especiais */}
+                            <div className="flex items-center gap-1 mt-1">
+                              {receita.tipo === 'Sugestão IA' && (
+                                <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                                  IA
+                                </span>
+                              )}
+                              {receita.fonte === 'TheMealDB' && (
+                                <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                                  🌍 Internacional
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                            <span className="flex items-center gap-1">
-                              <i className="fa-solid fa-clock"></i>
-                              {receita.tempo}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fa-solid fa-signal"></i>
-                              {receita.dificuldade}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-yellow-500 flex-shrink-0">
-                          <i className="fa-solid fa-star text-xs"></i>
-                          <span className="text-xs font-medium">{receita.rating}</span>
                         </div>
                       </button>
                     ))}
@@ -743,15 +911,49 @@ export default function CozinhaIA() {
           </div>
         )}
 
-        {/* Modal Receita Detalhes - Mobile */}
+        {/* Modal Receita Detalhes - Versão Melhorada */}
         {receitaSelecionada && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end">
-            <div className="bg-white dark:bg-gray-800 w-full h-[70vh] rounded-t-3xl">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {receitaSelecionada.nome}
-                  </h3>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 w-full max-w-4xl h-[90vh] rounded-2xl overflow-hidden">
+              {/* Header */}
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      {receitaSelecionada.nome}
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      <span className="flex items-center gap-1">
+                        <i className="fa-solid fa-clock"></i>
+                        {receitaSelecionada.tempo}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <i className="fa-solid fa-signal"></i>
+                        {receitaSelecionada.dificuldade}
+                      </span>
+                      <div className="flex items-center gap-1 text-yellow-500">
+                        <i className="fa-solid fa-star"></i>
+                        <span>{receitaSelecionada.rating}</span>
+                      </div>
+                      {receitaSelecionada.origem && (
+                        <span className="flex items-center gap-1">
+                          <i className="fa-solid fa-globe"></i>
+                          {receitaSelecionada.origem}
+                        </span>
+                      )}
+                    </div>
+                    {/* Apresentador/Fonte */}
+                    {(receitaSelecionada.apresentadoPor || receitaSelecionada.fonte) && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {receitaSelecionada.apresentadoPor && (
+                          <>👨‍🍳 Apresentado por: <strong>{receitaSelecionada.apresentadoPor}</strong></>
+                        )}
+                        {receitaSelecionada.fonte && !receitaSelecionada.apresentadoPor && (
+                          <>📖 Fonte: <strong>{receitaSelecionada.fonte}</strong></>
+                        )}
+                      </p>
+                    )}
+                  </div>
                   <button
                     onClick={() => setReceitaSelecionada(null)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -759,50 +961,123 @@ export default function CozinhaIA() {
                     <i className="fa-solid fa-times text-gray-500 dark:text-gray-400"></i>
                   </button>
                 </div>
-                
-                <div className="bg-gray-100 dark:bg-gray-700 rounded-lg h-40 mb-4 flex items-center justify-center">
-                  <i className="fa-solid fa-utensils text-3xl text-gray-400"></i>
+              </div>
+              
+              {/* Conteúdo */}
+              <div className="p-6 h-[calc(90vh-200px)] overflow-y-auto">
+                <div className="grid lg:grid-cols-3 gap-6">
+                  
+                  {/* Imagem da Receita */}
+                  <div className="lg:col-span-1">
+                    {receitaSelecionada.imagem ? (
+                      <img 
+                        src={receitaSelecionada.imagem}
+                        alt={receitaSelecionada.nome}
+                        className="w-full h-64 rounded-lg object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`w-full h-64 rounded-lg flex flex-col items-center justify-center ${
+                      !receitaSelecionada.imagem ? 'bg-gray-100 dark:bg-gray-700' : 'hidden'
+                    }`}>
+                      <i className="fa-solid fa-utensils text-4xl text-gray-400 mb-2"></i>
+                      <p className="text-gray-500 text-sm">Imagem não disponível</p>
+                    </div>
+                    
+                    {/* Vídeo se disponível */}
+                    {receitaSelecionada.video && (
+                      <a 
+                        href={receitaSelecionada.video}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 flex items-center gap-2 text-red-600 hover:text-red-700 text-sm"
+                      >
+                        <i className="fa-brands fa-youtube"></i>
+                        Ver vídeo no YouTube
+                      </a>
+                    )}
+                  </div>
+                  
+                  {/* Ingredientes e Instruções */}
+                  <div className="lg:col-span-2 space-y-6">
+                    
+                    {/* Ingredientes */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-lg">📝 Ingredientes:</h4>
+                      <div className="grid sm:grid-cols-2 gap-2">
+                        {receitaSelecionada.ingredientes?.map((ingrediente, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+                          >
+                            <i className="fa-solid fa-check-circle text-green-500 text-xs"></i>
+                            <span className="text-gray-700 dark:text-gray-300">{ingrediente}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Instruções */}
+                    {receitaSelecionada.instrucoes && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-lg">🍳 Modo de Preparo:</h4>
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                          <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+                            {receitaSelecionada.instrucoes}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {!receitaSelecionada.instrucoes && receitaSelecionada.descricao && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-lg">📖 Descrição:</h4>
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                            {receitaSelecionada.descricao}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Tags se disponível */}
+                    {receitaSelecionada.tags && receitaSelecionada.tags.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-lg">🏷️ Tags:</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {receitaSelecionada.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded-full text-xs font-medium"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <i className="fa-solid fa-clock"></i>
-                      {receitaSelecionada.tempo}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <i className="fa-solid fa-signal"></i>
-                      {receitaSelecionada.dificuldade}
-                    </span>
-                    <div className="flex items-center gap-1 text-yellow-500">
-                      <i className="fa-solid fa-star"></i>
-                      <span>{receitaSelecionada.rating}</span>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">Ingredientes:</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {receitaSelecionada.ingredientes.map(ingrediente => (
-                        <span
-                          key={ingrediente}
-                          className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
-                        >
-                          {ingrediente}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <button
+              </div>
+              
+              {/* Footer com ações */}
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+                <div className="flex items-center gap-3">
+                  <button 
                     onClick={() => {
                       setReceitaSelecionada(null);
                       setChatAberto(true);
                     }}
-                    className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg font-medium transition-all duration-200"
+                    className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg transition-all duration-200 font-medium"
                   >
                     <i className="fa-solid fa-comments mr-2"></i>
                     Perguntar ao Chef IA
+                  </button>
+                  <button className="py-3 px-4 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors">
+                    📤 Compartilhar
                   </button>
                 </div>
               </div>
