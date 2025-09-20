@@ -94,12 +94,7 @@ export const useNotificationEvents = () => {
       window.removeEventListener('itemUnlocked', handleItemUnlocked);
       window.removeEventListener('firstUseReward', handleFirstUse);
     };
-  }, [
-    isAuthenticated,
-    notifyCreditsEarned,
-    notifyCreditsSpent,
-    notifyAchievement,
-    notifySuccess,
-    notifyInfo
-  ]);
+    // Remover dependências das funções para evitar loops infinitos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 };
