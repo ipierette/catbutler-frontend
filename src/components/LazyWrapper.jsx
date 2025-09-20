@@ -78,7 +78,7 @@ export const useLazyLoading = (options = {}) => {
   const [hasLoaded, setHasLoaded] = React.useState(false);
   const elementRef = React.useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasLoaded) {
@@ -172,7 +172,7 @@ export const useMemoizedComponent = (Component, deps = []) => {
 export const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
@@ -190,7 +190,7 @@ export const useThrottle = (value, delay) => {
   const [throttledValue, setThrottledValue] = React.useState(value);
   const lastExecuted = React.useRef(Date.now());
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (Date.now() >= lastExecuted.current + delay) {
       lastExecuted.current = Date.now();
       setThrottledValue(value);

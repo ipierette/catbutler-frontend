@@ -75,7 +75,7 @@ export default function Tarefas() {
   }, [isAuthenticated, filtroStatus, filtroCategoria, busca, loadTasks]);
 
   // Reset da página quando filtros mudam
-  React.useEffect(() => {
+  useEffect(() => {
     setPaginaAtual(1);
   }, [filtroStatus, filtroCategoria, busca]);
 

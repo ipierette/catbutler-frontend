@@ -123,7 +123,7 @@ export const LazyImage = memo(function LazyImage({
   const [loaded, setLoaded] = React.useState(false);
   const imgRef = React.useRef(null);
   
-  React.useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {

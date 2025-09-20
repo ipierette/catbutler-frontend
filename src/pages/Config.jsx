@@ -237,7 +237,7 @@ export default function Config() {
   };
 
   // Inicializar dados do perfil
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated && profile) {
       setPerfilEditando({
         nome: profile.nome || profile.display_name || '',

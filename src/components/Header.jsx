@@ -218,7 +218,7 @@ function ShareTooltip({ theme }) {
   const shareText = `Conheça o CatButler! Organize sua casa com IA: receitas, faxina, mercado e mais. Acesse: https://catbutler.app`;
 
   // Fecha tooltip ao clicar fora
-  React.useEffect(() => {
+  useEffect(() => {
     function handleClick(e) {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
         setOpen(false);

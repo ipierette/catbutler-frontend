@@ -3,40 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-// 🧹 LIMPEZA FORÇADA DE CACHE EM DESENVOLVIMENTO
+// Cache busting para desenvolvimento
 if (import.meta.env.DEV) {
-  console.log('🧹 Iniciando limpeza de cache de desenvolvimento...');
-  
-  // Limpar Service Workers
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-      registrations.forEach(registration => {
-        registration.unregister();
-        console.log('🗑️ Service Worker removido');
-      });
-    });
-  }
-  
-  // Limpar todos os tipos de storage
-  try {
-    localStorage.clear();
-    sessionStorage.clear();
-    console.log('🧹 Storage local limpo');
-  } catch (e) {
-    console.warn('Não foi possível limpar storage:', e);
-  }
-  
-  // Limpar cache do navigator
-  if ('caches' in window) {
-    caches.keys().then(names => {
-      names.forEach(name => {
-        caches.delete(name);
-        console.log('🗑️ Cache removido:', name);
-      });
-    });
-  }
-  
-  // Forçar recarregamento de módulos com cache busting
   const timestamp = Date.now();
   if (!window.location.search.includes('t=')) {
     const separator = window.location.search ? '&' : '?';
