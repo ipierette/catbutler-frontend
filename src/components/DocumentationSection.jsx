@@ -220,7 +220,7 @@ function DocumentationSection() {
           >
             <button
               onClick={() => toggleTutorial(tutorial.id)}
-              className="w-full p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+              className="w-full p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -241,7 +241,7 @@ function DocumentationSection() {
             </button>
 
             {openTutorial === tutorial.id && (
-              <div className="px-6 pb-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+              <div className="px-6 pb-6 border-t border-gray-100 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
                 <div className="pt-6 space-y-6">
                   
                   {/* Funcionalidades / Como Ganhar */}
