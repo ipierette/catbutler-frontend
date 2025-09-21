@@ -43,6 +43,24 @@ class CozinhaAPIClient {
     const path = endpoint.replace(/^\//, '');
     const url = `${base}/${path}`;
 
+    // Adiciona Authorization para endpoints protegidos
+    const protectedEndpoints = ['/favorites'];
+    const isProtected = protectedEndpoints.some(e => endpoint.startsWith(e));
+    if (isProtected) {
+      try {
+        // Importa dinamicamente o supabase client
+        const { supabase } = await import('../utils/supabase');
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        if (token) {
+          options.headers = options.headers || {};
+          options.headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch (e) {
+        console.warn('Não foi possível obter token do Supabase:', e);
+      }
+    }
+
     try {
       console.log(`🌐 [Tentativa ${attempt}] ${options.method || 'GET'} ${endpoint}`);
       console.log(`🔗 URL completa: ${url}`);
