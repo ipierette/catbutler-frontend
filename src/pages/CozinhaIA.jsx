@@ -526,10 +526,6 @@ export default function CozinhaIA() {
                         key={receita.id}
                         onClick={() => {
                           setReceitaSelecionada(receita);
-                          // Auto-limpar ingredientes quando usuário interagir com receita
-                          if (ingredientes.length > 0) {
-                            limparIngredientes();
-                          }
                         }}
                         className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left"
                       >

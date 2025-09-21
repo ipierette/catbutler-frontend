@@ -9,12 +9,21 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 
 // Configuração da API
 const API_CONFIG = {
-  BASE_URL: import.meta.env.MODE === 'production' 
-    ? 'https://your-app.vercel.app/api/kitchen'
-    : 'http://localhost:3000/api/kitchen',
+  BASE_URL: import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/kitchen`
+    : import.meta.env.MODE === 'production' 
+      ? 'https://catbutler-backend-56xkta02t-izadora-cury-pierettes-projects.vercel.app/api/kitchen'
+      : 'http://localhost:3000/api/kitchen',
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3
 };
+
+// Debug: Log da URL sendo usada
+console.log('🔧 CozinhaIA API Config:', {
+  mode: import.meta.env.MODE,
+  baseURL: API_CONFIG.BASE_URL,
+  timestamp: new Date().toISOString()
+});
 
 // ============================================
 // 🌐 CLIENTE HTTP PROFISSIONAL
@@ -29,11 +38,15 @@ class CozinhaAPIClient {
 
   // Método HTTP genérico com retry
   async makeRequest(endpoint, options = {}, attempt = 1) {
-    const url = `${this.baseURL}${endpoint}`;
-    
+    // Garante que não haja barras duplas entre baseURL e endpoint
+    const base = this.baseURL.replace(/\/$/, '');
+    const path = endpoint.replace(/^\//, '');
+    const url = `${base}/${path}`;
+
     try {
       console.log(`🌐 [Tentativa ${attempt}] ${options.method || 'GET'} ${endpoint}`);
-      
+      console.log(`🔗 URL completa: ${url}`);
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -59,7 +72,7 @@ class CozinhaAPIClient {
 
     } catch (error) {
       console.error(`❌ Erro tentativa ${attempt} para ${endpoint}:`, error.message);
-      
+
       // Retry em caso de falha de rede ou timeout
       if (attempt < this.retryAttempts && 
           (error.name === 'AbortError' || error.name === 'TypeError')) {
@@ -67,7 +80,7 @@ class CozinhaAPIClient {
         await this.delay(2000 * attempt);
         return this.makeRequest(endpoint, options, attempt + 1);
       }
-      
+
       throw error;
     }
   }
@@ -340,7 +353,7 @@ export function useChefChat(isVisitorMode = false) {
     const mensagemUsuario = {
       id: `user-${Date.now()}`,
       tipo: 'usuario',
-      mensagem: mensagem.trim(),
+      texto: mensagem.trim(), // Corrigido para 'texto' para compatibilidade com o componente
       timestamp: new Date()
     };
     setConversa(prev => [...prev, mensagemUsuario]);
@@ -361,8 +374,8 @@ export function useChefChat(isVisitorMode = false) {
         // Adicionar resposta do chef
         const respostaChef = {
           id: `chef-${Date.now()}`,
-          tipo: 'chef',
-          mensagem: response.data.resposta,
+          tipo: 'ia', // Corrigido para 'ia' para compatibilidade com o componente
+          texto: response.data.resposta, // Corrigido para 'texto' para compatibilidade
           sugestoes: response.data.sugestoes,
           timestamp: new Date()
         };
@@ -388,8 +401,8 @@ export function useChefChat(isVisitorMode = false) {
       // Adicionar mensagem de erro
       setConversa(prev => [...prev, {
         id: `error-${Date.now()}`,
-        tipo: 'chef',
-        mensagem: 'Desculpe, ocorreu um erro. Tente novamente.',
+        tipo: 'ia',
+        texto: 'Desculpe, ocorreu um erro. Tente novamente.',
         timestamp: new Date()
       }]);
     } finally {
