@@ -926,7 +926,7 @@ export default function CozinhaIA() {
         {/* Modal Receita Detalhes - Versão Melhorada */}
         {receitaSelecionada && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-110 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 w-full max-w-4xl h-[90vh] rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 w-full max-w-4xl h-[90vh] rounded-2xl overflow-hidden flex flex-col">
               {/* Header */}
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-start justify-between">
@@ -1002,7 +1002,7 @@ export default function CozinhaIA() {
               </div>
               
               {/* Conteúdo */}
-              <div className="p-6 h-[calc(90vh-200px)] overflow-y-auto">
+              <div className="flex-1 p-6 overflow-y-auto">
                 <div className="grid lg:grid-cols-3 gap-6">
                   
                   {/* Imagem da Receita */}
@@ -1101,21 +1101,34 @@ export default function CozinhaIA() {
                 </div>
               </div>
               
-              {/* Footer com ações */}
-              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+              {/* Footer com ações - FIXO na parte inferior */}
+              <div className="sticky bottom-0 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 mt-auto">
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={() => {
                       setReceitaSelecionada(null);
                       setChatAberto(true);
                     }}
-                    className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg transition-all duration-200 font-medium"
+                    className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2"
                   >
-                    <i className="fa-solid fa-comments mr-2"></i>
+                    <i className="fa-solid fa-comments"></i>
                     Perguntar ao Chef IA
                   </button>
-                  <button className="py-3 px-4 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors">
-                    📤 Compartilhar
+                  <button 
+                    onClick={() => {
+                      navigator.share({
+                        title: receitaSelecionada.nome,
+                        text: `Receita: ${receitaSelecionada.nome} - ${receitaSelecionada.origem}`,
+                        url: receitaSelecionada.fonte_url || window.location.href
+                      }).catch(() => {
+                        navigator.clipboard.writeText(`Receita: ${receitaSelecionada.nome} - ${receitaSelecionada.fonte_url || window.location.href}`);
+                        alert('Link copiado para área de transferência!');
+                      });
+                    }}
+                    className="py-3 px-4 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <i className="fa-solid fa-share"></i>
+                    Compartilhar
                   </button>
                 </div>
               </div>
