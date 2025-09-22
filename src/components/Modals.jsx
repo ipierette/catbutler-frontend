@@ -25,49 +25,63 @@ export function TermsModal({ open, onClose }) {
             Última atualização: {new Date().toLocaleDateString('pt-BR')}
           </p>
           
+          {/* 1. Aceitação */}
           <section>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">1. Aceitação dos Termos</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">1. Aceitação</h4>
             <p className="mb-2">
-              Ao utilizar o CatButler, você concorda com estes termos de uso. Se não concordar, 
-              não utilize nossos serviços.
+              Ao usar o CatButler, você concorda com estes termos. Se não concordar, não utilize o serviço.
             </p>
           </section>
-
+  
+          {/* 2. Uso do Serviço */}
           <section>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-2">2. Uso do Serviço</h4>
             <ul className="list-disc pl-5 space-y-1">
-              <li>O CatButler é fornecido "como está", sem garantias de funcionamento contínuo</li>
-              <li>Não utilize o serviço para atividades ilegais ou que violem direitos de terceiros</li>
-              <li>Funcionalidades e políticas podem ser alteradas a qualquer momento</li>
-              <li>Você é responsável por manter a segurança de sua conta</li>
+              <li>O CatButler é oferecido "como está", sem garantias de funcionamento contínuo</li>
+              <li>Não utilize para atividades ilegais ou que violem direitos de terceiros</li>
+              <li>Funcionalidades e políticas podem mudar a qualquer momento</li>
+              <li>Você é responsável por manter a segurança da sua conta</li>
             </ul>
           </section>
-
+  
+          {/* 3. Conteúdo de Usuários */}
           <section>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">3. Dados e Privacidade</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">3. Conteúdo de Usuários</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Usuários são os únicos responsáveis pelo conteúdo que publicam.</li>
+              <li>O CatButler não se responsabiliza por informações, receitas ou materiais enviados por terceiros.</li>
+              <li>Ao publicar, o usuário declara ter direitos sobre o conteúdo e autoriza sua exibição.</li>
+              <li>Podemos remover conteúdos denunciados ou que infrinjam direitos de terceiros sem aviso prévio.</li>
+            </ul>
+          </section>
+  
+          {/* 4. Privacidade e Dados */}
+          <section>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">4. Privacidade e Dados</h4>
             <ul className="list-disc pl-5 space-y-1">
               <li>Coletamos dados de uso para melhorar a experiência do usuário</li>
-              <li>Você pode solicitar a remoção de seus dados identificáveis</li>
+              <li>Você pode solicitar a exclusão dos seus dados pessoais</li>
               <li>Não compartilhamos dados pessoais com terceiros sem consentimento</li>
-              <li>Utilizamos cookies para funcionalidades essenciais</li>
+              <li>Utilizamos cookies apenas para funções essenciais</li>
             </ul>
           </section>
-
+  
+          {/* 5. Limitação de Responsabilidade */}
           <section>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">4. Limitações de Responsabilidade</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">5. Limitação de Responsabilidade</h4>
             <p className="mb-2">
-              O CatButler não se responsabiliza por danos diretos ou indiretos decorrentes 
-              do uso ou impossibilidade de uso do serviço.
+              Não nos responsabilizamos por danos diretos ou indiretos resultantes do uso ou da impossibilidade de uso do serviço.
             </p>
           </section>
-
+  
+          {/* 6. Contato */}
           <section>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">5. Contato</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">6. Contato</h4>
             <p>
-              Para dúvidas sobre estes termos, entre em contato através do email: 
+              Dúvidas? Escreva para: 
               <span className="text-green-600 dark:text-green-400 font-mono">
-              {' '}contato@catbutler.app
-            </span>
+                {' '}contato@catbutler.app
+              </span>
             </p>
           </section>
         </div>
