@@ -325,7 +325,7 @@ export default function CozinhaIA() {
                 </div>
                 <div>
                   <h1 className="font-bold text-gray-900 dark:text-white">Cozinha IA</h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Receitas personalizadas</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Receitas personalizadas &#9888; Utilizamos API internacional gratuida de receitas e para facilitar a commpreensão dos usuários pedimos a API do gemini para traduzir, o processo pode demorar alguns minutos</p>
                 </div>
               </div>
               <button
