@@ -96,6 +96,7 @@ module.exports = {
         '80': '80',
         '90': '90',
         '100': '100',
+        '110': '110',
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.6s ease-out',

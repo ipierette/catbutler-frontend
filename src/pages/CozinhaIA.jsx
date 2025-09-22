@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
 import useCozinhaIA from '../hooks/useCozinhaIA';
+import { useFavoritos } from '../hooks/useCozinhaIA';
 
 // ============================================
 // 🍳 THEMEALDB API INTEGRATION
@@ -124,6 +125,7 @@ export default function CozinhaIA() {
   
   // Integração com o backend via hook personalizado
   const cozinhaIA = useCozinhaIA(isVisitorMode);
+  const { isFavorito, adicionarFavorito, removerFavorito } = useFavoritos();
   
   // Referência para o card de receitas
   const receitasCardRef = useRef(null);
@@ -522,13 +524,26 @@ export default function CozinhaIA() {
                     )}
                     
                     {receitasFiltradas.map(receita => (
-                      <button
+                      <div
                         key={receita.id}
-                        onClick={() => {
-                          setReceitaSelecionada(receita);
-                        }}
-                        className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left"
+                        className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left flex items-center"
+                        onClick={() => setReceitaSelecionada(receita)}
                       >
+                        {/* Botão de Favorito */}
+                        <button
+                          className="mr-3 text-xl text-pink-500 hover:text-pink-600 focus:outline-none"
+                          title={isFavorito(receita.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                          onClick={e => {
+                            e.stopPropagation();
+                            if (isFavorito(receita.id)) {
+                              removerFavorito(receita.id);
+                            } else {
+                              adicionarFavorito(receita);
+                            }
+                          }}
+                        >
+                          <i className={isFavorito(receita.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}></i>
+                        </button>
                         <div className="flex gap-3">
                           {/* Imagem da receita */}
                           <div className="flex-shrink-0">
@@ -606,7 +621,7 @@ export default function CozinhaIA() {
                             </div>
                           </div>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 ) : (
@@ -910,7 +925,7 @@ export default function CozinhaIA() {
 
         {/* Modal Receita Detalhes - Versão Melhorada */}
         {receitaSelecionada && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-110 flex items-center justify-center p-4">
             <div className="bg-white dark:bg-gray-800 w-full max-w-4xl h-[90vh] rounded-2xl overflow-hidden">
               {/* Header */}
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
