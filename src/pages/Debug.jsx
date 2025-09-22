@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import TesteFavoritos from '../components/TesteFavoritos';
 
 export default function Debug() {
   const [version, setVersion] = useState(null);
@@ -93,6 +94,9 @@ export default function Debug() {
               </button>
             </div>
           </div>
+
+          {/* Teste de Favoritos */}
+          <TesteFavoritos />
         </div>
       </div>
     </div>
