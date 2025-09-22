@@ -965,6 +965,32 @@ export default function CozinhaIA() {
                         )}
                       </p>
                     )}
+                    
+                    {/* Link da Receita Original */}
+                    {receitaSelecionada.fonte_url && (
+                      <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <div className="flex items-center gap-3">
+                          <i className="fa-solid fa-external-link-alt text-blue-600 dark:text-blue-400"></i>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                              Receita Original
+                            </p>
+                            <p className="text-xs text-blue-600 dark:text-blue-300">
+                              Visite a página original para mais detalhes
+                            </p>
+                          </div>
+                          <a
+                            href={receitaSelecionada.fonte_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+                          >
+                            <i className="fa-solid fa-external-link-alt"></i>
+                            Visitar Site
+                          </a>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => setReceitaSelecionada(null)}
