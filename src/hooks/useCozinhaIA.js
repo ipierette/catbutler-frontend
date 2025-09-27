@@ -1,4 +1,86 @@
 // ============================================
+// 🌐 CONFIG E CLIENTE HTTP PARA API
+// ============================================
+const API_CONFIG = {
+  BASE_URL: import.meta.env.MODE === 'production'
+    ? 'https://your-app.vercel.app/api/kitchen'
+    : 'http://localhost:3000/api/kitchen',
+  TIMEOUT: 30000,
+  RETRY_ATTEMPTS: 3
+};
+
+class CozinhaAPIClient {
+  constructor() {
+    this.baseURL = API_CONFIG.BASE_URL;
+    this.timeout = API_CONFIG.TIMEOUT;
+    this.retryAttempts = API_CONFIG.RETRY_ATTEMPTS;
+  }
+
+  async makeRequest(endpoint, options = {}, attempt = 1) {
+    const url = `${this.baseURL}${endpoint}`;
+    try {
+      console.log(`🌐 [Tentativa ${attempt}] ${options.method || 'GET'} ${endpoint}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        signal: controller.signal,
+        ...options,
+      });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log(`✅ Sucesso ${endpoint} em ${attempt} tentativa(s)`);
+      return data;
+    } catch (error) {
+      console.error(`❌ Erro tentativa ${attempt} para ${endpoint}:`, error.message);
+      if (attempt < this.retryAttempts && (error.name === 'AbortError' || error.name === 'TypeError')) {
+        console.log(`🔄 Tentando novamente em 2s...`);
+        await this.delay(2000 * attempt);
+        return this.makeRequest(endpoint, options, attempt + 1);
+      }
+      throw error;
+    }
+  }
+
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Endpoints
+  async obterSugestoes(ingredientes) {
+    if (!ingredientes?.length) {
+      return { success: false, error: 'Nenhum ingrediente informado' };
+    }
+    return this.makeRequest(`/suggestions`, {
+      method: 'POST',
+      body: JSON.stringify({ ingredientes })
+    });
+  }
+
+  async buscarReceitas(params) {
+    return this.makeRequest(`/search`, {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+  }
+
+  async chatComChef(mensagem, ingredientesContexto = [], isVisitorMode = false) {
+    return this.makeRequest(`/chat`, {
+      method: 'POST',
+      body: JSON.stringify({ mensagem, ingredientes: ingredientesContexto, isVisitorMode })
+    });
+  }
+}
+
+const apiClient = new CozinhaAPIClient();
+// ============================================
 // 🔍 HOOK REACT PARA BUSCA DE RECEITAS
 // ============================================
 export function useBusca() {
