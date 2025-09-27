@@ -4,6 +4,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 // Fast Refresh signature para desenvolvimento
@@ -38,6 +39,12 @@ export const useAuth = () => {
 
 // Provider de autenticação
 export function AuthProvider({ children }) {
+  let navigate;
+  try {
+    navigate = useNavigate();
+  } catch (e) {
+    navigate = null;
+  }
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -83,9 +90,7 @@ export function AuthProvider({ children }) {
 
     try {
       console.log('🔄 Carregando perfil do usuário...', authUser.email);
-      
       const result = await getUserProfile();
-      
       if (result.success) {
         console.log('✅ Perfil carregado:', result.profile);
         setProfile(result.profile);
@@ -95,6 +100,9 @@ export function AuthProvider({ children }) {
         setProfile({
           id: authUser.id,
           display_name: authUser.email?.split('@')[0] || 'Usuário',
+          first_name: authUser.user_metadata?.first_name || authUser.email?.split('@')[0] || 'Usuário',
+          last_name: authUser.user_metadata?.last_name || '',
+          avatar_url: 'axel',
           theme: 'auto'
         });
       }
@@ -104,6 +112,9 @@ export function AuthProvider({ children }) {
       setProfile({
         id: authUser.id,
         display_name: authUser.email?.split('@')[0] || 'Usuário',
+        first_name: authUser.user_metadata?.first_name || authUser.email?.split('@')[0] || 'Usuário',
+        last_name: authUser.user_metadata?.last_name || '',
+        avatar_url: 'axel',
         theme: 'auto'
       });
     }
@@ -462,7 +473,11 @@ export function AuthProvider({ children }) {
         if (session.user.app_metadata?.provider && session.user.app_metadata.provider !== 'email') {
           console.log('✅ Login social concluído, redirecionando...');
           setTimeout(() => {
-            window.location.href = '/';
+            try {
+              navigate('/');
+            } catch (e) {
+              window.location.href = '/';
+            }
           }, 1000);
         }
       } else if (event === 'TOKEN_REFRESHED') {

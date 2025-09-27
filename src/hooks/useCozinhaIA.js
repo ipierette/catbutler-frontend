@@ -3,7 +3,7 @@
 // ============================================
 const API_CONFIG = {
   BASE_URL: import.meta.env.MODE === 'production'
-    ? 'https://your-app.vercel.app/api/kitchen'
+    ? 'https://catbutler-backend.vercel.app/api/kitchen'
     : 'http://localhost:3000/api/kitchen',
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3
@@ -358,126 +358,6 @@ export function useChefChat(isVisitorMode = false) {
 }
 
 // ============================================
-// ⭐ HOOK REACT PARA FAVORITOS
-// ============================================
-
-export function useFavoritos() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [favoritos, setFavoritos] = useState([]);
-
-  const carregarFavoritos = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      console.log('⭐ Carregando favoritos...');
-      
-      const response = await apiClient.listarFavoritos();
-      
-      if (response.success) {
-        setFavoritos(response.data.favoritos || []);
-        console.log(`✅ ${response.data.favoritos?.length || 0} favoritos carregados`);
-      } else {
-        throw new Error('Erro ao carregar favoritos');
-      }
-      
-    } catch (err) {
-      setError(err.message || 'Erro ao carregar favoritos');
-      console.error('❌ Erro nos favoritos:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const adicionarFavorito = useCallback(async (receita, rating, notas) => {
-    try {
-      console.log('⭐ Adicionando favorito:', receita.nome);
-
-      // Verificar se usuário está autenticado
-      const { supabase } = await import('../utils/supabase');
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        console.warn('⚠️ Usuário não está autenticado');
-        setError('Você precisa estar logado para adicionar favoritos. Faça login e tente novamente.');
-        return { success: false, message: 'Login necessário' };
-      }
-
-      const favoritoData = {
-        receita_id: receita.id,
-        nome: receita.nome,
-        ingredientes: receita.ingredientes,
-        instrucoes: receita.instrucoes,
-        tempo_estimado: receita.tempoEstimado,
-        dificuldade: receita.dificuldade,
-        imagem_url: receita.imagem,
-        rating,
-        notas
-      };
-
-      const response = await apiClient.adicionarFavorito(favoritoData);
-
-      if (response.success) {
-        await carregarFavoritos(); // Recarregar lista
-        console.log('✅ Favorito adicionado');
-        return { success: true, message: 'Receita adicionada aos favoritos!' };
-      } else {
-        throw new Error(response.error || 'Erro ao adicionar favorito');
-      }
-
-    } catch (err) {
-      const errorMessage = err.message || 'Erro ao adicionar favorito';
-      setError(errorMessage);
-      console.error('❌ Erro ao adicionar favorito:', err);
-      return { success: false, message: errorMessage };
-    }
-  }, [carregarFavoritos]);
-
-  const removerFavorito = useCallback(async (id) => {
-    try {
-      console.log('🗑️ Removendo favorito:', id);
-      
-      const response = await apiClient.removerFavorito(id);
-      
-      if (response.success) {
-        setFavoritos(prev => prev.filter(f => f.id !== id));
-        console.log('✅ Favorito removido');
-      } else {
-        throw new Error('Erro ao remover favorito');
-      }
-      
-    } catch (err) {
-      setError(err.message || 'Erro ao remover favorito');
-      console.error('❌ Erro ao remover favorito:', err);
-      throw err;
-    }
-  }, []);
-
-  const isFavorito = useCallback((receitaId) => {
-    return favoritos.some(f => f.receita_id === receitaId);
-  }, [favoritos]);
-
-  // Auto-carregar favoritos ao inicializar
-  useEffect(() => {
-    carregarFavoritos();
-  }, [carregarFavoritos]);
-
-  return {
-    // Estado
-    loading,
-    error,
-    favoritos,
-    
-    // Ações
-    carregarFavoritos,
-    adicionarFavorito,
-    removerFavorito,
-    isFavorito
-  };
-}
-
-// ============================================
 // 🎯 HOOK PRINCIPAL - COZINHA IA REACT
 // ============================================
 
@@ -486,7 +366,6 @@ export function useCozinhaIA(isVisitorMode = false) {
   const sugestoes = useSugestoes();
   const busca = useBusca();
   const chat = useChefChat(isVisitorMode);
-  const favoritos = useFavoritos();
 
   // Estado global da aplicação
   const [abaSelecionada, setAbaSelecionada] = useState('sugestoes');
@@ -540,7 +419,6 @@ export function useCozinhaIA(isVisitorMode = false) {
     sugestoes,
     busca,
     chat,
-    favoritos,
 
     // Estado global
     abaSelecionada,
