@@ -89,9 +89,6 @@
     }
   ],
 "rewrites": [
-  {
-    "source": "/((?!assets|images|js|css|manifest\\.webmanifest|sw\\.js|workbox-.*\\.js).*)",
-    "destination": "/index.html"
-  }
+  { "source": "/(.*)", "destination": "/" }
 ]
 }

@@ -1,189 +1,5 @@
-// 🍳 CozinhaIA - Hook React para integração com backend
-// Sistema completo de conexão com as APIs do backend usando React hooks
-
-import { useState, useCallback, useEffect, useMemo } from 'react';
-
 // ============================================
-// 🔧 CONFIGURAÇÃO E CONSTANTES
-// ============================================
-
-// Configuração da API
-const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL 
-    ? `${import.meta.env.VITE_API_URL}/kitchen`
-    : import.meta.env.MODE === 'production' 
-      ? 'https://catbutler-backend-56xkta02t-izadora-cury-pierettes-projects.vercel.app/api/kitchen'
-      : 'http://localhost:3000/api/kitchen',
-  TIMEOUT: 30000,
-  RETRY_ATTEMPTS: 3
-};
-
-// Debug: Log da URL sendo usada
-console.log('🔧 CozinhaIA API Config:', {
-  mode: import.meta.env.MODE,
-  baseURL: API_CONFIG.BASE_URL,
-  timestamp: new Date().toISOString()
-});
-
-// ============================================
-// 🌐 CLIENTE HTTP PROFISSIONAL
-// ============================================
-
-class CozinhaAPIClient {
-  constructor() {
-    this.baseURL = API_CONFIG.BASE_URL;
-    this.timeout = API_CONFIG.TIMEOUT;
-    this.retryAttempts = API_CONFIG.RETRY_ATTEMPTS;
-  }
-
-  // Método HTTP genérico com retry
-  async makeRequest(endpoint, options = {}, attempt = 1) {
-    // Garante que não haja barras duplas entre baseURL e endpoint
-    const base = this.baseURL.replace(/\/$/, '');
-    const path = endpoint.replace(/^\//, '');
-    const url = `${base}/${path}`;
-
-    // Adiciona Authorization para endpoints protegidos
-    const protectedEndpoints = ['/favorites'];
-    const isProtected = protectedEndpoints.some(e => endpoint.startsWith(e));
-    if (isProtected) {
-      try {
-        // Importa dinamicamente o supabase client
-        const { supabase } = await import('../utils/supabase');
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
-        if (token) {
-          options.headers = options.headers || {};
-          options.headers['Authorization'] = `Bearer ${token}`;
-        }
-      } catch (e) {
-        console.warn('Não foi possível obter token do Supabase:', e);
-      }
-    }
-
-    try {
-      console.log(`🌐 [Tentativa ${attempt}] ${options.method || 'GET'} ${endpoint}`);
-      console.log(`🔗 URL completa: ${url}`);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        signal: controller.signal,
-        ...options,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log(`✅ Sucesso ${endpoint} em ${attempt} tentativa(s)`);
-      return data;
-
-    } catch (error) {
-      console.error(`❌ Erro tentativa ${attempt} para ${endpoint}:`, error.message);
-
-      // Retry em caso de falha de rede ou timeout
-      if (attempt < this.retryAttempts && 
-          (error.name === 'AbortError' || error.name === 'TypeError')) {
-        console.log(`🔄 Tentando novamente em 2s...`);
-        await this.delay(2000 * attempt);
-        return this.makeRequest(endpoint, options, attempt + 1);
-      }
-
-      throw error;
-    }
-  }
-
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // ================== ENDPOINTS ==================
-
-  // 🔮 Sugestões de Receitas
-  async obterSugestoes(ingredientes) {
-    if (!ingredientes?.length) {
-      throw new Error('Lista de ingredientes é obrigatória');
-    }
-
-    return this.makeRequest('/suggestions', {
-      method: 'POST',
-      body: JSON.stringify({ ingredientes }),
-    });
-  }
-
-  // 🔍 Busca de Receitas
-  async buscarReceitas(params) {
-    const searchParams = new URLSearchParams();
-    
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) searchParams.append(key, value.toString());
-    });
-
-    const endpoint = searchParams.toString() ? 
-      `/search?${searchParams.toString()}` : 
-      '/search';
-
-    return this.makeRequest(endpoint);
-  }
-
-  // 🤖 Chat com Chef IA
-  async chatComChef(mensagem, ingredientes = [], isVisitorMode = false) {
-    if (!mensagem?.trim()) {
-      throw new Error('Mensagem é obrigatória');
-    }
-
-    return this.makeRequest('/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        mensagem: mensagem.trim(),
-        ingredientes,
-        isVisitorMode,
-      }),
-    });
-  }
-
-  // ⭐ Favoritos
-  async listarFavoritos() {
-    return this.makeRequest('/favorites');
-  }
-
-  async adicionarFavorito(favorito) {
-    return this.makeRequest('/favorites', {
-      method: 'POST',
-      body: JSON.stringify(favorito),
-    });
-  }
-
-  async atualizarFavorito(id, updates) {
-    return this.makeRequest('/favorites', {
-      method: 'PUT',
-      body: JSON.stringify({ id, ...updates }),
-    });
-  }
-
-  async removerFavorito(id) {
-    return this.makeRequest('/favorites', {
-      method: 'DELETE',
-      body: JSON.stringify({ id }),
-    });
-  }
-}
-
-// Instância singleton
-const apiClient = new CozinhaAPIClient();
-
-// ============================================
-// 🎯 HOOK REACT PARA SUGESTÕES
+// 🥄 HOOK REACT PARA SUGESTÕES
 // ============================================
 
 export function useSugestoes() {
@@ -207,7 +23,7 @@ export function useSugestoes() {
     setError(null);
     
     try {
-      console.log('🔮 Buscando sugestões para:', ingredientes);
+      console.log('🔎 Buscando sugestões para:', ingredientes);
       
       const response = await apiClient.obterSugestoes(ingredientes);
       
@@ -269,6 +85,43 @@ export function useSugestoes() {
     limparSugestoes
   };
 }
+// 🍳 CozinhaIA - Hook React para integração com backend
+// Sistema completo de conexão com as APIs do backend usando React hooks
+
+import { useState, useCallback, useEffect, useMemo } from 'react';
+
+// ============================================
+// 🔧 CONFIGURAÇÃO E CONSTANTES
+// ============================================
+
+// Configuração da API
+const API_CONFIG = {
+  BASE_URL: import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/kitchen`
+    : import.meta.env.MODE === 'production' 
+      ? 'https://catbutler-backend-56xkta02t-izadora-cury-pierettes-projects.vercel.app/api/kitchen'
+      : 'http://localhost:3000/api/kitchen',
+  TIMEOUT: 30000,
+  RETRY_ATTEMPTS: 3
+};
+
+// Debug: Log da URL sendo usada
+console.log('🔧 CozinhaIA API Config:', {
+  mode: import.meta.env.MODE,
+  baseURL: API_CONFIG.BASE_URL,
+  timestamp: new Date().toISOString()
+});
+
+// ============================================
+// 🌐 CLIENTE HTTP PROFISSIONAL
+// ============================================
+
+class CozinhaAPIClient {
+}
+
+// Removido hook de favoritos e referências
+// (definição duplicada removida)
+// Fim do arquivo. Favoritos removidos.
 
 // ============================================
 // 🔍 HOOK REACT PARA BUSCA
@@ -496,33 +349,44 @@ export function useFavoritos() {
   const adicionarFavorito = useCallback(async (receita, rating, notas) => {
     try {
       console.log('⭐ Adicionando favorito:', receita.nome);
-      
+
+      // Verificar se usuário está autenticado
+      const { supabase } = await import('../utils/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.warn('⚠️ Usuário não está autenticado');
+        setError('Você precisa estar logado para adicionar favoritos. Faça login e tente novamente.');
+        return { success: false, message: 'Login necessário' };
+      }
+
       const favoritoData = {
         receita_id: receita.id,
         nome: receita.nome,
-        descricao: `Receita ${receita.nome}`,
         ingredientes: receita.ingredientes,
         instrucoes: receita.instrucoes,
-        tempo_minutos: receita.tempoEstimado ? parseInt(receita.tempoEstimado) : undefined,
+        tempo_estimado: receita.tempoEstimado,
         dificuldade: receita.dificuldade,
         imagem_url: receita.imagem,
         rating,
-        notas_pessoais: notas
+        notas
       };
 
       const response = await apiClient.adicionarFavorito(favoritoData);
-      
+
       if (response.success) {
         await carregarFavoritos(); // Recarregar lista
         console.log('✅ Favorito adicionado');
+        return { success: true, message: 'Receita adicionada aos favoritos!' };
       } else {
-        throw new Error('Erro ao adicionar favorito');
+        throw new Error(response.error || 'Erro ao adicionar favorito');
       }
-      
+
     } catch (err) {
-      setError(err.message || 'Erro ao adicionar favorito');
+      const errorMessage = err.message || 'Erro ao adicionar favorito';
+      setError(errorMessage);
       console.error('❌ Erro ao adicionar favorito:', err);
-      throw err;
+      return { success: false, message: errorMessage };
     }
   }, [carregarFavoritos]);
 

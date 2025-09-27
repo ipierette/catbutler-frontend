@@ -340,10 +340,9 @@ export default function CozinhaIA() {
             </div>
           </div>
           
-          {/* Navegação por Abas */}
+          {/* Navegação por Abas (removida a aba Buscar) */}
           <div className="flex border-t border-gray-200 dark:border-gray-700">
             {[
-              { id: 'buscar', label: 'Buscar', icon: 'fa-search' },
               { id: 'ia', label: 'IA Chef', icon: 'fa-magic-wand-sparkles' },
               { id: 'contribuir', label: 'Enviar', icon: 'fa-plus-circle' }
             ].map(aba => (
@@ -365,277 +364,6 @@ export default function CozinhaIA() {
 
 {/* Conteúdo Principal */}
         <div className="p-4 pb-20">
-          {/* Aba Buscar */}
-          {abaSelecionada === 'buscar' && (
-            <div className="space-y-4">{/* Os cards foram movidos para aqui */}
-              {/* Adicionar Ingrediente Personalizado */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
-                  Adicionar Ingrediente Personalizado
-                </h3>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <i className="fa-solid fa-plus absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input
-                      type="text"
-                      value={ingredientePersonalizado}
-                      onChange={(e) => setIngredientePersonalizado(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (ingredientePersonalizado.trim() && !ingredientes.includes(ingredientePersonalizado.trim())) {
-                            adicionarIngrediente(ingredientePersonalizado.trim());
-                            setIngredientePersonalizado('');
-                          }
-                        }
-                      }}
-                      placeholder="Digite um ingrediente (ex: alho, pimenta, manjericão...) a nossa IA selecionará receitas automaticamente."
-                      className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:text-white text-sm"
-                    />
-                  </div>
-                  <button
-                    onClick={adicionarIngredientePersonalizado}
-                    disabled={!ingredientePersonalizado.trim() || ingredientes.includes(ingredientePersonalizado.trim())}
-                    className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
-                  >
-                    <i className="fa-solid fa-plus"></i>{" "}
-                    Adicionar
-                  </button>
-                </div>
-                {ingredientePersonalizado.trim() && ingredientes.includes(ingredientePersonalizado.trim()) && (
-                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                    <i className="fa-solid fa-info-circle"></i>
-                    Este ingrediente já foi adicionado
-                  </p>
-                )}
-              </div>
-
-              {/* Ingredientes Selecionados - Compacto */}
-              {ingredientes.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                      Ingredientes ({ingredientes.length})
-                    </h3>
-                    <button
-                      onClick={() => {
-                        // Limpar todos os ingredientes usando o hook
-                        ingredientes.forEach(ing => removerIngrediente(ing));
-                      }}
-                      className="text-xs text-red-600 dark:text-red-400 hover:underline"
-                    >
-                      Limpar
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {ingredientes.map((ingrediente, index) => (
-                      <span 
-                        key={`${ingrediente}-${index}`}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs"
-                      >
-                        {ingrediente}
-                        <button
-                          onClick={() => removerIngrediente(ingrediente)}
-                          className="ml-1 hover:bg-orange-200 dark:hover:bg-orange-800 rounded-full w-4 h-4 flex items-center justify-center transition-colors"
-                        >
-                          <i className="fa-solid fa-times text-xs"></i>
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  
-                  {/* Botão Chat IA - Simplificado */}
-                  <button
-                    onClick={() => setChatAberto(true)}
-                    className="w-full mt-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                  >
-                    <i className="fa-solid fa-comments text-sm"></i>
-                    {isVisitorMode ? 'Ver Chat IA' : 'Chat com IA'}
-                  </button>
-                </div>
-              )}
-
-              {/* Ingredientes Populares - Botão para Modal */}
-              <button
-                onClick={() => setModalIngredientes(true)}
-                className="w-full bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700 hover:shadow-md transition-all duration-200 text-left group"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
-                      Ingredientes Populares
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Clique para ver ingredientes disponíveis
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex -space-x-1">
-                      {INGREDIENTES_POPULARES.slice(0, 3).map((ingrediente) => (
-                        <div 
-                          key={ingrediente.name}
-                          className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800"
-                        >
-                          <span className="text-sm">{ingrediente.icon}</span>
-                        </div>
-                      ))}
-                      <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800">
-                        <span className="text-xs font-bold text-orange-600 dark:text-orange-400">+{INGREDIENTES_POPULARES.length - 3}</span>
-                      </div>
-                    </div>
-                    <i className="fa-solid fa-chevron-right text-gray-400 group-hover:text-orange-500 transition-colors"></i>
-                  </div>
-                </div>
-              </button>
-              {/* Busca Rápida */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <div className="relative">
-                  <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  <input
-                    type="text"
-                    value={busca}
-                    onChange={(e) => setBusca(e.target.value)}
-                    placeholder="Buscar receitas..."
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Receitas - Cards Compactos */}
-              <div ref={receitasCardRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
-                  Receitas ({receitasFiltradas.length})
-                  {ingredientes.length > 0 && (
-                    <span className="ml-2 text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-full">
-                      + {receitasFiltradas.filter(r => r.tipo === 'Sugestão IA').length} sugestões IA
-                    </span>
-                  )}
-                </h3>
-                {receitasFiltradas.length > 0 ? (
-                  <div className="space-y-3">
-                    {/* Separar sugestões IA das receitas normais */}
-                    {receitasFiltradas.filter(r => r.tipo === 'Sugestão IA').length > 0 && (
-                      <div className="border-l-4 border-purple-500 pl-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-r-lg py-2">
-                        <h4 className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-1">
-                          <i className="fa-solid fa-magic-wand-sparkles"></i>
-                          {" "}Sugestões Personalizadas da IA
-                        </h4>
-                      </div>
-                    )}
-                    
-                    {receitasFiltradas.map(receita => (
-                      <div
-                        key={receita.id}
-                        className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 text-left flex items-center"
-                        onClick={() => setReceitaSelecionada(receita)}
-                      >
-                        {/* Botão de Favorito */}
-                        <button
-                          className="mr-3 text-xl text-pink-500 hover:text-pink-600 focus:outline-none"
-                          title={isFavorito(receita.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-                          onClick={e => {
-                            e.stopPropagation();
-                            if (isFavorito(receita.id)) {
-                              removerFavorito(receita.id);
-                            } else {
-                              adicionarFavorito(receita);
-                            }
-                          }}
-                        >
-                          <i className={isFavorito(receita.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}></i>
-                        </button>
-                        <div className="flex gap-3">
-                          {/* Imagem da receita */}
-                          <div className="flex-shrink-0">
-                            {receita.imagem ? (
-                              <img 
-                                src={receita.imagem}
-                                alt={receita.nome}
-                                className="w-16 h-16 rounded-lg object-cover"
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.nextSibling.style.display = 'flex';
-                                }}
-                              />
-                            ) : null}
-                            <div className={`w-16 h-16 rounded-lg flex items-center justify-center ${
-                              !receita.imagem ? 'bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30' : 'hidden'
-                            } ${receita.tipo === 'Sugestão IA' ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30' : ''}`}>
-                              <i className={`fa-solid ${receita.tipo === 'Sugestão IA' ? 'fa-magic-wand-sparkles text-purple-600 dark:text-purple-400' : 'fa-utensils text-orange-600 dark:text-orange-400'}`}></i>
-                            </div>
-                          </div>
-                          
-                          {/* Conteúdo da receita */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2 mb-1">
-                              <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                                {receita.nome}
-                              </h4>
-                              <div className="flex items-center gap-1 text-yellow-500 flex-shrink-0">
-                                <i className="fa-solid fa-star text-xs"></i>
-                                <span className="text-xs font-medium">{receita.rating}</span>
-                              </div>
-                            </div>
-                            
-                            {/* Apresentador/Fonte */}
-                            {(receita.apresentadoPor || receita.fonte) && (
-                              <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">
-                                {receita.apresentadoPor && (
-                                  <span>👨‍🍳 {receita.apresentadoPor}</span>
-                                )}
-                                {receita.fonte && !receita.apresentadoPor && (
-                                  <span>📖 {receita.fonte}</span>
-                                )}
-                              </div>
-                            )}
-                            
-                            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                              <span className="flex items-center gap-1">
-                                <i className="fa-solid fa-clock"></i>
-                                {receita.tempo}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <i className="fa-solid fa-signal"></i>
-                                {receita.dificuldade}
-                              </span>
-                              {receita.origem && (
-                                <span className="flex items-center gap-1">
-                                  <i className="fa-solid fa-globe"></i>
-                                  {receita.origem}
-                                </span>
-                              )}
-                            </div>
-                            
-                            {/* Badges especiais */}
-                            <div className="flex items-center gap-1 mt-1">
-                              {receita.tipo === 'Sugestão IA' && (
-                                <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                                  IA
-                                </span>
-                              )}
-                              {receita.fonte === 'TheMealDB' && (
-                                <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                                  🌍 Internacional
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <i className="fa-solid fa-search text-3xl text-gray-400 mb-2"></i>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Nenhuma receita encontrada
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Aba IA Chef */}
           {abaSelecionada === 'ia' && (
             <div className="space-y-4">
@@ -653,7 +381,6 @@ export default function CozinhaIA() {
                     </p>
                   </div>
                 </div>
-                
                 {isVisitorMode && (
                   <div className="bg-orange-100 dark:bg-orange-900/20 rounded-lg p-3 border border-orange-200 dark:border-orange-600">
                     <p className="text-sm text-orange-800 dark:text-orange-200">
@@ -667,7 +394,6 @@ export default function CozinhaIA() {
                     </button>
                   </div>
                 )}
-                
                 <button
                   onClick={() => setChatAberto(true)}
                   className="w-full mt-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors duration-200"
@@ -675,7 +401,6 @@ export default function CozinhaIA() {
                   Conversar com Chef IA
                 </button>
               </div>
-
               {/* Funções IA Rápidas */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
@@ -704,7 +429,6 @@ export default function CozinhaIA() {
                       </p>
                     </div>
                   </button>
-                  
                   <button
                     onClick={() => {
                       if (isVisitorMode) {
@@ -731,7 +455,6 @@ export default function CozinhaIA() {
               </div>
             </div>
           )}
-
           {/* Aba Contribuir */}
           {abaSelecionada === 'contribuir' && (
             <div className="space-y-4">
@@ -744,7 +467,6 @@ export default function CozinhaIA() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Ajude a comunidade e ganhe créditos por receitas aprovadas!
                   </p>
-                  
                   {isVisitorMode ? (
                     <div className="bg-orange-100 dark:bg-orange-900/20 rounded-lg p-3 border border-orange-200 dark:border-orange-600 mb-4">
                       <p className="text-sm text-orange-800 dark:text-orange-200">
@@ -758,7 +480,6 @@ export default function CozinhaIA() {
                       </p>
                     </div>
                   )}
-                  
                   <button
                     onClick={() => {
                       if (isVisitorMode) {
@@ -775,7 +496,6 @@ export default function CozinhaIA() {
                   </button>
                 </div>
               </div>
-              
               {/* Info sobre créditos */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">

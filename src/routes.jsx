@@ -58,13 +58,13 @@ const Docs = withLazyLoading(() => import("./pages/Docs"), {
 });
 
 const FaxinaIA = lazy(() => import('./pages/FaxinaIA'));
-const CozinhaMinimalista = lazy(() => import('./pages/CozinhaMinimalista'));
+const CozinhaIA = lazy(() => import('./pages/CozinhaIA'));
 const MercadoIA = lazy(() => import('./pages/MercadoIA'));
 
 // Atualizar rotas para lazy loading
 const routes = [
   { path: '/faxina-ia', element: <FaxinaIA /> },
-  { path: '/cozinha-ia', element: <CozinhaMinimalista /> },
+  { path: '/cozinha-ia', element: <CozinhaIA /> },
   { path: '/mercado-ia', element: <MercadoIA /> },
 ];
 
@@ -109,7 +109,7 @@ export default function AppRoutes() {
               <Route path="/historico" element={<Historico />} />
               <Route path="/docs" element={<Docs />} />
               <Route path="/mercado-ia" element={<MercadoIA />} />
-              <Route path="/cozinha-ia" element={<CozinhaMinimalista />} />
+              <Route path="/cozinha-ia" element={<CozinhaIA />} />
               <Route path="/faxina-ia" element={<FaxinaIA />} />
               <Route path="/criar-conta" element={<SignUp />} />
               <Route path="/signup" element={<SignUp />} />
