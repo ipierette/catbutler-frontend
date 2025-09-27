@@ -1,4 +1,76 @@
 // ============================================
+// 🔍 HOOK REACT PARA BUSCA DE RECEITAS
+// ============================================
+export function useBusca() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [resultados, setResultados] = useState([]);
+  const [filtrosAtivos, setFiltrosAtivos] = useState({});
+  const [totalResultados, setTotalResultados] = useState(0);
+
+  const buscar = useCallback(async (params) => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log('🔍 Buscando receitas com parâmetros:', params);
+      const response = await apiClient.buscarReceitas(params);
+      if (response.success) {
+        setResultados(response.data.receitas);
+        setFiltrosAtivos(response.data.filtros);
+        setTotalResultados(response.data.total);
+        console.log(`✅ ${response.data.total} resultados encontrados`);
+      } else {
+        throw new Error(response.error || 'Erro na busca');
+      }
+    } catch (err) {
+      setError(err.message || 'Erro ao buscar receitas');
+      console.error('❌ Erro na busca:', err);
+      setResultados([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const buscarPorNome = useCallback((nome, limit = 12) => {
+    return buscar({ query: nome, limit });
+  }, [buscar]);
+
+  const buscarPorIngrediente = useCallback((ingrediente, limit = 12) => {
+    return buscar({ ingrediente, limit });
+  }, [buscar]);
+
+  const buscarPorCategoria = useCallback((categoria, limit = 12) => {
+    return buscar({ categoria, limit });
+  }, [buscar]);
+
+  const receitasAleatorias = useCallback((limit = 8) => {
+    return buscar({ limit });
+  }, [buscar]);
+
+  const limparResultados = useCallback(() => {
+    setResultados([]);
+    setFiltrosAtivos({});
+    setTotalResultados(0);
+    setError(null);
+  }, []);
+
+  return {
+    // Estado
+    loading,
+    error,
+    resultados,
+    filtrosAtivos,
+    totalResultados,
+    // Ações
+    buscar,
+    buscarPorNome,
+    buscarPorIngrediente,
+    buscarPorCategoria,
+    receitasAleatorias,
+    limparResultados
+  };
+}
+// ============================================
 // 🥄 HOOK REACT PARA SUGESTÕES
 // ============================================
 
@@ -91,117 +163,7 @@ export function useSugestoes() {
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
 // ============================================
-// 🔧 CONFIGURAÇÃO E CONSTANTES
-// ============================================
-
-// Configuração da API
-const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL 
-    ? `${import.meta.env.VITE_API_URL}/kitchen`
-    : import.meta.env.MODE === 'production' 
-      ? 'https://catbutler-backend-56xkta02t-izadora-cury-pierettes-projects.vercel.app/api/kitchen'
-      : 'http://localhost:3000/api/kitchen',
-  TIMEOUT: 30000,
-  RETRY_ATTEMPTS: 3
-};
-
-// Debug: Log da URL sendo usada
-console.log('🔧 CozinhaIA API Config:', {
-  mode: import.meta.env.MODE,
-  baseURL: API_CONFIG.BASE_URL,
-  timestamp: new Date().toISOString()
-});
-
-// ============================================
-// 🌐 CLIENTE HTTP PROFISSIONAL
-// ============================================
-
-class CozinhaAPIClient {
-}
-
-// Removido hook de favoritos e referências
-// (definição duplicada removida)
-// Fim do arquivo. Favoritos removidos.
-
-// ============================================
-// 🔍 HOOK REACT PARA BUSCA
-// ============================================
-
-export function useBusca() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [resultados, setResultados] = useState([]);
-  const [filtrosAtivos, setFiltrosAtivos] = useState({});
-  const [totalResultados, setTotalResultados] = useState(0);
-
-  const buscar = useCallback(async (params) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      console.log('🔍 Buscando receitas com parâmetros:', params);
-      
-      const response = await apiClient.buscarReceitas(params);
-      
-      if (response.success) {
-        setResultados(response.data.receitas);
-        setFiltrosAtivos(response.data.filtros);
-        setTotalResultados(response.data.total);
-        
-        console.log(`✅ ${response.data.total} resultados encontrados`);
-      } else {
-        throw new Error(response.error || 'Erro na busca');
-      }
-      
-    } catch (err) {
-      setError(err.message || 'Erro ao buscar receitas');
-      console.error('❌ Erro na busca:', err);
-      setResultados([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const buscarPorNome = useCallback((nome, limit = 12) => {
-    return buscar({ query: nome, limit });
-  }, [buscar]);
-
-  const buscarPorIngrediente = useCallback((ingrediente, limit = 12) => {
-    return buscar({ ingrediente, limit });
-  }, [buscar]);
-
-  const buscarPorCategoria = useCallback((categoria, limit = 12) => {
-    return buscar({ categoria, limit });
-  }, [buscar]);
-
-  const receitasAleatorias = useCallback((limit = 8) => {
-    return buscar({ limit });
-  }, [buscar]);
-
-  const limparResultados = useCallback(() => {
-    setResultados([]);
-    setFiltrosAtivos({});
-    setTotalResultados(0);
-    setError(null);
-  }, []);
-
-  return {
-    // Estado
-    loading,
-    error,
-    resultados,
-    filtrosAtivos,
-    totalResultados,
-    
-    // Ações
-    buscar,
-    buscarPorNome,
-    buscarPorIngrediente,
-    buscarPorCategoria,
-    receitasAleatorias,
-    limparResultados
-  };
-}
+// Favoritos removidos: hook e referências eliminados.
 
 // ============================================
 // 🤖 HOOK REACT PARA CHAT

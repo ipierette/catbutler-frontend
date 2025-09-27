@@ -138,7 +138,7 @@ export default function CozinhaIA() {
   const [modalIngredientes, setModalIngredientes] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [chatAberto, setChatAberto] = useState(false);
-  const [abaSelecionada, setAbaSelecionada] = useState('buscar'); // CORREÇÃO: Adicionar estado da aba
+  const [abaSelecionada, setAbaSelecionada] = useState('ia'); // CORREÇÃO: Inicializar na aba IA Chef
   
   // Estados para TheMealDB
   const [receitasTheMealDB, setReceitasTheMealDB] = useState([]);
