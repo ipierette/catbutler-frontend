@@ -272,9 +272,20 @@ export const getUserProfile = async () => {
         
         // Tentar criar no banco, se falhar, usar localStorage
         try {
+          // Only send valid columns
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
-            .insert([newProfile])
+            .insert([{
+              id: newProfile.id,
+              display_name: newProfile.display_name,
+              first_name: newProfile.first_name,
+              last_name: newProfile.last_name,
+              avatar_url: newProfile.avatar_url,
+              theme: newProfile.theme,
+              auto_theme_change: newProfile.auto_theme_change,
+              preferences: newProfile.preferences,
+              endereco: newProfile.endereco
+            }])
             .select()
             .single();
             
@@ -339,12 +350,14 @@ export const updateUserProfile = async (userId, profileData) => {
       .from('profiles')
       .update({
         display_name: profileData.display_name,
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
         avatar_url: profileData.avatar_url,
-        endereco: profileData.endereco,
+        theme: profileData.theme,
         auto_theme_change: profileData.auto_theme_change,
         preferences: profileData.preferences,
-        updated_at: new Date().toISOString(),
-        ...profileData
+        endereco: profileData.endereco,
+        updated_at: new Date().toISOString()
       })
       .eq('id', userId)
       .select()
