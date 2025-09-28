@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useFavoritos } from '../hooks/useCozinhaIA';
+
 import { useAuth } from '../contexts/AuthContext';
 
 const TesteFavoritos = () => {
-  const { favoritos, loading, error, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
+
   const { isAuthenticated, user } = useAuth();
   const [testResults, setTestResults] = useState(null);
   const [testLoading, setTestLoading] = useState(false);

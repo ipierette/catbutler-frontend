@@ -36,28 +36,28 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <CreditsProvider>
-          <NotificationsProvider>
-            <CreditRewardsManager />
-            <ThemeProvider>
-              <ToastProvider>
-                <ConfirmationProvider>
-                <CustomBackground />
-                <BrowserRouter
-                  future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true
-                  }}
-                >
-                  <AppRoutes />
-                </BrowserRouter>
-              </ConfirmationProvider>
-            </ToastProvider>
-          </ThemeProvider>
-          </NotificationsProvider>
-        </CreditsProvider>
-      </AuthProvider>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
+        <AuthProvider>
+          <CreditsProvider>
+            <NotificationsProvider>
+              <CreditRewardsManager />
+              <ThemeProvider>
+                <ToastProvider>
+                  <ConfirmationProvider>
+                    <CustomBackground />
+                    <AppRoutes />
+                  </ConfirmationProvider>
+                </ToastProvider>
+              </ThemeProvider>
+            </NotificationsProvider>
+          </CreditsProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
 import useCozinhaIA from '../hooks/useCozinhaIA';
-import { useFavoritos } from '../hooks/useCozinhaIA';
+
 
 // ============================================
 // 🍳 THEMEALDB API INTEGRATION
@@ -125,7 +125,7 @@ export default function CozinhaIA() {
   
   // Integração com o backend via hook personalizado
   const cozinhaIA = useCozinhaIA(isVisitorMode);
-  const { isFavorito, adicionarFavorito, removerFavorito } = useFavoritos();
+
   
   // Referência para o card de receitas
   const receitasCardRef = useRef(null);

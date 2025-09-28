@@ -39,12 +39,7 @@ export const useAuth = () => {
 
 // Provider de autenticação
 export function AuthProvider({ children }) {
-  let navigate;
-  try {
-    navigate = useNavigate();
-  } catch (e) {
-    navigate = null;
-  }
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -475,7 +470,7 @@ export function AuthProvider({ children }) {
           setTimeout(() => {
             try {
               navigate('/');
-            } catch (e) {
+            } catch {
               window.location.href = '/';
             }
           }, 1000);

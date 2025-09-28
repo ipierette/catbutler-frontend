@@ -264,14 +264,17 @@ export const getUserProfile = async () => {
           first_name: session.user.user_metadata?.first_name || session.user.email?.split('@')[0] || 'Usuário',
           last_name: session.user.user_metadata?.last_name || '',
           avatar_url: 'axel',
-          theme: 'auto'
+          theme: 'auto',
+          auto_theme_change: false,
+          preferences: '{}',
+          endereco: ''
         };
         
         // Tentar criar no banco, se falhar, usar localStorage
         try {
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
-            .insert(newProfile)
+            .insert([newProfile])
             .select()
             .single();
             
