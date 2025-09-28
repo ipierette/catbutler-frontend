@@ -509,12 +509,14 @@ export function AuthProvider({ children }) {
     profile,
     loading,
     isVisitorMode,
-    
+
     // Funções de autenticação
     login,
     logout,
     updateProfile,
-    
+    initializeAuth,
+    loadUserProfile, // Expose for callback usage
+
     // Funções de utilidade
     isAuthenticated,
     getDisplayName,
@@ -524,7 +526,7 @@ export function AuthProvider({ children }) {
     availableAvatars,
   // Remover funções das dependências para evitar loops infinitos
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [user, profile, loading, isVisitorMode, login, logout, updateProfile, isAuthenticated, updateUserSettings]);
+  }), [user, profile, loading, isVisitorMode, login, logout, updateProfile, initializeAuth, loadUserProfile, isAuthenticated, updateUserSettings]);
 
   return (
     <AuthContext.Provider value={value}>

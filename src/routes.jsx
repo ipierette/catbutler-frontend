@@ -73,8 +73,12 @@ const SignUp = withLazyLoading(() => import("./pages/SignUp"), {
   description: "Preparando formulário de registro" 
 });
 
+
 // Login com import direto para evitar problemas no Vercel
 const Login = lazy(() => import("./pages/Login"));
+
+// AuthCallback page for OAuth redirect
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 
 const NotFound = withLazyLoading(() => import("./pages/NotFound"), { 
   title: "Carregando...", 
@@ -116,6 +120,11 @@ export default function AppRoutes() {
               <Route path="/login" element={
                 <Suspense fallback={<Loading />}>
                   <Login />
+                </Suspense>
+              } />
+              <Route path="/auth/callback" element={
+                <Suspense fallback={<Loading />}>
+                  <AuthCallback />
                 </Suspense>
               } />
               <Route path="*" element={<NotFound />} />
