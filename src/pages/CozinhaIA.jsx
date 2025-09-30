@@ -140,8 +140,6 @@ export default function CozinhaIA() {
   const [chatAberto, setChatAberto] = useState(false);
   const [abaSelecionada, setAbaSelecionada] = useState('ia'); // CORREÇÃO: Inicializar na aba IA Chef
   
-  // Estados para TheMealDB
-  const [receitasTheMealDB, setReceitasTheMealDB] = useState([]);
 
   // Função para scroll automático ao card de receitas
   const scrollToReceitas = useCallback(() => {
@@ -190,40 +188,10 @@ export default function CozinhaIA() {
   }, [busca, buscarReceitas]);
 
   // Buscar receitas TheMealDB quando ingredientes mudam
-  useEffect(() => {
-    const buscarReceitasTheMealDB = async () => {
-      if (ingredientes.length > 0) {
-        try {
-          // Buscar receitas para o primeiro ingrediente (TheMealDB aceita apenas 1 por vez)
-          const ingredientePrincipal = ingredientes[0];
-          const mealsData = await TheMealDBAPI.buscarPorIngrediente(ingredientePrincipal);
-          
-          // Limitar a 6 receitas e formatar
-          const receitasFormatadas = await Promise.all(
-            mealsData.slice(0, 6).map(async (meal) => {
-              const detalhes = await TheMealDBAPI.obterDetalhesReceita(meal.idMeal);
-              return TheMealDBAPI.formatarReceita(detalhes);
-            })
-          );
-          
-          setReceitasTheMealDB(receitasFormatadas.filter(Boolean));
-          console.log('🍳 Receitas TheMealDB carregadas:', receitasFormatadas.length);
-        } catch (error) {
-          console.error('❌ Erro ao buscar receitas TheMealDB:', error);
-          setReceitasTheMealDB([]);
-        }
-      } else {
-        setReceitasTheMealDB([]);
-      }
-    };
-
-    buscarReceitasTheMealDB();
-  }, [ingredientes]);
 
   // Receitas filtradas combinando backend e fallback estático
   const receitasFiltradas = useMemo(() => {
     let receitas = [];
-    
     // 1. Priorizar dados do backend (busca específica)
     if (busca && resultadosBusca.length > 0) {
       receitas = [...resultadosBusca];
@@ -232,14 +200,9 @@ export default function CozinhaIA() {
     else if (ingredientes.length > 0 && sugestoes.length > 0) {
       receitas = [...sugestoes];
     } 
-    // 3. Receitas do TheMealDB baseadas em ingredientes
-    else if (ingredientes.length > 0 && receitasTheMealDB.length > 0) {
-      receitas = [...receitasTheMealDB];
-    } 
-    // 4. Fallback para dados estáticos
+    // 3. Fallback para dados estáticos
     else {
       receitas = [...RECEITAS_EXEMPLO];
-      
       // Filtrar por ingredientes selecionados localmente
       if (ingredientes.length > 0) {
         receitas = receitas.filter(receita =>
@@ -251,7 +214,6 @@ export default function CozinhaIA() {
           )
         );
       }
-      
       // Filtrar por busca localmente
       if (busca) {
         receitas = receitas.filter(receita =>
@@ -259,9 +221,17 @@ export default function CozinhaIA() {
         );
       }
     }
-    
     return receitas;
-  }, [ingredientes, sugestoes, resultadosBusca, busca, receitasTheMealDB]);
+  }, [ingredientes, sugestoes, resultadosBusca, busca]);
+  // Ref para auto-scroll do chat
+  const chatScrollRef = useRef(null);
+
+  // Auto-scroll para a última mensagem do chat
+  useEffect(() => {
+    if (chatAberto && chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [conversas, chatAberto]);
 
   // Handlers integrados com o backend
   const toggleIngrediente = useCallback((ingrediente) => {
@@ -274,15 +244,6 @@ export default function CozinhaIA() {
     }
   }, [ingredientes, adicionarIngrediente, removerIngrediente, scrollToReceitas]);
 
-  const adicionarIngredientePersonalizado = useCallback(() => {
-    const ingrediente = ingredientePersonalizado.trim();
-    if (ingrediente && !ingredientes.includes(ingrediente)) {
-      adicionarIngrediente(ingrediente);
-      setIngredientePersonalizado("");
-      // Fazer scroll automático para o card de receitas após adicionar ingrediente
-      setTimeout(() => scrollToReceitas(), 300);
-    }
-  }, [ingredientePersonalizado, ingredientes, adicionarIngrediente, scrollToReceitas]);
 
   const enviarMensagem = useCallback(async () => {
     if (!mensagem.trim()) return;
@@ -547,7 +508,7 @@ export default function CozinhaIA() {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              <div className="flex-1 p-6 overflow-y-auto space-y-4" ref={chatScrollRef}>
                 {/* Banner de aviso para visitantes */}
                 {isVisitorMode && conversas.length === 0 && (
                   <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-600 rounded-lg p-4 mb-4">
