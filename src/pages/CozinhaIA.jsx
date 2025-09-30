@@ -229,7 +229,12 @@ export default function CozinhaIA() {
   // Auto-scroll para a última mensagem do chat
   useEffect(() => {
     if (chatAberto && chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      // Garante que o scroll ocorra após o DOM atualizar
+      setTimeout(() => {
+        if (chatScrollRef.current) {
+          chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+        }
+      }, 50);
     }
   }, [conversas, chatAberto]);
 
@@ -286,7 +291,7 @@ export default function CozinhaIA() {
                 </div>
                 <div>
                   <h1 className="font-bold text-gray-900 dark:text-white">Cozinha IA</h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Receitas personalizadas &#9888; Utilizamos API internacional gratuida de receitas e para facilitar a commpreensão dos usuários pedimos a API do gemini para traduzir, o processo pode demorar alguns minutos</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400"> A base do banco de dados está sendo construída com receitas criadas através de modelo de IA, a IA não gera imagens por isso agradecemos a todos os usuárias(os) que puderem compartilhar fotos!</p>
                 </div>
               </div>
               <button
