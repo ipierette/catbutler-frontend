@@ -24,6 +24,10 @@ export default function CozinhaIA() {
   const cardapioBoxRef = useRef(null);
   const chatScrollRef = useRef(null);
   const { cardapioSemanal, loadingCardapio, erroCardapio, gerarCardapioSemanal, chat } = cozinhaIA;
+
+  // Ingredientes indesejados para filtro do cardápio semanal
+  const [ingredientesIndesejados, setIngredientesIndesejados] = useState('');
+  const [ingredientesLista, setIngredientesLista] = useState([]);
   const conversas = React.useMemo(() => chat?.conversa || [], [chat?.conversa]);
 
   // Auto-scroll para a última mensagem do chat
@@ -117,16 +121,57 @@ export default function CozinhaIA() {
               <i className="fa-solid fa-plus-circle text-orange-600 dark:text-orange-400"></i>
               <span className="font-medium text-orange-700 dark:text-orange-300">Enviar Receita Própria</span>
             </button>
-            <button
-              onClick={() => {
-                gerarCardapioSemanal();
-                setMostrarCardapio(true);
-              }}
-              className="flex-1 px-4 py-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center gap-3 border border-blue-200 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800 transition-all"
-            >
-              <i className="fa-solid fa-calendar-week text-blue-600 dark:text-blue-400"></i>
-              <span className="font-medium text-blue-700 dark:text-blue-300">Gerar Cardápio Semanal</span>
-            </button>
+            <div className="flex-1 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={ingredientesIndesejados}
+                  onChange={e => setIngredientesIndesejados(e.target.value)}
+                  placeholder="Ex: peixe, ovo, pimentão"
+                  className="flex-1 px-3 py-2 border border-blue-200 dark:border-blue-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && ingredientesIndesejados.trim()) {
+                      setIngredientesLista(arr => [...arr, ...ingredientesIndesejados.split(',').map(i => i.trim()).filter(Boolean)]);
+                      setIngredientesIndesejados('');
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm"
+                  onClick={() => {
+                    if (ingredientesIndesejados.trim()) {
+                      setIngredientesLista(arr => [...arr, ...ingredientesIndesejados.split(',').map(i => i.trim()).filter(Boolean)]);
+                      setIngredientesIndesejados('');
+                    }
+                  }}
+                >
+                  Adicionar
+                </button>
+              </div>
+              {ingredientesLista.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {ingredientesLista.map((ing, idx) => (
+                    <span key={ing+idx} className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-full text-xs flex items-center gap-1">
+                      {ing}
+                      <button type="button" className="ml-1 text-blue-400 hover:text-blue-700 dark:hover:text-blue-100" onClick={() => setIngredientesLista(arr => arr.filter((_, i) => i !== idx))}>
+                        <i className="fa-solid fa-xmark text-xs"></i>
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <button
+                onClick={async () => {
+                  await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
+                  setMostrarCardapio(true);
+                }}
+                className="w-full px-4 py-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center gap-3 border border-blue-200 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800 transition-all justify-center mt-1"
+              >
+                <i className="fa-solid fa-calendar-week text-blue-600 dark:text-blue-400"></i>
+                <span className="font-medium text-blue-700 dark:text-blue-300">Gerar Cardápio Semanal</span>
+              </button>
+            </div>
             <button
               onClick={() => setModalFeedback(true)}
               className="flex-1 px-4 py-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center gap-3 border border-purple-200 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-800 transition-all"
