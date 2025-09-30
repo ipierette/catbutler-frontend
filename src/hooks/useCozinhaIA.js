@@ -10,6 +10,11 @@ const API_CONFIG = {
 };
 
 class CozinhaAPIClient {
+  async gerarCardapioSemanal() {
+    return this.makeRequest(`/weekly-menu`, {
+      method: 'POST'
+    });
+  }
   constructor() {
     this.baseURL = API_CONFIG.BASE_URL;
     this.timeout = API_CONFIG.TIMEOUT;
@@ -367,6 +372,29 @@ export function useCozinhaIA(isVisitorMode = false) {
   const busca = useBusca();
   const chat = useChefChat(isVisitorMode);
 
+  // Cardápio semanal
+  const [cardapioSemanal, setCardapioSemanal] = useState(null);
+  const [loadingCardapio, setLoadingCardapio] = useState(false);
+  const [erroCardapio, setErroCardapio] = useState(null);
+
+  const gerarCardapioSemanal = useCallback(async () => {
+    setLoadingCardapio(true);
+    setErroCardapio(null);
+    try {
+      const response = await apiClient.gerarCardapioSemanal();
+      if (response.success) {
+        setCardapioSemanal(response.cardapio);
+      } else {
+        throw new Error(response.error || 'Erro ao gerar cardápio semanal');
+      }
+    } catch (err) {
+      setErroCardapio(err.message || 'Erro ao gerar cardápio semanal');
+      setCardapioSemanal(null);
+    } finally {
+      setLoadingCardapio(false);
+    }
+  }, []);
+
   // Estado global da aplicação
   const [abaSelecionada, setAbaSelecionada] = useState('sugestoes');
   const [ingredientesSelecionados, setIngredientesSelecionados] = useState([]);
@@ -419,6 +447,12 @@ export function useCozinhaIA(isVisitorMode = false) {
     sugestoes,
     busca,
     chat,
+
+    // Cardápio semanal
+    cardapioSemanal,
+    loadingCardapio,
+    erroCardapio,
+    gerarCardapioSemanal,
 
     // Estado global
     abaSelecionada,

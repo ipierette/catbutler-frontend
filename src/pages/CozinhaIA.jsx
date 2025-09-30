@@ -126,6 +126,37 @@ export default function CozinhaIA() {
   // Integração com o backend via hook personalizado
   const cozinhaIA = useCozinhaIA(isVisitorMode);
 
+  // Cardápio semanal modal/box
+  const [mostrarCardapio, setMostrarCardapio] = useState(false);
+  const cardapioBoxRef = useRef(null);
+  const {
+    cardapioSemanal,
+    loadingCardapio,
+    erroCardapio,
+    gerarCardapioSemanal
+  } = cozinhaIA;
+
+  // Função para copiar cardápio
+  const copiarCardapio = () => {
+    if (cardapioSemanal) {
+      navigator.clipboard.writeText(cardapioSemanal + '\n\nFeito com IA no CatButler.com.br 🐾');
+      alert('Cardápio copiado!');
+    }
+  };
+
+  // Função para compartilhar (Web Share API)
+  const compartilharCardapio = () => {
+    if (navigator.share && cardapioSemanal) {
+      navigator.share({
+        title: 'Cardápio Semanal - CatButler',
+        text: cardapioSemanal + '\n\nFeito com IA no CatButler.com.br 🐾',
+        url: 'https://catbutler.com.br'
+      });
+    } else {
+      copiarCardapio();
+    }
+  };
+
   
   // Referência para o card de receitas
   const receitasCardRef = useRef(null);
@@ -374,13 +405,95 @@ export default function CozinhaIA() {
                 </h3>
                 <div className="grid grid-cols-1 gap-3">
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (isVisitorMode) {
                         alert('Crie uma conta para usar funções de IA!');
                       } else {
-                        // Lógica para cardápio semanal
+                        gerarCardapioSemanal();
+                        setMostrarCardapio(true);
                       }
                     }}
+
+      {/* Modal/Card para exibir o cardápio semanal gerado */}
+      {mostrarCardapio && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div ref={cardapioBoxRef} className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 max-w-lg w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              onClick={() => setMostrarCardapio(false)}
+            >
+              <i className="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 className="font-bold text-lg mb-2 text-center text-emerald-600 dark:text-emerald-400">Cardápio Semanal</h3>
+            {loadingCardapio && (
+              <div className="text-center py-6">
+                <i className="fa-solid fa-spinner fa-spin text-2xl text-emerald-500"></i>
+                <p className="mt-2 text-gray-500">Gerando cardápio...</p>
+              </div>
+            )}
+            {erroCardapio && (
+              <div className="text-center text-red-500 py-4">{erroCardapio}</div>
+            )}
+            {cardapioSemanal && !loadingCardapio && !erroCardapio && (
+              <>
+                <pre className="whitespace-pre-wrap text-sm bg-gray-50 dark:bg-gray-800 rounded p-3 mb-4 max-h-96 overflow-auto border border-gray-200 dark:border-gray-700">{cardapioSemanal}</pre>
+                <div className="flex gap-2 justify-center">
+                  <button onClick={() => {
+                    navigator.clipboard.writeText(cardapioSemanal + '\n\nFeito com IA no CatButler.com.br 🐾');
+                    alert('Cardápio copiado!');
+                  }} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm flex items-center gap-2"><i className="fa-solid fa-copy"></i> Copiar</button>
+                  <button onClick={() => {
+                    if (navigator.share && cardapioSemanal) {
+                      navigator.share({
+                        title: 'Cardápio Semanal - CatButler',
+                        text: cardapioSemanal + '\n\nFeito com IA no CatButler.com.br 🐾',
+                        url: 'https://catbutler.com.br'
+                      });
+                    } else {
+                      navigator.clipboard.writeText(cardapioSemanal + '\n\nFeito com IA no CatButler.com.br 🐾');
+                      alert('Cardápio copiado!');
+                    }
+                  }} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm flex items-center gap-2"><i className="fa-solid fa-share-nodes"></i> Compartilhar</button>
+                </div>
+                <p className="text-xs text-center text-gray-400 mt-3">Feito com IA no <a href="https://catbutler.com.br" className="underline hover:text-emerald-600">CatButler.com.br</a> 🐾</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      {/* Modal/Card para exibir o cardápio semanal gerado */}
+      {mostrarCardapio && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div ref={cardapioBoxRef} className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 max-w-lg w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              onClick={() => setMostrarCardapio(false)}
+            >
+              <i className="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 className="font-bold text-lg mb-2 text-center text-emerald-600 dark:text-emerald-400">Cardápio Semanal</h3>
+            {loadingCardapio && (
+              <div className="text-center py-6">
+                <i className="fa-solid fa-spinner fa-spin text-2xl text-emerald-500"></i>
+                <p className="mt-2 text-gray-500">Gerando cardápio...</p>
+              </div>
+            )}
+            {erroCardapio && (
+              <div className="text-center text-red-500 py-4">{erroCardapio}</div>
+            )}
+            {cardapioSemanal && !loadingCardapio && !erroCardapio && (
+              <>
+                <pre className="whitespace-pre-wrap text-sm bg-gray-50 dark:bg-gray-800 rounded p-3 mb-4 max-h-96 overflow-auto border border-gray-200 dark:border-gray-700">{cardapioSemanal}</pre>
+                <div className="flex gap-2 justify-center">
+                  <button onClick={copiarCardapio} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm flex items-center gap-2"><i className="fa-solid fa-copy"></i> Copiar</button>
+                  <button onClick={compartilharCardapio} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm flex items-center gap-2"><i className="fa-solid fa-share-nodes"></i> Compartilhar</button>
+                </div>
+                <p className="text-xs text-center text-gray-400 mt-3">Feito com IA no <a href="https://catbutler.com.br" className="underline hover:text-emerald-600">CatButler.com.br</a> 🐾</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
                     className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200"
                   >
                     <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
