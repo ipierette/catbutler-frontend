@@ -96,7 +96,7 @@ export default function CozinhaIA() {
               </div>
               <div>
                 <h1 className="font-bold text-gray-900 dark:text-white">Cozinha IA</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Receitas e cardápios gerados por IA. Compartilhe suas receitas e fotos!</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Receitas e cardápios gerados por IA Gratuita, pode demorar alguns minutos!!. Compartilhe suas receitas e fotos!</p>
               </div>
             </div>
             <button
@@ -166,10 +166,23 @@ export default function CozinhaIA() {
                   await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
                   setMostrarCardapio(true);
                 }}
-                className="w-full px-4 py-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center gap-3 border border-blue-200 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800 transition-all justify-center mt-1"
+                className="w-full px-4 py-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center gap-3 border border-blue-200 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800 transition-all justify-center mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={loadingCardapio}
               >
-                <i className="fa-solid fa-calendar-week text-blue-600 dark:text-blue-400"></i>
-                <span className="font-medium text-blue-700 dark:text-blue-300">Gerar Cardápio Semanal</span>
+                {loadingCardapio ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                    <span className="ml-2 font-medium text-blue-700 dark:text-blue-300">Gerando cardápio...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-calendar-week text-blue-600 dark:text-blue-400"></i>
+                    <span className="font-medium text-blue-700 dark:text-blue-300">Gerar Cardápio Semanal</span>
+                  </>
+                )}
               </button>
             </div>
             <button
