@@ -115,8 +115,6 @@ export default function CozinhaIA() {
             </div>
           </div>
 
-          {/* Funções rápidas */}
-          <div className="space-y-4">
           {/* Grid de Funcionalidades */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             
@@ -136,17 +134,18 @@ export default function CozinhaIA() {
               <div className="mb-3">
                 <div className="flex items-center gap-2 mb-2">
                   <i className="fa-solid fa-ban text-red-500"></i>
-                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">Ingredientes/Pratos a Excluir</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">Exclusões Personalizadas</h3>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                  Liste ingredientes ou pratos que você NÃO quer no cardápio semanal
+                  <strong>Ingredientes:</strong> peixe, ovo, leite<br/>
+                  <strong>Pratos inteiros:</strong> lasanha, feijoada, sushi
                 </p>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={ingredientesIndesejados}
                     onChange={e => setIngredientesIndesejados(e.target.value)}
-                    placeholder="Ex: peixe, ovo, pimentão"
+                    placeholder="Ex: peixe, lasanha, ovo, feijoada"
                     className="flex-1 px-3 py-2 border border-red-200 dark:border-red-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     onKeyDown={e => {
                       if (e.key === 'Enter' && ingredientesIndesejados.trim()) {
