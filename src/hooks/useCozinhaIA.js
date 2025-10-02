@@ -382,6 +382,33 @@ export function useCozinhaIA(isVisitorMode = false) {
   const [estatisticasCardapio, setEstatisticasCardapio] = useState(null);
   const [loadingCardapio, setLoadingCardapio] = useState(false);
   const [erroCardapio, setErroCardapio] = useState(null);
+  const [podeGerar, setPodeGerar] = useState(true);
+  const [proximaGeracao, setProximaGeracao] = useState(null);
+  const [versaoAtual, setVersaoAtual] = useState(1);
+
+  // Verificar se pode gerar cardápio esta semana
+  const verificarCardapioSemanal = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/weekly-menu?userId=${user.id}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setPodeGerar(data.canGenerate);
+        setProximaGeracao(data.nextAvailable);
+        
+        // Se já tem cardápio desta semana, carregar
+        if (!data.canGenerate && data.existingMenu) {
+          setCardapioSemanal(data.existingMenu.cardapio_atual);
+          setEstatisticasCardapio(data.existingMenu.estatisticas);
+          setVersaoAtual(data.existingMenu.versao);
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao verificar cardápio semanal:', err);
+    }
+  }, [user]);
 
   const gerarCardapioSemanal = useCallback(async (opcoes = {}) => {
     setLoadingCardapio(true);
@@ -397,6 +424,12 @@ export function useCozinhaIA(isVisitorMode = false) {
       if (response.success) {
         setCardapioSemanal(response.cardapio);
         setEstatisticasCardapio(response.estatisticas);
+        setVersaoAtual(response.version || 1);
+        
+        // Atualizar estado de geração
+        if (response.isNew) {
+          setPodeGerar(false);
+        }
       } else {
         throw new Error(response.error || 'Erro ao gerar cardápio semanal');
       }
@@ -408,6 +441,38 @@ export function useCozinhaIA(isVisitorMode = false) {
       setLoadingCardapio(false);
     }
   }, [user]);
+
+  // Salvar edição manual
+  const salvarEdicaoCardapio = useCallback(async (cardapioEditado, ingredientesExcluidos = []) => {
+    if (!user?.id) return { success: false, error: 'Usuário não autenticado' };
+
+    try {
+      const response = await apiClient.gerarCardapioSemanal({
+        userId: user.id,
+        isEdit: true,
+        cardapioEditado,
+        ingredientesProibidos: ingredientesExcluidos
+      });
+
+      if (response.success) {
+        // Atualizar estado local com versão editada
+        setCardapioSemanal(cardapioEditado);
+        setVersaoAtual(response.version || versaoAtual + 1);
+        return { success: true, version: response.version };
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, [user, versaoAtual]);
+
+  // Verificar cardápio ao carregar
+  useEffect(() => {
+    if (user?.id) {
+      verificarCardapioSemanal();
+    }
+  }, [user, verificarCardapioSemanal]);
 
   // Estado global da aplicação
   const [abaSelecionada, setAbaSelecionada] = useState('sugestoes');
@@ -468,6 +533,11 @@ export function useCozinhaIA(isVisitorMode = false) {
     loadingCardapio,
     erroCardapio,
     gerarCardapioSemanal,
+    salvarEdicaoCardapio,
+    verificarCardapioSemanal,
+    podeGerar,
+    proximaGeracao,
+    versaoAtual,
 
     // Estado global
     abaSelecionada,

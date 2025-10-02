@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
 import useCozinhaIA from '../hooks/useCozinhaIA';
 import useCardapioHistory from '../hooks/useCardapioHistory';
+import useSmartTips from '../hooks/useSmartTips';
+import SmartTipCard from '../components/SmartTipCard';
 
 // ...existing code...
 
@@ -16,6 +18,8 @@ export default function CozinhaIA() {
   
   // Hook para histórico e analytics
   const cardapioHistory = useCardapioHistory();
+  
+  // Hook para dicas inteligentes contextuais (usado no SmartTipCard)
 
   // Cardápio semanal modal/box
   const [mostrarCardapio, setMostrarCardapio] = useState(false);
@@ -25,11 +29,25 @@ export default function CozinhaIA() {
   const [modalFeedback, setModalFeedback] = useState(false);
   const [modalHistorico, setModalHistorico] = useState(false);
   const [modalAnalytics, setModalAnalytics] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [cardapioEditado, setCardapioEditado] = useState('');
+  const [alteracoesPendentes, setAlteracoesPendentes] = useState(false);
   // Removido imagemReceita pois não é utilizado
   const [feedback, setFeedback] = useState('');
   const cardapioBoxRef = useRef(null);
   const chatScrollRef = useRef(null);
-  const { cardapioSemanal, estatisticasCardapio, loadingCardapio, erroCardapio, gerarCardapioSemanal, chat } = cozinhaIA;
+  const { 
+    cardapioSemanal, 
+    estatisticasCardapio, 
+    loadingCardapio, 
+    erroCardapio, 
+    gerarCardapioSemanal, 
+    salvarEdicaoCardapio,
+    podeGerar,
+    proximaGeracao,
+    versaoAtual,
+    chat 
+  } = cozinhaIA;
 
   // Ingredientes indesejados para filtro do cardápio semanal
   const [ingredientesIndesejados, setIngredientesIndesejados] = useState('');
@@ -86,6 +104,106 @@ export default function CozinhaIA() {
     setFeedback('');
     alert('Feedback enviado! Obrigado pela colaboração.');
   };
+
+  // Funções para edição manual do cardápio
+  const iniciarEdicao = () => {
+    setCardapioEditado(cardapioSemanal || '');
+    setModoEdicao(true);
+    setAlteracoesPendentes(false);
+  };
+
+  const cancelarEdicao = () => {
+    if (alteracoesPendentes) {
+      if (confirm('Você tem alterações não salvas. Deseja descartar?')) {
+        setModoEdicao(false);
+        setCardapioEditado('');
+        setAlteracoesPendentes(false);
+      }
+    } else {
+      setModoEdicao(false);
+      setCardapioEditado('');
+    }
+  };
+
+  const salvarEdicao = async () => {
+    if (!cardapioEditado.trim()) {
+      alert('Cardápio não pode estar vazio');
+      return;
+    }
+
+    try {
+      // Salvar edição usando o novo sistema
+      const resultado = await salvarEdicaoCardapio(cardapioEditado, ingredientesLista);
+      
+      if (resultado.success) {
+        alert(`Cardápio salvo com sucesso! Versão ${resultado.version} - Suas preferências foram atualizadas.`);
+        setModoEdicao(false);
+        setAlteracoesPendentes(false);
+        
+        // Recarregar analytics
+        cardapioHistory.loadStats();
+      } else {
+        alert(`Erro ao salvar: ${resultado.error}`);
+      }
+    } catch (err) {
+      alert(`Erro ao salvar: ${err.message}`);
+    }
+  };
+
+  // Função para analisar cardápio editado (versão simplificada frontend)
+  const analisarCardapioEditado = (cardapio) => {
+    const linhas = cardapio.split('\n');
+    let refeicoes = 0;
+    const dias = new Set();
+    
+    linhas.forEach(linha => {
+      const linhaNorm = linha.toLowerCase();
+      if (linhaNorm.includes('segunda') || linhaNorm.includes('terça') || 
+          linhaNorm.includes('quarta') || linhaNorm.includes('quinta') ||
+          linhaNorm.includes('sexta') || linhaNorm.includes('sábado') || 
+          linhaNorm.includes('domingo')) {
+        const dia = linhaNorm.match(/(segunda|terça|quarta|quinta|sexta|sábado|domingo)/)?.[1];
+        if (dia) dias.add(dia);
+      }
+      if (linhaNorm.includes('café') || linhaNorm.includes('almoço') || linhaNorm.includes('jantar')) {
+        refeicoes++;
+      }
+    });
+
+    return {
+      dias: dias.size,
+      refeicoes,
+      excluidos: ingredientesLista.length,
+      personalizado: 100, // Editado manualmente = 100% personalizado
+      editadoManualmente: true
+    };
+  };
+
+  // Função para extrair pratos do cardápio (versão simplificada)
+  const extrairPratosDoCardapio = (cardapio) => {
+    const pratos = [];
+    const linhas = cardapio.split('\n');
+    
+    linhas.forEach(linha => {
+      const match = linha.match(/(?:☕|🍲|🌙|Café|Almoço|Jantar).*?:\s*(.+)/i);
+      if (match && match[1]) {
+        const prato = match[1].trim().split(/[,\-()]/)[0].trim();
+        if (prato.length > 3) {
+          pratos.push(prato.toLowerCase());
+        }
+      }
+    });
+    
+    return [...new Set(pratos)];
+  };
+
+  // Detectar alterações no cardápio editado
+  useEffect(() => {
+    if (modoEdicao && cardapioEditado !== cardapioSemanal) {
+      setAlteracoesPendentes(true);
+    }
+  }, [cardapioEditado, cardapioSemanal, modoEdicao]);
+
   // Ref para auto-scroll do chat
 
   // Auto-scroll para a última mensagem do chat
@@ -268,42 +386,81 @@ export default function CozinhaIA() {
                 </div>
               </div>
               
-              <button
-                onClick={async () => {
-                  await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
+              {/* Botão de Geração ou Status Semanal */}
+              {podeGerar ? (
+                <button
+                  onClick={async () => {
+                    await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
+                    setMostrarCardapio(true);
+                  }}
+                  className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                  disabled={loadingCardapio}
+                >
+                  {loadingCardapio ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                      </svg>
+                      <span>Criando seu cardápio personalizado...</span>
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-magic-wand-sparkles text-lg"></i>
+                      <span>Gerar Cardápio Semanal com IA</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                /* Cardápio já existe esta semana */
+                <div className="space-y-3">
+                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-700 rounded-xl">
+                    <div className="flex items-center gap-3 mb-2">
+                      <i className="fa-solid fa-calendar-check text-green-600 text-lg"></i>
+                      <div>
+                        <h4 className="font-semibold text-green-800 dark:text-green-200">
+                          Cardápio da Semana Criado!
+                        </h4>
+                        <p className="text-sm text-green-700 dark:text-green-300">
+                          Versão {versaoAtual} • {cardapioSemanal ? 'Disponível para visualização' : 'Carregando...'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setMostrarCardapio(true)}
+                        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        disabled={!cardapioSemanal}
+                      >
+                        <i className="fa-solid fa-eye"></i>
+                        Ver Cardápio
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMostrarCardapio(true);
+                          setTimeout(() => iniciarEdicao(), 500);
+                        }}
+                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        disabled={!cardapioSemanal}
+                      >
+                        <i className="fa-solid fa-edit"></i>
+                        Editar
+                      </button>
+                    </div>
+                  </div>
                   
-                  // Salvar no histórico se usuário estiver logado
-                  if (!isVisitorMode && cardapioSemanal && estatisticasCardapio) {
-                    await cardapioHistory.saveCardapio({
-                      cardapio: cardapioSemanal,
-                      ingredientesExcluidos: ingredientesLista,
-                      estatisticas: estatisticasCardapio,
-                      pratos: estatisticasCardapio?.detalhes?.ingredientesUnicos || []
-                    });
-                  }
-                  
-                  setMostrarCardapio(true);
-                }}
-                className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={loadingCardapio}
-              >
-                {loadingCardapio ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg>
-                    <span>Criando seu cardápio personalizado...</span>
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-magic-wand-sparkles text-lg"></i>
-                    <span>Gerar Cardápio Semanal com IA</span>
-                  </>
-                )}
-              </button>
+                  {proximaGeracao && (
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600 rounded-lg text-center">
+                      <p className="text-sm text-blue-800 dark:text-blue-200">
+                        <i className="fa-solid fa-calendar-plus mr-1"></i>
+                        Próximo cardápio disponível: <strong>{new Date(proximaGeracao).toLocaleDateString('pt-BR')}</strong>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
               
-              {ingredientesLista.length === 0 && (
+              {ingredientesLista.length === 0 && podeGerar && (
                 <p className="text-center text-sm text-blue-700 dark:text-blue-300 mt-3">
                   <i className="fa-solid fa-info-circle mr-1"></i>
                   Cardápio será gerado sem exclusões - máxima variedade!
@@ -457,9 +614,15 @@ export default function CozinhaIA() {
                       <i className="fa-solid fa-calendar-week text-white"></i>
                     </div>
                     <div>
-                      <h3 className="font-bold text-xl text-gray-900 dark:text-white">Cardápio Semanal</h3>
+                      <h3 className="font-bold text-xl text-gray-900 dark:text-white">
+                        Cardápio Semanal
+                        <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                          v{versaoAtual}
+                        </span>
+                      </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {ingredientesLista.length > 0 && `Excluindo: ${ingredientesLista.join(', ')}`}
+                        {ingredientesLista.length > 0 ? `Excluindo: ${ingredientesLista.join(', ')}` : 'Sem exclusões'}
+                        {versaoAtual > 1 && ' • Editado manualmente'}
                       </p>
                     </div>
                   </div>
@@ -495,16 +658,81 @@ export default function CozinhaIA() {
                   
                   {cardapioSemanal && !loadingCardapio && !erroCardapio && (
                     <div className="p-6">
-                      {/* Cardápio Formatado */}
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-700 mb-6">
-                        <div className="prose prose-sm max-w-none dark:prose-invert">
-                          <div 
-                            className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed"
-                            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-                          >
-                            {cardapioSemanal}
-                          </div>
+                      {/* Toolbar de Edição */}
+                      <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <i className="fa-solid fa-edit text-blue-500"></i>
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {modoEdicao ? 'Editando cardápio' : 'Visualizando cardápio'}
+                          </span>
+                          {alteracoesPendentes && (
+                            <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs font-medium">
+                              Alterações pendentes
+                            </span>
+                          )}
                         </div>
+                        <div className="flex items-center gap-2">
+                          {!modoEdicao ? (
+                            <button
+                              onClick={iniciarEdicao}
+                              className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
+                            >
+                              <i className="fa-solid fa-edit"></i>
+                              Editar
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={cancelarEdicao}
+                                className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm transition-colors"
+                              >
+                                Cancelar
+                              </button>
+                              <button
+                                onClick={salvarEdicao}
+                                className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
+                                disabled={!alteracoesPendentes}
+                              >
+                                <i className="fa-solid fa-save"></i>
+                                Salvar
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Cardápio - Modo Visualização ou Edição */}
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-700 mb-6">
+                        {modoEdicao ? (
+                          /* Modo Edição */
+                          <div>
+                            <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600 rounded-lg">
+                              <div className="flex items-center gap-2 mb-2">
+                                <i className="fa-solid fa-info-circle text-blue-500"></i>
+                                <span className="text-sm font-medium text-blue-800 dark:text-blue-200">Modo de Edição Ativo</span>
+                              </div>
+                              <p className="text-xs text-blue-700 dark:text-blue-300">
+                                Edite livremente o cardápio. Use o chat IA para tirar dúvidas sobre substituições antes de salvar.
+                              </p>
+                            </div>
+                            <textarea
+                              value={cardapioEditado}
+                              onChange={(e) => setCardapioEditado(e.target.value)}
+                              className="w-full h-96 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-mono text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Cole ou edite seu cardápio aqui..."
+                            />
+                          </div>
+                        ) : (
+                          /* Modo Visualização */
+                          <div className="prose prose-sm max-w-none dark:prose-invert">
+                            <div 
+                              className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed"
+                              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                            >
+                              {cardapioSemanal}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Estatísticas do Cardápio */}
@@ -574,6 +802,27 @@ export default function CozinhaIA() {
                 {/* Footer com Ações */}
                 {cardapioSemanal && !loadingCardapio && !erroCardapio && (
                   <div className="p-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50">
+                    
+                    {/* Aviso durante edição */}
+                    {modoEdicao && (
+                      <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <i className="fa-solid fa-info-circle text-blue-500"></i>
+                          <span className="text-sm font-medium text-blue-800 dark:text-blue-200">Modo de Edição Ativo</span>
+                        </div>
+                        <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">
+                          O cardápio permanece aberto para consultas. Use o <strong>Chat IA</strong> para tirar dúvidas sobre substituições antes de salvar.
+                        </p>
+                        <button
+                          onClick={() => setChatAberto(true)}
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-medium transition-colors flex items-center gap-1"
+                        >
+                          <i className="fa-solid fa-comments"></i>
+                          Consultar Chef IA
+                        </button>
+                      </div>
+                    )}
+                    
                     <div className="flex flex-wrap gap-3 justify-center">
                       <button 
                         onClick={copiarCardapio} 
@@ -591,6 +840,13 @@ export default function CozinhaIA() {
                       </button>
                       <button 
                         onClick={async () => {
+                          if (modoEdicao && alteracoesPendentes) {
+                            if (!confirm('Você tem alterações não salvas. Gerar novo cardápio irá descartá-las. Continuar?')) {
+                              return;
+                            }
+                          }
+                          setModoEdicao(false);
+                          setAlteracoesPendentes(false);
                           await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
                         }}
                         className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 hover:scale-105"
@@ -796,31 +1052,52 @@ export default function CozinhaIA() {
                 </div>
               </div>
 
-              {/* Dica em Destaque */}
-              <div className="mt-6 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg p-4">
+              {/* Tutorial de Edição de Cardápio */}
+              <div className="mt-6 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="fa-solid fa-star text-white"></i>
+                  <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i className="fa-solid fa-graduation-cap text-white"></i>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-indigo-800 dark:text-indigo-200 mb-2">💡 Dica do Chef</h4>
-                    <p className="text-sm text-indigo-700 dark:text-indigo-300 mb-3">
-                      <strong>Substituindo ovos em receitas:</strong> Para cada ovo, use 1 colher de sopa de linhaça moída + 3 colheres de água (deixe descansar 5 min). 
-                      Funciona perfeitamente em bolos, panquecas e muffins!
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-xs">
-                        #SubstituiçãoVegana
-                      </span>
-                      <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-xs">
-                        #DicaDoChef
-                      </span>
-                      <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-xs">
-                        #SemOvos
-                      </span>
+                    <h4 className="font-bold text-yellow-800 dark:text-yellow-200 mb-2">
+                      📝 Como Personalizar Seu Cardápio
+                    </h4>
+                    <div className="text-sm text-yellow-700 dark:text-yellow-300 space-y-2">
+                      <div className="flex items-start gap-2">
+                        <span className="font-bold text-yellow-600">1.</span>
+                        <span>Gere um cardápio inicial com suas exclusões</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="font-bold text-yellow-600">2.</span>
+                        <span>Clique em "Editar" para personalizar manualmente</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="font-bold text-yellow-600">3.</span>
+                        <span>Use o <strong>Chat IA</strong> para tirar dúvidas sobre substituições</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="font-bold text-yellow-600">4.</span>
+                        <span>Salve suas alterações para atualizar suas preferências</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded text-xs text-yellow-800 dark:text-yellow-200">
+                      <i className="fa-solid fa-lightbulb mr-1"></i>
+                      <strong>Dica:</strong> Cardápios editados geram analytics mais precisos das suas preferências!
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Dica Inteligente em Destaque */}
+              <div className="mt-4">
+                <SmartTipCard 
+                  categoria="cozinha"
+                  contexto={{ ingredientesExcluidos: ingredientesLista }}
+                  titulo="Dica do Chef"
+                  icone="fa-chef-hat"
+                  corPrimaria="indigo"
+                  tamanho="normal"
+                />
               </div>
             </div>
           </div>

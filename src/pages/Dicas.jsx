@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import FilterButton from '../components/ui/FilterButton';
 import VisitorModeWrapper from '../components/VisitorModeWrapper';
+import SmartTipCard from '../components/SmartTipCard';
 
 // Dados das dicas domésticas
 const dicasDomesticas = [
@@ -176,6 +177,38 @@ export default function Dicas() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Dicas Inteligentes em Destaque */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <SmartTipCard 
+            categoria="cozinha"
+            titulo="Dica de Cozinha"
+            icone="fa-utensils"
+            corPrimaria="orange"
+            tamanho="compact"
+          />
+          <SmartTipCard 
+            categoria="limpeza"
+            titulo="Dica de Limpeza"
+            icone="fa-broom"
+            corPrimaria="green"
+            tamanho="compact"
+          />
+          <SmartTipCard 
+            categoria="organização"
+            titulo="Dica de Organização"
+            icone="fa-list-check"
+            corPrimaria="purple"
+            tamanho="compact"
+          />
+          <SmartTipCard 
+            categoria="economia"
+            titulo="Dica de Economia"
+            icone="fa-piggy-bank"
+            corPrimaria="indigo"
+            tamanho="compact"
+          />
         </div>
 
         {/* Tabs */}

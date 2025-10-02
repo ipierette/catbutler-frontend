@@ -84,8 +84,18 @@ function DocumentationSection() {
           '2. Liste ingredientes ou pratos que NÃO quer (ex: ovo, lasanha)',
           '3. Clique em "Gerar Cardápio Semanal"',
           '4. Aguarde a IA criar 21 refeições únicas',
-          '5. Veja estatísticas detalhadas do cardápio',
-          '6. Copie ou compartilhe seu cardápio personalizado'
+          '5. OPCIONAL: Clique em "Editar" para personalizar manualmente',
+          '6. Use o Chat IA para tirar dúvidas sobre substituições',
+          '7. Salve suas alterações para analytics mais precisos',
+          '8. Copie ou compartilhe seu cardápio final'
+        ],
+        edicaoManual: [
+          'Clique em "Editar" no modal do cardápio gerado',
+          'Modifique pratos, ingredientes ou métodos de preparo',
+          'Consulte o Chat IA antes de salvar para dúvidas',
+          'Cardápio fica aberto para consultas durante edição',
+          'Clique em "Salvar" para confirmar alterações',
+          'Analytics são atualizados com suas preferências reais'
         ],
         exclusoes: [
           'Ingredientes: peixe, ovo, leite, glúten',
@@ -349,6 +359,35 @@ function DocumentationSection() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {/* Edição Manual (específico para CozinhaIA) */}
+                  {tutorial.conteudo.edicaoManual && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                        <i className="fa-solid fa-edit text-blue-500 mr-2"></i>
+                        Edição Manual de Cardápios
+                      </h4>
+                      <ul className="space-y-2">
+                        {tutorial.conteudo.edicaoManual.map((item, index) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <i className="fa-solid fa-pencil text-blue-500 dark:text-blue-400 mt-1 text-sm"></i>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600 rounded-lg">
+                        <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                          🎯 Benefícios da Edição Manual
+                        </h5>
+                        <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                          <li>• Analytics mais precisos das suas preferências reais</li>
+                          <li>• Cardápios 100% personalizados ao seu gosto</li>
+                          <li>• Aprendizado da IA sobre seus padrões culinários</li>
+                          <li>• Histórico detalhado de suas modificações</li>
+                        </ul>
+                      </div>
                     </div>
                   )}
 
