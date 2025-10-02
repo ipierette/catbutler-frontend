@@ -10,9 +10,10 @@ const API_CONFIG = {
 };
 
 class CozinhaAPIClient {
-  async gerarCardapioSemanal() {
+  async gerarCardapioSemanal(opcoes = {}) {
     return this.makeRequest(`/weekly-menu`, {
-      method: 'POST'
+      method: 'POST',
+      body: JSON.stringify(opcoes)
     });
   }
   constructor() {
@@ -248,6 +249,7 @@ export function useSugestoes() {
 // Sistema completo de conexão com as APIs do backend usando React hooks
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 // ============================================
 // Favoritos removidos: hook e referências eliminados.
@@ -371,29 +373,41 @@ export function useCozinhaIA(isVisitorMode = false) {
   const sugestoes = useSugestoes();
   const busca = useBusca();
   const chat = useChefChat(isVisitorMode);
+  
+  // Importar user do contexto de auth
+  const { user } = useAuth();
 
   // Cardápio semanal
   const [cardapioSemanal, setCardapioSemanal] = useState(null);
+  const [estatisticasCardapio, setEstatisticasCardapio] = useState(null);
   const [loadingCardapio, setLoadingCardapio] = useState(false);
   const [erroCardapio, setErroCardapio] = useState(null);
 
-  const gerarCardapioSemanal = useCallback(async () => {
+  const gerarCardapioSemanal = useCallback(async (opcoes = {}) => {
     setLoadingCardapio(true);
     setErroCardapio(null);
     try {
-      const response = await apiClient.gerarCardapioSemanal();
+      // Adicionar userId se usuário estiver logado
+      const opcoesCompletas = {
+        ...opcoes,
+        ...(user?.id && { userId: user.id })
+      };
+      
+      const response = await apiClient.gerarCardapioSemanal(opcoesCompletas);
       if (response.success) {
         setCardapioSemanal(response.cardapio);
+        setEstatisticasCardapio(response.estatisticas);
       } else {
         throw new Error(response.error || 'Erro ao gerar cardápio semanal');
       }
     } catch (err) {
       setErroCardapio(err.message || 'Erro ao gerar cardápio semanal');
       setCardapioSemanal(null);
+      setEstatisticasCardapio(null);
     } finally {
       setLoadingCardapio(false);
     }
-  }, []);
+  }, [user]);
 
   // Estado global da aplicação
   const [abaSelecionada, setAbaSelecionada] = useState('sugestoes');
@@ -450,6 +464,7 @@ export function useCozinhaIA(isVisitorMode = false) {
 
     // Cardápio semanal
     cardapioSemanal,
+    estatisticasCardapio,
     loadingCardapio,
     erroCardapio,
     gerarCardapioSemanal,

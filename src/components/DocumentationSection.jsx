@@ -69,26 +69,46 @@ function DocumentationSection() {
       icon: 'fa-utensils',
       color: 'orange',
       conteudo: {
-        introducao: 'Transforme ingredientes em receitas deliciosas com inteligência artificial.',
+        introducao: 'Seu chef pessoal com IA: cardápios semanais, receitas personalizadas e tutoriais culinários.',
         funcionalidades: [
-          'Receitas baseadas nos seus ingredientes',
-          'Sugestões nutricionais equilibradas',
-          'Tempo de preparo estimado',
-          'Dificuldade da receita',
-          'Dicas de preparação personalizadas'
+          'Cardápios semanais completos (21 refeições)',
+          'Exclusão inteligente de ingredientes e pratos',
+          'Chat com Chef IA para dúvidas e substituições',
+          'Análise nutricional e cultural dos cardápios',
+          'Tutoriais de técnicas culinárias essenciais',
+          'Sistema anti-repetição com histórico',
+          'Suporte para restrições alimentares complexas'
         ],
         comoUsar: [
-          '1. Adicione ingredientes que você tem',
-          '2. Escolha tipo de prato (almoço, jantar, etc.)',
-          '3. Defina tempo disponível para cozinhar',
-          '4. Clique em "Gerar Receita"',
-          '5. Siga o passo a passo detalhado'
+          '1. Acesse a seção "Exclusões Personalizadas"',
+          '2. Liste ingredientes ou pratos que NÃO quer (ex: ovo, lasanha)',
+          '3. Clique em "Gerar Cardápio Semanal"',
+          '4. Aguarde a IA criar 21 refeições únicas',
+          '5. Veja estatísticas detalhadas do cardápio',
+          '6. Copie ou compartilhe seu cardápio personalizado'
+        ],
+        exclusoes: [
+          'Ingredientes: peixe, ovo, leite, glúten',
+          'Pratos inteiros: lasanha, feijoada, sushi',
+          'Preparações com ovos: bolos, tortas, pudins',
+          'Preparações com leite: molhos, cremes, doces',
+          'Sistema detecta automaticamente variações'
+        ],
+        chatIA: [
+          'Substitua ingredientes em qualquer receita',
+          'Peça receitas completas e detalhadas',
+          'Aprenda técnicas: quebrar ovos, virar omelete',
+          'Tire dúvidas sobre pontos de carne',
+          'Descubra alternativas veganas',
+          'Obtenha dicas de conservação e armazenamento'
         ],
         dicas: [
-          'Quanto mais ingredientes, mais opções de receitas',
-          'Especifique restrições alimentares',
-          'Salve suas receitas favoritas',
-          'Ganha +1 crédito por receita gerada'
+          'Use vírgulas para separar múltiplos itens',
+          'O sistema filtra automaticamente preparações',
+          'Cardápios nunca se repetem graças ao histórico',
+          'Estatísticas mostram variedade cultural real',
+          'Chat IA disponível 24/7 para dúvidas',
+          'Compartilhe cardápios para ajudar outros usuários'
         ]
       }
     },
@@ -293,6 +313,42 @@ function DocumentationSection() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Exclusões (específico para CozinhaIA) */}
+                  {tutorial.conteudo.exclusoes && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                        <i className="fa-solid fa-ban text-red-500 mr-2"></i>
+                        Sistema de Exclusões Inteligente
+                      </h4>
+                      <ul className="space-y-2">
+                        {tutorial.conteudo.exclusoes.map((item, index) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <i className="fa-solid fa-shield-alt text-red-500 dark:text-red-400 mt-1 text-sm"></i>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Chat IA (específico para CozinhaIA) */}
+                  {tutorial.conteudo.chatIA && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                        <i className="fa-solid fa-robot text-green-500 mr-2"></i>
+                        Chef IA - Assistente Culinário
+                      </h4>
+                      <ul className="space-y-2">
+                        {tutorial.conteudo.chatIA.map((item, index) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <i className="fa-solid fa-comments text-green-500 dark:text-green-400 mt-1 text-sm"></i>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
 
