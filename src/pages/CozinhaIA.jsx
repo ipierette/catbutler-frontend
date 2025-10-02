@@ -85,113 +85,144 @@ export default function CozinhaIA() {
   // Auto-scroll para a última mensagem do chat
   return (
     <VisitorModeWrapper pageName="a cozinha IA">
-      {/* Envolva todo o conteúdo em um único elemento pai */}
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <i className="fa-solid fa-utensils text-orange-600 dark:text-orange-400"></i>
+      <div className="h-full overflow-y-auto custom-scrollbar">
+        <div className="p-4 lg:p-6 space-y-6">
+          
+          {/* Header padronizado */}
+          <div className="mb-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg shrink-0">
+                <i className="fa-solid fa-utensils text-lg sm:text-xl text-orange-600 dark:text-orange-400" aria-label="cozinha"></i>
               </div>
-              <div>
-                <h1 className="font-bold text-gray-900 dark:text-white">Cozinha IA</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Receitas e cardápios gerados por IA Gratuita, pode demorar alguns minutos!!. Compartilhe suas receitas e fotos!</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                  Cozinha IA
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                  Receitas e cardápios gerados por IA gratuita. Compartilhe suas receitas e fotos!
+                </p>
               </div>
+              <button
+                onClick={() => setChatAberto(true)}
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 shrink-0"
+              >
+                <i className="fa-solid fa-comments"></i>
+                <span className="hidden sm:inline">Chef IA</span>
+                {conversas.length > 0 && (
+                  <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+                )}
+              </button>
             </div>
-            <button
-              onClick={() => setChatAberto(true)}
-              className="relative p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
-            >
-              <i className="fa-solid fa-comments text-green-600 dark:text-green-400"></i>
-              {conversas.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              )}
-            </button>
           </div>
-        </div>
 
-        {/* Funções rápidas */}
-        <div className="p-4 pb-20 space-y-4">
-          <div className="flex flex-col md:flex-row gap-3">
-            <button
-              onClick={() => setModalReceita(true)}
-              className="flex-1 px-4 py-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center gap-3 border border-orange-200 dark:border-orange-700 hover:bg-orange-200 dark:hover:bg-orange-800 transition-all"
-            >
-              <i className="fa-solid fa-plus-circle text-orange-600 dark:text-orange-400"></i>
-              <span className="font-medium text-orange-700 dark:text-orange-300">Enviar Receita Própria</span>
-            </button>
-            <div className="flex-1 flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={ingredientesIndesejados}
-                  onChange={e => setIngredientesIndesejados(e.target.value)}
-                  placeholder="Ex: peixe, ovo, pimentão"
-                  className="flex-1 px-3 py-2 border border-blue-200 dark:border-blue-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && ingredientesIndesejados.trim()) {
-                      setIngredientesLista(arr => [...arr, ...ingredientesIndesejados.split(',').map(i => i.trim()).filter(Boolean)]);
-                      setIngredientesIndesejados('');
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm"
-                  onClick={() => {
-                    if (ingredientesIndesejados.trim()) {
-                      setIngredientesLista(arr => [...arr, ...ingredientesIndesejados.split(',').map(i => i.trim()).filter(Boolean)]);
-                      setIngredientesIndesejados('');
-                    }
-                  }}
-                >
-                  Adicionar
-                </button>
+          {/* Funções rápidas */}
+          <div className="space-y-4">
+          {/* Grid de Funcionalidades */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            
+            {/* Enviar Receita Própria */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setModalReceita(true)}
+                className="w-full px-4 py-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center gap-3 border border-orange-200 dark:border-orange-700 hover:bg-orange-200 dark:hover:bg-orange-800 transition-all"
+              >
+                <i className="fa-solid fa-plus-circle text-orange-600 dark:text-orange-400"></i>
+                <span className="font-medium text-orange-700 dark:text-orange-300">Enviar Receita Própria</span>
+              </button>
+            </div>
+
+            {/* Gerador de Cardápio com Exclusões */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+              <div className="mb-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <i className="fa-solid fa-ban text-red-500"></i>
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">Ingredientes/Pratos a Excluir</h3>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                  Liste ingredientes ou pratos que você NÃO quer no cardápio semanal
+                </p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={ingredientesIndesejados}
+                    onChange={e => setIngredientesIndesejados(e.target.value)}
+                    placeholder="Ex: peixe, ovo, pimentão"
+                    className="flex-1 px-3 py-2 border border-red-200 dark:border-red-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && ingredientesIndesejados.trim()) {
+                        setIngredientesLista(arr => [...arr, ...ingredientesIndesejados.split(',').map(i => i.trim()).filter(Boolean)]);
+                        setIngredientesIndesejados('');
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition-colors"
+                    onClick={() => {
+                      if (ingredientesIndesejados.trim()) {
+                        setIngredientesLista(arr => [...arr, ...ingredientesIndesejados.split(',').map(i => i.trim()).filter(Boolean)]);
+                        setIngredientesIndesejados('');
+                      }
+                    }}
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                  </button>
+                </div>
               </div>
+              
               {ingredientesLista.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-1">
+                <div className="flex flex-wrap gap-2 mb-3">
                   {ingredientesLista.map((ing, idx) => (
-                    <span key={ing+idx} className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-full text-xs flex items-center gap-1">
+                    <span key={ing+idx} className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-200 rounded-full text-xs flex items-center gap-1">
+                      <i className="fa-solid fa-ban text-xs"></i>
                       {ing}
-                      <button type="button" className="ml-1 text-blue-400 hover:text-blue-700 dark:hover:text-blue-100" onClick={() => setIngredientesLista(arr => arr.filter((_, i) => i !== idx))}>
+                      <button 
+                        type="button" 
+                        className="ml-1 text-red-400 hover:text-red-700 dark:hover:text-red-100" 
+                        onClick={() => setIngredientesLista(arr => arr.filter((_, i) => i !== idx))}
+                      >
                         <i className="fa-solid fa-xmark text-xs"></i>
                       </button>
                     </span>
                   ))}
                 </div>
               )}
+              
               <button
                 onClick={async () => {
                   await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
                   setMostrarCardapio(true);
                 }}
-                className="w-full px-4 py-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center gap-3 border border-blue-200 dark:border-blue-700 hover:bg-blue-200 dark:hover:bg-blue-800 transition-all justify-center mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center gap-2 justify-center transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={loadingCardapio}
               >
                 {loadingCardapio ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                     </svg>
-                    <span className="ml-2 font-medium text-blue-700 dark:text-blue-300">Gerando cardápio...</span>
+                    <span className="font-medium text-sm">Gerando...</span>
                   </>
                 ) : (
                   <>
-                    <i className="fa-solid fa-calendar-week text-blue-600 dark:text-blue-400"></i>
-                    <span className="font-medium text-blue-700 dark:text-blue-300">Gerar Cardápio Semanal</span>
+                    <i className="fa-solid fa-calendar-week"></i>
+                    <span className="font-medium text-sm">Gerar Cardápio Semanal</span>
                   </>
                 )}
               </button>
             </div>
-            <button
-              onClick={() => setModalFeedback(true)}
-              className="flex-1 px-4 py-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center gap-3 border border-purple-200 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-800 transition-all"
-            >
-              <i className="fa-solid fa-face-smile text-purple-600 dark:text-purple-400"></i>
-              <span className="font-medium text-purple-700 dark:text-purple-300">Feedback de Receita IA</span>
-            </button>
+
+            {/* Feedback de Receita IA */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setModalFeedback(true)}
+                className="w-full px-4 py-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center gap-3 border border-purple-200 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-800 transition-all"
+              >
+                <i className="fa-solid fa-face-smile text-purple-600 dark:text-purple-400"></i>
+                <span className="font-medium text-purple-700 dark:text-purple-300">Feedback de Receita IA</span>
+              </button>
+            </div>
           </div>
 
           {/* Chat Modal */}
@@ -304,33 +335,124 @@ export default function CozinhaIA() {
 
           {/* Modal Cardápio Semanal */}
           {mostrarCardapio && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-              <div ref={cardapioBoxRef} className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 max-w-lg w-full relative">
-                <button
-                  className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                  onClick={() => setMostrarCardapio(false)}
-                >
-                  <i className="fa-solid fa-xmark text-lg"></i>
-                </button>
-                <h3 className="font-bold text-lg mb-2 text-center text-emerald-600 dark:text-emerald-400">Cardápio Semanal</h3>
-                {loadingCardapio && (
-                  <div className="text-center py-6">
-                    <i className="fa-solid fa-spinner fa-spin text-2xl text-emerald-500"></i>
-                    <p className="mt-2 text-gray-500">Gerando cardápio...</p>
-                  </div>
-                )}
-                {erroCardapio && (
-                  <div className="text-center text-red-500 py-4">{erroCardapio}</div>
-                )}
-                {cardapioSemanal && !loadingCardapio && !erroCardapio && (
-                  <>
-                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 dark:bg-gray-800 rounded p-3 mb-4 max-h-96 overflow-auto border border-gray-200 dark:border-gray-700">{cardapioSemanal}</pre>
-                    <div className="flex gap-2 justify-center">
-                      <button onClick={copiarCardapio} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm flex items-center gap-2"><i className="fa-solid fa-copy"></i> Copiar</button>
-                      <button onClick={compartilharCardapio} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm flex items-center gap-2"><i className="fa-solid fa-share-nodes"></i> Compartilhar</button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+              <div ref={cardapioBoxRef} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                
+                {/* Header do Modal */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full flex items-center justify-center">
+                      <i className="fa-solid fa-calendar-week text-white"></i>
                     </div>
-                    <p className="text-xs text-center text-gray-400 mt-3">Feito com IA no <a href="https://catbutler.com.br" className="underline hover:text-emerald-600">CatButler.com.br</a> 🐾</p>
-                  </>
+                    <div>
+                      <h3 className="font-bold text-xl text-gray-900 dark:text-white">Cardápio Semanal</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {ingredientesLista.length > 0 && `Excluindo: ${ingredientesLista.join(', ')}`}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    onClick={() => setMostrarCardapio(false)}
+                  >
+                    <i className="fa-solid fa-xmark text-gray-500 dark:text-gray-400 text-lg"></i>
+                  </button>
+                </div>
+
+                {/* Conteúdo do Modal */}
+                <div className="flex-1 overflow-y-auto">
+                  {loadingCardapio && (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i className="fa-solid fa-spinner fa-spin text-2xl text-emerald-500"></i>
+                      </div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Gerando seu cardápio...</h4>
+                      <p className="text-gray-500 dark:text-gray-400">A IA está criando receitas personalizadas para você</p>
+                    </div>
+                  )}
+                  
+                  {erroCardapio && (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i className="fa-solid fa-exclamation-triangle text-2xl text-red-500"></i>
+                      </div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Erro ao gerar cardápio</h4>
+                      <p className="text-red-500 dark:text-red-400">{erroCardapio}</p>
+                    </div>
+                  )}
+                  
+                  {cardapioSemanal && !loadingCardapio && !erroCardapio && (
+                    <div className="p-6">
+                      {/* Cardápio Formatado */}
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-700 mb-6">
+                        <div className="prose prose-sm max-w-none dark:prose-invert">
+                          <div 
+                            className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed"
+                            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                          >
+                            {cardapioSemanal}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Estatísticas do Cardápio */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">7</div>
+                          <div className="text-xs text-blue-700 dark:text-blue-300">Dias</div>
+                        </div>
+                        <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">21</div>
+                          <div className="text-xs text-orange-700 dark:text-orange-300">Refeições</div>
+                        </div>
+                        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                            {ingredientesLista.length}
+                          </div>
+                          <div className="text-xs text-purple-700 dark:text-purple-300">Excluídos</div>
+                        </div>
+                        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-green-600 dark:text-green-400">100%</div>
+                          <div className="text-xs text-green-700 dark:text-green-300">Personalizado</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer com Ações */}
+                {cardapioSemanal && !loadingCardapio && !erroCardapio && (
+                  <div className="p-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50">
+                    <div className="flex flex-wrap gap-3 justify-center">
+                      <button 
+                        onClick={copiarCardapio} 
+                        className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 hover:scale-105"
+                      >
+                        <i className="fa-solid fa-copy"></i>
+                        Copiar Cardápio
+                      </button>
+                      <button 
+                        onClick={compartilharCardapio} 
+                        className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 hover:scale-105"
+                      >
+                        <i className="fa-solid fa-share-nodes"></i>
+                        Compartilhar
+                      </button>
+                      <button 
+                        onClick={async () => {
+                          await gerarCardapioSemanal({ ingredientesProibidos: ingredientesLista });
+                        }}
+                        className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2 hover:scale-105"
+                        disabled={loadingCardapio}
+                      >
+                        <i className="fa-solid fa-refresh"></i>
+                        Gerar Novo
+                      </button>
+                    </div>
+                    <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
+                      Feito com IA no <a href="https://catbutler.com.br" className="underline hover:text-emerald-600 dark:hover:text-emerald-400">CatButler.com.br</a> 🐾
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -366,6 +488,9 @@ export default function CozinhaIA() {
               </form>
             </div>
           )}
+
+          {/* Spacing for mobile scroll */}
+          <div className="h-16"></div>
         </div>
       </div>
     </VisitorModeWrapper>
