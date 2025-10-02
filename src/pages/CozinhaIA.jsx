@@ -6,6 +6,7 @@ import VisitorModeWrapper from '../components/VisitorModeWrapper';
 import useCozinhaIA from '../hooks/useCozinhaIA';
 import useCardapioHistory from '../hooks/useCardapioHistory';
 import useSmartTips from '../hooks/useSmartTips';
+import useUserTimezone from '../hooks/useUserTimezone';
 import SmartTipCard from '../components/SmartTipCard';
 
 // ...existing code...
@@ -18,6 +19,9 @@ export default function CozinhaIA() {
   
   // Hook para histórico e analytics
   const cardapioHistory = useCardapioHistory();
+  
+  // Hook para controle de timezone por usuário
+  const userTimezone = useUserTimezone();
   
   // Hook para dicas inteligentes contextuais (usado no SmartTipCard)
 
@@ -224,6 +228,12 @@ export default function CozinhaIA() {
                 </h1>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   Receitas e cardápios gerados por IA gratuita. Compartilhe suas receitas e fotos!
+                  {!isVisitorMode && (
+                    <span className="block mt-1 text-xs text-blue-600 dark:text-blue-400">
+                      <i className="fa-solid fa-clock mr-1"></i>
+                      {userTimezone.getLocalTime()} • {userTimezone.getLocalDate()}
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -296,6 +306,35 @@ export default function CozinhaIA() {
                     </button>
                   </span>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Informações da Semana Atual - apenas para usuários logados */}
+          {!isVisitorMode && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-calendar-week text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-blue-800 dark:text-blue-200">
+                      Semana {userTimezone.getWeekInfo().week} de {userTimezone.getWeekInfo().year}
+                    </h3>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      {podeGerar ? 'Cardápio disponível para geração' : `Cardápio criado • Versão ${versaoAtual}`}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    {userTimezone.getLocalTime()}
+                  </div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                    {userTimezone.timezone.split('/')[1]?.replace('_', ' ')}
+                  </div>
+                </div>
               </div>
             </div>
           )}
