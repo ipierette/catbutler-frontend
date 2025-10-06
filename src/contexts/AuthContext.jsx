@@ -302,7 +302,7 @@ export function AuthProvider({ children }) {
         ...prev,
         ...result.profile,
         // Mapear campos do banco para o formato esperado pelo contexto
-        avatar: result.profile.avatar_url || result.profile.avatar,
+        avatar: result.profile.avatar,
         nome: result.profile.display_name || result.profile.nome
       }));
 

@@ -233,7 +233,7 @@ export const getUserProfile = async () => {
     
     // Busca o perfil diretamente no Supabase
     const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
+      .from('user_profiles')
       .select('*')
       .eq('id', session.user.id)
       .single();
@@ -347,16 +347,13 @@ export const updateUserProfile = async (userId, profileData) => {
     console.log('🔄 Atualizando perfil no Supabase...', { userId, profileData });
     
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_profiles')
       .update({
-        display_name: profileData.display_name,
+        display_name: profileData.display_name || profileData.nome,
         first_name: profileData.first_name,
         last_name: profileData.last_name,
-        avatar_url: profileData.avatar_url,
+        avatar: profileData.avatar || profileData.avatar_url,
         theme: profileData.theme,
-        auto_theme_change: profileData.auto_theme_change,
-        preferences: profileData.preferences,
-        endereco: profileData.endereco,
         updated_at: new Date().toISOString()
       })
       .eq('id', userId)
