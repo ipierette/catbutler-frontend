@@ -116,22 +116,32 @@ export default function Config() {
   const salvarPerfil = async () => {
     if (!isAuthenticated) return;
     
+    console.log('💾 [Config] Iniciando salvamento do perfil...');
+    console.log('📋 [Config] Dados do perfil editando:', perfilEditando);
+    console.log('🎭 [Config] Avatar selecionado:', perfilEditando.avatarSelecionado);
+    
     setSalvandoPerfil(true);
     try {
-      console.log('🟦 Salvando perfil com dados:', {
-        display_name: perfilEditando.nome,
+      const profileData = {
+        nome: perfilEditando.nome,
+        endereco: perfilEditando.endereco,
         avatar: perfilEditando.avatarSelecionado
-      });
+      };
       
-      await updateProfile({
-        display_name: perfilEditando.nome,
-        avatar: perfilEditando.avatarSelecionado
-      });
+      console.log('📤 [Config] Enviando dados para updateProfile:', profileData);
       
-      setModalAberto('perfil-salvo');
-      setTimeout(() => setModalAberto(null), 2000);
+      const result = await updateProfile(profileData);
+      
+      console.log('📥 [Config] Resultado do updateProfile:', result);
+      
+      if (result.success) {
+        setModalAberto('perfil-salvo');
+        setTimeout(() => setModalAberto(null), 2000);
+      } else {
+        console.error('❌ [Config] Falha ao salvar perfil:', result);
+      }
     } catch (error) {
-      console.error('❌ Erro ao salvar perfil:', error);
+      console.error('🚨 [Config] Erro ao salvar perfil:', error);
     }
     setSalvandoPerfil(false);
   };
@@ -379,7 +389,14 @@ export default function Config() {
                                 <button
                                   onClick={() => {
                                     if (canSelect) {
-                                      setPerfilEditando(prev => ({ ...prev, avatarSelecionado: avatar.id }));
+                                      console.log('🎭 [Config] Selecionando avatar:', avatar.id);
+                                      console.log('📋 [Config] Estado anterior:', perfilEditando);
+                                      
+                                      setPerfilEditando(prev => {
+                                        const novoEstado = { ...prev, avatarSelecionado: avatar.id };
+                                        console.log('📋 [Config] Novo estado:', novoEstado);
+                                        return novoEstado;
+                                      });
                                     } else {
                                       // Aqui poderia abrir modal de compra
                                       alert(`Avatar "${avatar.name}" custa ${avatar.cost} tokens!`);

@@ -346,26 +346,44 @@ export const updateUserProfile = async (userId, profileData) => {
 
     console.log('🔄 Atualizando perfil no Supabase...', { userId, profileData });
     
+    // Preparar dados para atualização
+    const updateData = {
+      updated_at: new Date().toISOString()
+    };
+    
+    // Adicionar campos apenas se estiverem presentes
+    if (profileData.display_name || profileData.nome) {
+      updateData.display_name = profileData.display_name || profileData.nome;
+    }
+    if (profileData.first_name) updateData.first_name = profileData.first_name;
+    if (profileData.last_name) updateData.last_name = profileData.last_name;
+    if (profileData.avatar || profileData.avatar_url) {
+      updateData.avatar = profileData.avatar || profileData.avatar_url;
+      console.log('🎭 Atualizando avatar para:', updateData.avatar);
+    }
+    if (profileData.theme) updateData.theme = profileData.theme;
+    
+    console.log('📝 Dados que serão enviados para o Supabase:', updateData);
+    
     const { data, error } = await supabase
       .from('user_profiles')
-      .update({
-        display_name: profileData.display_name || profileData.nome,
-        first_name: profileData.first_name,
-        last_name: profileData.last_name,
-        avatar: profileData.avatar || profileData.avatar_url,
-        theme: profileData.theme,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', userId)
       .select()
       .single();
 
     if (error) {
-      console.error('🚨 Erro ao atualizar perfil:', error);
+      console.error('🚨 Erro detalhado ao atualizar perfil:', {
+        error,
+        userId,
+        updateData,
+        errorCode: error.code,
+        errorMessage: error.message
+      });
       
       // Se tabela não existir, usar fallback local
-      if (error.message?.includes('table') && error.message?.includes('profiles')) {
-        console.warn('⚠️ Tabela profiles não existe - usando persistência local temporária');
+      if (error.message?.includes('table') && (error.message?.includes('profiles') || error.message?.includes('user_profiles'))) {
+        console.warn('⚠️ Tabela user_profiles não existe - usando persistência local temporária');
         
         // Salvar no localStorage como fallback
         const fallbackProfile = { 
@@ -384,7 +402,8 @@ export const updateUserProfile = async (userId, profileData) => {
       throw new Error(`Erro ao atualizar perfil: ${error.message}`);
     }
 
-    console.log('✅ Perfil atualizado com sucesso:', data);
+    console.log('✅ Perfil atualizado com sucesso no Supabase:', data);
+    console.log('🎭 Avatar salvo:', data?.avatar);
     
     return {
       success: true,

@@ -284,29 +284,37 @@ export function AuthProvider({ children }) {
   // Função para atualizar perfil
   const updateProfile = async (newProfileData) => {
     try {
-      console.log('🔄 Atualizando perfil...', newProfileData);
+      console.log('🔄 [AuthContext] Iniciando atualização do perfil...', newProfileData);
+      console.log('👤 [AuthContext] User ID:', user?.id);
+      console.log('📋 [AuthContext] Profile atual:', profile);
 
       if (!user?.id) {
         throw new Error('Usuário não está autenticado');
       }
 
       // Salvar no Supabase
+      console.log('💾 [AuthContext] Chamando updateUserProfile...');
       const result = await updateUserProfile(user.id, newProfileData);
+      
+      console.log('📤 [AuthContext] Resultado do updateUserProfile:', result);
       
       if (!result.success) {
         throw new Error(result.error);
       }
 
       // Atualizar estado local apenas se salvou com sucesso
-      setProfile(prev => ({
-        ...prev,
+      const newProfile = {
+        ...profile,
         ...result.profile,
         // Mapear campos do banco para o formato esperado pelo contexto
         avatar: result.profile.avatar,
         nome: result.profile.display_name || result.profile.nome
-      }));
+      };
+      
+      console.log('🔄 [AuthContext] Atualizando estado local do profile:', newProfile);
+      setProfile(newProfile);
 
-      console.log('✅ Perfil atualizado com sucesso!', result.profile);
+      console.log('✅ [AuthContext] Perfil atualizado com sucesso!', result.profile);
       return { success: true, profile: result.profile };
 
     } catch (error) {
